@@ -20,9 +20,16 @@ from homeassistant.helpers.selector import (
 
 from .api import AniListAuthError, AniListClient, AniListError
 from .const import (
+    ALL_MEDIA_FORMATS,
     CONF_USER_ID,
     CONF_USER_NAME,
+    DEFAULT_AIRING_WINDOW_DAYS,
+    DEFAULT_CALENDAR_REMINDER_OFFSET,
+    DEFAULT_EXCLUDED_GENRES,
     DEFAULT_INCLUDE_ADULT,
+    DEFAULT_MANGA_STATUSES,
+    DEFAULT_MEDIA_FORMATS,
+    DEFAULT_SCORE_FORMAT,
     DEFAULT_SHOW_AIRING_CALENDAR,
     DEFAULT_SHOW_SEASON_CALENDAR,
     DEFAULT_TITLE_LANGUAGE,
@@ -30,7 +37,13 @@ from .const import (
     DEFAULT_WATCHLIST_STATUSES,
     DOMAIN,
     LOGGER,
+    OPT_AIRING_WINDOW_DAYS,
+    OPT_CALENDAR_REMINDER_OFFSET,
+    OPT_EXCLUDED_GENRES,
     OPT_INCLUDE_ADULT,
+    OPT_MANGA_STATUSES,
+    OPT_MEDIA_FORMATS,
+    OPT_SCORE_FORMAT,
     OPT_SHOW_AIRING_CALENDAR,
     OPT_SHOW_SEASON_CALENDAR,
     OPT_TITLE_LANGUAGE,
@@ -247,6 +260,70 @@ class AniListOptionsFlow(OptionsFlowWithReload):
                         OPT_SHOW_AIRING_CALENDAR, DEFAULT_SHOW_AIRING_CALENDAR
                     ),
                 ): BooleanSelector(),
+                vol.Optional(
+                    OPT_AIRING_WINDOW_DAYS,
+                    default=opts.get(OPT_AIRING_WINDOW_DAYS, DEFAULT_AIRING_WINDOW_DAYS),
+                ): NumberSelector(
+                    NumberSelectorConfig(
+                        min=1,
+                        max=14,
+                        step=1,
+                        mode=NumberSelectorMode.SLIDER,
+                    )
+                ),
+                vol.Optional(
+                    OPT_MEDIA_FORMATS,
+                    default=opts.get(OPT_MEDIA_FORMATS, DEFAULT_MEDIA_FORMATS),
+                ): SelectSelector(
+                    SelectSelectorConfig(
+                        options=ALL_MEDIA_FORMATS,
+                        multiple=True,
+                        mode=SelectSelectorMode.LIST,
+                        translation_key="media_format",
+                    )
+                ),
+                vol.Optional(
+                    OPT_SCORE_FORMAT,
+                    default=opts.get(OPT_SCORE_FORMAT, DEFAULT_SCORE_FORMAT),
+                ): SelectSelector(
+                    SelectSelectorConfig(
+                        options=["POINT_10", "POINT_100", "POINT_5", "SMILEY"],
+                        mode=SelectSelectorMode.DROPDOWN,
+                        translation_key="score_format",
+                    )
+                ),
+                vol.Optional(
+                    OPT_MANGA_STATUSES,
+                    default=opts.get(OPT_MANGA_STATUSES, DEFAULT_MANGA_STATUSES),
+                ): SelectSelector(
+                    SelectSelectorConfig(
+                        options=[
+                            "CURRENT",
+                            "PLANNING",
+                            "COMPLETED",
+                            "DROPPED",
+                            "PAUSED",
+                            "REPEATING",
+                        ],
+                        multiple=True,
+                        mode=SelectSelectorMode.LIST,
+                        translation_key="watchlist_status",
+                    )
+                ),
+                vol.Optional(
+                    OPT_CALENDAR_REMINDER_OFFSET,
+                    default=opts.get(
+                        OPT_CALENDAR_REMINDER_OFFSET, DEFAULT_CALENDAR_REMINDER_OFFSET
+                    ),
+                ): NumberSelector(
+                    NumberSelectorConfig(
+                        min=0,
+                        max=60,
+                        step=5,
+                        mode=NumberSelectorMode.SLIDER,
+                        unit_of_measurement="min",
+                    )
+                ),
             }
         )
 

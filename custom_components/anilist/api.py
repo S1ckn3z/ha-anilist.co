@@ -31,6 +31,9 @@ query PublicData(
   $airingAt_lesser: Int
   $season: MediaSeason
   $seasonYear: Int
+  $nextSeason: MediaSeason
+  $nextSeasonYear: Int
+  $isAdult: Boolean
 ) {
   schedule: Page(page: 1, perPage: 50) {
     pageInfo { hasNextPage currentPage }
@@ -51,6 +54,7 @@ query PublicData(
         duration
         format
         coverImage { large medium color }
+        genres
         isAdult
         siteUrl
       }
@@ -63,7 +67,36 @@ query PublicData(
       seasonYear: $seasonYear
       type: ANIME
       sort: POPULARITY_DESC
-      isAdult: false
+      isAdult: $isAdult
+    ) {
+      id
+      title { romaji english native }
+      status
+      season
+      seasonYear
+      episodes
+      duration
+      format
+      genres
+      averageScore
+      popularity
+      coverImage { extraLarge large medium color }
+      bannerImage
+      startDate { year month day }
+      endDate { year month day }
+      nextAiringEpisode { id airingAt timeUntilAiring episode }
+      studios(isMain: true) { nodes { id name } }
+      siteUrl
+    }
+  }
+  nextSeasonMedia: Page(page: 1, perPage: 50) {
+    pageInfo { hasNextPage currentPage }
+    media(
+      season: $nextSeason
+      seasonYear: $nextSeasonYear
+      type: ANIME
+      sort: POPULARITY_DESC
+      isAdult: $isAdult
     ) {
       id
       title { romaji english native }
@@ -95,6 +128,9 @@ query CombinedData(
   $airingAt_lesser: Int
   $season: MediaSeason
   $seasonYear: Int
+  $nextSeason: MediaSeason
+  $nextSeasonYear: Int
+  $isAdult: Boolean
 ) {
   watchlist: MediaListCollection(userName: $userName, type: ANIME) {
     user { id name mediaListOptions { scoreFormat } }
@@ -141,6 +177,8 @@ query CombinedData(
         id
         title { romaji english native }
         duration
+        format
+        genres
         coverImage { medium color }
         isAdult
         siteUrl
@@ -154,7 +192,33 @@ query CombinedData(
       seasonYear: $seasonYear
       type: ANIME
       sort: POPULARITY_DESC
-      isAdult: false
+      isAdult: $isAdult
+    ) {
+      id
+      title { romaji english native }
+      status
+      season
+      seasonYear
+      episodes
+      duration
+      format
+      genres
+      averageScore
+      coverImage { extraLarge large medium color }
+      startDate { year month day }
+      endDate { year month day }
+      nextAiringEpisode { id airingAt timeUntilAiring episode }
+      siteUrl
+    }
+  }
+  nextSeasonMedia: Page(page: 1, perPage: 50) {
+    pageInfo { hasNextPage currentPage }
+    media(
+      season: $nextSeason
+      seasonYear: $nextSeasonYear
+      type: ANIME
+      sort: POPULARITY_DESC
+      isAdult: $isAdult
     ) {
       id
       title { romaji english native }
@@ -176,7 +240,7 @@ query CombinedData(
 }
 """
 
-# Standalone query for schedule pagination (pages 2+)
+# Standalone query for airing schedule pagination (pages 2+)
 QUERY_SCHEDULE_PAGE = """
 query SchedulePage(
   $airingAt_greater: Int
@@ -199,9 +263,82 @@ query SchedulePage(
         id
         title { romaji english native }
         duration
+        format
+        genres
         coverImage { medium color }
         isAdult
         siteUrl
+      }
+    }
+  }
+}
+"""
+
+# User statistics, favourites, and manga list in one request (auth-only).
+# Uses Viewer (authenticated user) for statistics/favourites to ensure
+# full data access, and userName for the manga list.
+QUERY_USER_STATS_AND_MANGA = """
+query UserStatsAndManga($userName: String) {
+  Viewer {
+    statistics {
+      anime {
+        count
+        episodesWatched
+        minutesWatched
+        meanScore
+        genres(sort: COUNT_DESC) { genre count }
+      }
+      manga {
+        count
+        chaptersRead
+        volumesRead
+        meanScore
+      }
+    }
+    favourites {
+      anime(perPage: 5) {
+        nodes {
+          id
+          title { romaji english native }
+          coverImage { medium }
+          siteUrl
+        }
+      }
+      manga(perPage: 5) {
+        nodes {
+          id
+          title { romaji english native }
+          coverImage { medium }
+          siteUrl
+        }
+      }
+    }
+  }
+  mangaList: MediaListCollection(userName: $userName, type: MANGA) {
+    lists {
+      name
+      isCustomList
+      status
+      entries {
+        id
+        mediaId
+        status
+        score
+        progress
+        progressVolumes
+        repeat
+        notes
+        updatedAt
+        media {
+          id
+          title { romaji english native }
+          chapters
+          volumes
+          status
+          format
+          coverImage { large medium color }
+          siteUrl
+        }
       }
     }
   }
@@ -256,10 +393,7 @@ class AniListClient:
         query: str,
         variables: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
-        """Execute a GraphQL query and return the data payload.
-
-        Handles rate-limit headers and raises typed exceptions for errors.
-        """
+        """Execute a GraphQL query and return the data payload."""
         headers: dict[str, str] = {
             "Content-Type": "application/json",
             "Accept": "application/json",
@@ -277,7 +411,6 @@ class AniListClient:
                 json=payload,
                 headers=headers,
             ) as resp:
-                # Read rate limit info before consuming the body
                 remaining = int(resp.headers.get("X-RateLimit-Remaining", 90))
                 reset_ts = int(resp.headers.get("X-RateLimit-Reset", 0))
 
@@ -286,17 +419,15 @@ class AniListClient:
                     raise AniListRateLimitError(retry_after=retry_after)
 
                 if resp.status == 403:
-                    raise AniListError("AniList API returned 403 Forbidden — API may be unavailable")
+                    raise AniListError("AniList API returned 403 Forbidden")
 
                 resp.raise_for_status()
 
-                # Proactively throttle when the rate-limit budget runs low
                 if remaining < RATE_LIMIT_BUFFER and reset_ts:
                     sleep_secs = max(0.0, reset_ts - time.time()) + 1.0
                     LOGGER.debug(
-                        "Rate limit budget low (%d remaining), sleeping %.1fs until reset",
-                        remaining,
-                        sleep_secs,
+                        "Rate limit budget low (%d remaining), sleeping %.1fs",
+                        remaining, sleep_secs,
                     )
                     await asyncio.sleep(sleep_secs)
 
@@ -304,7 +435,7 @@ class AniListClient:
 
                 if "errors" in body:
                     errors: list[dict[str, Any]] = body["errors"]
-                    LOGGER.debug("AniList API returned errors: %s", errors)
+                    LOGGER.debug("AniList API errors: %s", errors)
                     if any(e.get("status") in (401, 403) for e in errors):
                         raise AniListAuthError(str(errors))
                     raise AniListError(str(errors))
@@ -312,16 +443,14 @@ class AniListClient:
                 return body.get("data", {})
 
         except (aiohttp.ClientError, asyncio.TimeoutError) as err:
-            raise AniListError(f"Network error communicating with AniList: {err}") from err
+            raise AniListError(f"Network error: {err}") from err
 
     async def get_viewer(self) -> dict[str, Any]:
-        """Return the authenticated user's profile via the Viewer query."""
+        """Return the authenticated user's profile."""
         result = await self.query(QUERY_VIEWER)
         viewer = result.get("Viewer")
         if not viewer:
-            raise AniListAuthError(
-                "Viewer query returned no data — token may be invalid or revoked"
-            )
+            raise AniListAuthError("Viewer query returned no data")
         return viewer
 
     async def fetch_public_data(
@@ -330,8 +459,11 @@ class AniListClient:
         airing_at_lesser: int,
         season: str,
         season_year: int,
+        next_season: str,
+        next_season_year: int,
+        include_adult: bool = False,
     ) -> dict[str, Any]:
-        """Fetch public (unauthenticated) airing schedule and season anime."""
+        """Fetch public airing schedule + current and next season anime."""
         return await self.query(
             QUERY_PUBLIC,
             variables={
@@ -339,6 +471,9 @@ class AniListClient:
                 "airingAt_lesser": airing_at_lesser,
                 "season": season,
                 "seasonYear": season_year,
+                "nextSeason": next_season,
+                "nextSeasonYear": next_season_year,
+                "isAdult": include_adult if include_adult else False,
             },
         )
 
@@ -349,8 +484,11 @@ class AniListClient:
         airing_at_lesser: int,
         season: str,
         season_year: int,
+        next_season: str,
+        next_season_year: int,
+        include_adult: bool = False,
     ) -> dict[str, Any]:
-        """Fetch watchlist + airing schedule (page 1) + season anime in one request."""
+        """Fetch watchlist + schedule + current and next season in one request."""
         return await self.query(
             QUERY_COMBINED,
             variables={
@@ -359,6 +497,9 @@ class AniListClient:
                 "airingAt_lesser": airing_at_lesser,
                 "season": season,
                 "seasonYear": season_year,
+                "nextSeason": next_season,
+                "nextSeasonYear": next_season_year,
+                "isAdult": include_adult if include_adult else False,
             },
         )
 
@@ -368,7 +509,7 @@ class AniListClient:
         airing_at_lesser: int,
         page: int,
     ) -> dict[str, Any]:
-        """Fetch a single page of the airing schedule (used for pagination, page 2+)."""
+        """Fetch a single page of the airing schedule (pagination, page 2+)."""
         return await self.query(
             QUERY_SCHEDULE_PAGE,
             variables={
@@ -376,4 +517,14 @@ class AniListClient:
                 "airingAt_lesser": airing_at_lesser,
                 "page": page,
             },
+        )
+
+    async def fetch_user_stats_and_manga(
+        self,
+        user_name: str,
+    ) -> dict[str, Any]:
+        """Fetch user statistics, favourites, and manga list."""
+        return await self.query(
+            QUERY_USER_STATS_AND_MANGA,
+            variables={"userName": user_name},
         )

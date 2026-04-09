@@ -13,16 +13,33 @@ from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
 from .const import (
+    DEFAULT_CALENDAR_REMINDER_OFFSET,
     DEFAULT_EPISODE_DURATION,
+    DEFAULT_MANGA_STATUSES,
     DEFAULT_TITLE_LANGUAGE,
     DEFAULT_WATCHLIST_STATUSES,
     DOMAIN,
+    OPT_CALENDAR_REMINDER_OFFSET,
+    OPT_MANGA_STATUSES,
     OPT_SHOW_AIRING_CALENDAR,
     OPT_SHOW_SEASON_CALENDAR,
     OPT_TITLE_LANGUAGE,
     OPT_WATCHLIST_STATUSES,
 )
-from .coordinator import AiringEntry, AniListConfigEntry, AniListCoordinator, AniListData
+from .coordinator import (
+    AiringEntry,
+    AniListConfigEntry,
+    AniListCoordinator,
+    AniListData,
+    MangaEntry,
+)
+
+# Try to import CalendarAlarm (available since HA 2024.3)
+try:
+    from homeassistant.components.calendar import CalendarAlarm
+    _HAS_ALARM = True
+except ImportError:
+    _HAS_ALARM = False
 
 
 # ---------------------------------------------------------------------------
@@ -31,7 +48,6 @@ from .coordinator import AiringEntry, AniListConfigEntry, AniListCoordinator, An
 
 
 def _get_title(media: dict[str, Any], language: str) -> str:
-    """Return the anime title in the requested language with fallback chain."""
     title = media.get("title") or {}
     return (
         title.get(language)
@@ -42,30 +58,12 @@ def _get_title(media: dict[str, Any], language: str) -> str:
     )
 
 
-def _airing_entry_to_event(entry: AiringEntry, language: str) -> CalendarEvent:
-    """Convert an AiringEntry to a CalendarEvent."""
-    duration_min = entry.media.get("duration") or DEFAULT_EPISODE_DURATION
-    start_dt = dt_util.utc_from_timestamp(entry.airing_at)
-    end_dt = start_dt + datetime.timedelta(minutes=duration_min)
-
-    title = _get_title(entry.media, language)
-    total_eps = entry.media.get("episodes")
-    ep_suffix = f" of {total_eps}" if total_eps else ""
-
-    return CalendarEvent(
-        uid=str(entry.id),
-        summary=f"{title} — Episode {entry.episode}{ep_suffix}",
-        start=start_dt,
-        end=end_dt,
-        description=(
-            f"Episode {entry.episode}{ep_suffix}\n"
-            f"{entry.media.get('siteUrl', '')}"
-        ),
-    )
-
-
 def _get_language(entry: AniListConfigEntry) -> str:
     return entry.options.get(OPT_TITLE_LANGUAGE, DEFAULT_TITLE_LANGUAGE)
+
+
+def _get_reminder_offset(entry: AniListConfigEntry) -> int:
+    return entry.options.get(OPT_CALENDAR_REMINDER_OFFSET, DEFAULT_CALENDAR_REMINDER_OFFSET)
 
 
 def _make_device_info(entry: AniListConfigEntry) -> DeviceInfo:
@@ -76,6 +74,43 @@ def _make_device_info(entry: AniListConfigEntry) -> DeviceInfo:
         manufacturer="AniList",
         configuration_url="https://anilist.co",
     )
+
+
+def _build_alarm(offset_minutes: int) -> list | None:
+    """Build a CalendarAlarm list if alarm support is available and offset > 0."""
+    if not _HAS_ALARM or offset_minutes <= 0:
+        return None
+    return [CalendarAlarm(trigger=datetime.timedelta(minutes=-offset_minutes))]
+
+
+def _airing_entry_to_event(
+    entry: AiringEntry,
+    language: str,
+    reminder_offset: int = 0,
+) -> CalendarEvent:
+    """Convert an AiringEntry to a CalendarEvent."""
+    duration_min = entry.media.get("duration") or DEFAULT_EPISODE_DURATION
+    start_dt = dt_util.utc_from_timestamp(entry.airing_at)
+    end_dt = start_dt + datetime.timedelta(minutes=duration_min)
+    title = _get_title(entry.media, language)
+    total_eps = entry.media.get("episodes")
+    ep_suffix = f" of {total_eps}" if total_eps else ""
+
+    kwargs: dict[str, Any] = {
+        "uid": str(entry.id),
+        "summary": f"{title} — Episode {entry.episode}{ep_suffix}",
+        "start": start_dt,
+        "end": end_dt,
+        "description": (
+            f"Episode {entry.episode}{ep_suffix}\n"
+            f"{entry.media.get('siteUrl', '')}"
+        ),
+    }
+    alarm = _build_alarm(reminder_offset)
+    if alarm is not None:
+        kwargs["alarm"] = alarm
+
+    return CalendarEvent(**kwargs)
 
 
 # ---------------------------------------------------------------------------
@@ -101,26 +136,23 @@ async def async_setup_entry(
 
     if coordinator.client.is_authenticated:
         entities.append(WatchlistCalendarEntity(coordinator, entry))
+        entities.append(MangaCalendarEntity(coordinator, entry))
 
     async_add_entities(entities)
 
 
 # ---------------------------------------------------------------------------
-# Airing Calendar — all upcoming episodes (next 7 days)
+# Airing Calendar — all upcoming episodes in the configured window
 # ---------------------------------------------------------------------------
 
 
 class AiringCalendarEntity(CoordinatorEntity[AniListCoordinator], CalendarEntity):
-    """Calendar showing every airing episode in the next 7 days."""
+    """Calendar showing every airing episode in the configured airing window."""
 
     _attr_has_entity_name = True
     _attr_translation_key = "airing_calendar"
 
-    def __init__(
-        self,
-        coordinator: AniListCoordinator,
-        entry: AniListConfigEntry,
-    ) -> None:
+    def __init__(self, coordinator: AniListCoordinator, entry: AniListConfigEntry) -> None:
         super().__init__(coordinator)
         self._entry = entry
         self._attr_unique_id = f"{entry.entry_id}_airing_calendar"
@@ -128,16 +160,14 @@ class AiringCalendarEntity(CoordinatorEntity[AniListCoordinator], CalendarEntity
 
     @property
     def event(self) -> CalendarEvent | None:
-        """Return the next upcoming airing episode."""
         now = time.time()
-        upcoming = [
-            e for e in self.coordinator.data.airing_schedule if e.airing_at > now
-        ]
+        upcoming = [e for e in self.coordinator.data.airing_schedule if e.airing_at > now]
         if not upcoming:
             return None
         return _airing_entry_to_event(
             min(upcoming, key=lambda e: e.airing_at),
             _get_language(self._entry),
+            _get_reminder_offset(self._entry),
         )
 
     async def async_get_events(
@@ -146,77 +176,88 @@ class AiringCalendarEntity(CoordinatorEntity[AniListCoordinator], CalendarEntity
         start_date: datetime.datetime,
         end_date: datetime.datetime,
     ) -> list[CalendarEvent]:
-        """Return all airing events that overlap the requested date range."""
         lang = _get_language(self._entry)
-        events: list[CalendarEvent] = []
-        for entry in self.coordinator.data.airing_schedule:
-            ev = _airing_entry_to_event(entry, lang)
-            if ev.end > start_date and ev.start < end_date:
-                events.append(ev)
-        return events
+        offset = _get_reminder_offset(self._entry)
+        return [
+            _airing_entry_to_event(e, lang, offset)
+            for e in self.coordinator.data.airing_schedule
+            if dt_util.utc_from_timestamp(e.airing_at) + datetime.timedelta(
+                minutes=e.media.get("duration") or DEFAULT_EPISODE_DURATION
+            ) > start_date
+            and dt_util.utc_from_timestamp(e.airing_at) < end_date
+        ]
 
 
 # ---------------------------------------------------------------------------
-# Season Calendar — one event per season anime (next episode)
+# Season Calendar — current + next season
 # ---------------------------------------------------------------------------
 
 
 class SeasonCalendarEntity(CoordinatorEntity[AniListCoordinator], CalendarEntity):
-    """Calendar showing each current-season anime's next episode time."""
+    """Calendar showing current and next season anime next episode times."""
 
     _attr_has_entity_name = True
     _attr_translation_key = "season_calendar"
 
-    def __init__(
-        self,
-        coordinator: AniListCoordinator,
-        entry: AniListConfigEntry,
-    ) -> None:
+    def __init__(self, coordinator: AniListCoordinator, entry: AniListConfigEntry) -> None:
         super().__init__(coordinator)
         self._entry = entry
         self._attr_unique_id = f"{entry.entry_id}_season_calendar"
         self._attr_device_info = _make_device_info(entry)
 
-    def _season_events(self, lang: str) -> list[CalendarEvent]:
-        """Build CalendarEvent objects from the season anime list."""
+    def _build_events_from_list(
+        self,
+        anime_list: list[dict[str, Any]],
+        lang: str,
+        label: str,
+        offset: int = 0,
+    ) -> list[CalendarEvent]:
         events: list[CalendarEvent] = []
-        for anime in self.coordinator.data.season_anime:
+        for anime in anime_list:
             nae = anime.get("nextAiringEpisode")
-            if not nae:
-                continue
-            airing_at = nae.get("airingAt")
-            if not airing_at:
+            if not nae or not nae.get("airingAt"):
                 continue
             duration_min = anime.get("duration") or DEFAULT_EPISODE_DURATION
-            start_dt = dt_util.utc_from_timestamp(airing_at)
+            start_dt = dt_util.utc_from_timestamp(nae["airingAt"])
             end_dt = start_dt + datetime.timedelta(minutes=duration_min)
             title = _get_title(anime, lang)
             episode = nae.get("episode", "?")
             total_eps = anime.get("episodes")
             ep_suffix = f" of {total_eps}" if total_eps else ""
-            events.append(
-                CalendarEvent(
-                    uid=f"season_{anime['id']}_{episode}",
-                    summary=f"{title} — Episode {episode}{ep_suffix}",
-                    start=start_dt,
-                    end=end_dt,
-                    description=(
-                        f"Episode {episode}{ep_suffix}\n"
-                        f"Score: {anime.get('averageScore', 'N/A')}\n"
-                        f"{anime.get('siteUrl', '')}"
-                    ),
-                )
-            )
+
+            kwargs: dict[str, Any] = {
+                "uid": f"{label}_{anime['id']}_{episode}",
+                "summary": f"{title} — Episode {episode}{ep_suffix}",
+                "start": start_dt,
+                "end": end_dt,
+                "description": (
+                    f"[{label}] Episode {episode}{ep_suffix}\n"
+                    f"Score: {anime.get('averageScore', 'N/A')}\n"
+                    f"{anime.get('siteUrl', '')}"
+                ),
+            }
+            alarm = _build_alarm(offset)
+            if alarm is not None:
+                kwargs["alarm"] = alarm
+            events.append(CalendarEvent(**kwargs))
+        return events
+
+    def _all_season_events(self, lang: str, offset: int) -> list[CalendarEvent]:
+        data = self.coordinator.data
+        events = self._build_events_from_list(
+            data.season_anime, lang, "Current Season", offset
+        )
+        events += self._build_events_from_list(
+            data.next_season_anime, lang, "Next Season", offset
+        )
         return events
 
     @property
     def event(self) -> CalendarEvent | None:
-        """Return the nearest upcoming season anime episode."""
         now_dt = dt_util.utcnow()
-        upcoming = [
-            e for e in self._season_events(_get_language(self._entry))
-            if e.start >= now_dt
-        ]
+        lang = _get_language(self._entry)
+        offset = _get_reminder_offset(self._entry)
+        upcoming = [e for e in self._all_season_events(lang, offset) if e.start >= now_dt]
         return min(upcoming, key=lambda e: e.start) if upcoming else None
 
     async def async_get_events(
@@ -225,16 +266,16 @@ class SeasonCalendarEntity(CoordinatorEntity[AniListCoordinator], CalendarEntity
         start_date: datetime.datetime,
         end_date: datetime.datetime,
     ) -> list[CalendarEvent]:
-        """Return season anime events that overlap the requested date range."""
+        lang = _get_language(self._entry)
+        offset = _get_reminder_offset(self._entry)
         return [
-            e
-            for e in self._season_events(_get_language(self._entry))
+            e for e in self._all_season_events(lang, offset)
             if e.end > start_date and e.start < end_date
         ]
 
 
 # ---------------------------------------------------------------------------
-# Watchlist Calendar — filtered to the user's own list
+# Watchlist Calendar — filtered to the user's own anime list
 # ---------------------------------------------------------------------------
 
 
@@ -244,54 +285,35 @@ class WatchlistCalendarEntity(CoordinatorEntity[AniListCoordinator], CalendarEnt
     _attr_has_entity_name = True
     _attr_translation_key = "watchlist_calendar"
 
-    def __init__(
-        self,
-        coordinator: AniListCoordinator,
-        entry: AniListConfigEntry,
-    ) -> None:
+    def __init__(self, coordinator: AniListCoordinator, entry: AniListConfigEntry) -> None:
         super().__init__(coordinator)
         self._entry = entry
         self._attr_unique_id = f"{entry.entry_id}_watchlist_calendar"
         self._attr_device_info = _make_device_info(entry)
 
-    def _allowed_statuses(self) -> set[str]:
-        statuses = self._entry.options.get(
-            OPT_WATCHLIST_STATUSES, DEFAULT_WATCHLIST_STATUSES
-        )
-        return set(statuses)
-
-    def _watchlist_media_ids(self) -> set[int]:
-        """Return media IDs whose watchlist status is in the allowed set."""
+    def _allowed_media_ids(self) -> set[int]:
         data: AniListData = self.coordinator.data
         if not data.watchlist:
             return set()
-        allowed = self._allowed_statuses()
+        allowed = set(
+            self._entry.options.get(OPT_WATCHLIST_STATUSES, DEFAULT_WATCHLIST_STATUSES)
+        )
         return {e.media_id for e in data.watchlist if e.status in allowed}
-
-    def _watchlist_events(self, lang: str) -> list[CalendarEvent]:
-        """Build CalendarEvents from airing entries that are on the watchlist."""
-        allowed_ids = self._watchlist_media_ids()
-        events: list[CalendarEvent] = []
-        for entry in self.coordinator.data.airing_schedule:
-            if entry.media_id not in allowed_ids:
-                continue
-            events.append(_airing_entry_to_event(entry, lang))
-        return events
 
     @property
     def event(self) -> CalendarEvent | None:
-        """Return the next upcoming watchlist episode."""
         now = time.time()
         lang = _get_language(self._entry)
+        offset = _get_reminder_offset(self._entry)
+        allowed = self._allowed_media_ids()
         upcoming = [
-            e
-            for e in self.coordinator.data.airing_schedule
-            if e.airing_at > now and e.media_id in self._watchlist_media_ids()
+            e for e in self.coordinator.data.airing_schedule
+            if e.airing_at > now and e.media_id in allowed
         ]
         if not upcoming:
             return None
         return _airing_entry_to_event(
-            min(upcoming, key=lambda e: e.airing_at), lang
+            min(upcoming, key=lambda e: e.airing_at), lang, offset
         )
 
     async def async_get_events(
@@ -300,10 +322,99 @@ class WatchlistCalendarEntity(CoordinatorEntity[AniListCoordinator], CalendarEnt
         start_date: datetime.datetime,
         end_date: datetime.datetime,
     ) -> list[CalendarEvent]:
-        """Return watchlist airing events that overlap the requested date range."""
         lang = _get_language(self._entry)
+        offset = _get_reminder_offset(self._entry)
+        allowed = self._allowed_media_ids()
         return [
-            e
-            for e in self._watchlist_events(lang)
-            if e.end > start_date and e.start < end_date
+            _airing_entry_to_event(e, lang, offset)
+            for e in self.coordinator.data.airing_schedule
+            if e.media_id in allowed
+            and dt_util.utc_from_timestamp(e.airing_at) < end_date
+            and dt_util.utc_from_timestamp(e.airing_at) + datetime.timedelta(
+                minutes=e.media.get("duration") or DEFAULT_EPISODE_DURATION
+            ) > start_date
+        ]
+
+
+# ---------------------------------------------------------------------------
+# Manga Calendar — user's manga reading list
+# ---------------------------------------------------------------------------
+
+
+class MangaCalendarEntity(CoordinatorEntity[AniListCoordinator], CalendarEntity):
+    """Calendar showing manga entries the user has recently read or is reading."""
+
+    _attr_has_entity_name = True
+    _attr_translation_key = "manga_calendar"
+
+    def __init__(self, coordinator: AniListCoordinator, entry: AniListConfigEntry) -> None:
+        super().__init__(coordinator)
+        self._entry = entry
+        self._attr_unique_id = f"{entry.entry_id}_manga_calendar"
+        self._attr_device_info = _make_device_info(entry)
+
+    def _allowed_statuses(self) -> set[str]:
+        return set(
+            self._entry.options.get(OPT_MANGA_STATUSES, DEFAULT_MANGA_STATUSES)
+        )
+
+    def _manga_events(self, lang: str) -> list[CalendarEvent]:
+        data = self.coordinator.data
+        if not data.manga_list:
+            return []
+        allowed = self._allowed_statuses()
+        events: list[CalendarEvent] = []
+        for entry in data.manga_list:
+            if entry.status not in allowed:
+                continue
+            if not entry.updated_at:
+                continue
+            # Show as all-day event on the last-updated date
+            updated_date = datetime.date.fromtimestamp(entry.updated_at)
+            title = _get_title(entry.media, lang)
+            total_ch = entry.media.get("chapters")
+            ch_suffix = f" of {total_ch}" if total_ch else ""
+            total_vol = entry.media.get("volumes")
+            vol_suffix = f" of {total_vol}" if total_vol else ""
+            events.append(
+                CalendarEvent(
+                    uid=f"manga_{entry.id}_{entry.updated_at}",
+                    summary=f"{title} — Ch. {entry.progress}{ch_suffix}",
+                    start=updated_date,
+                    end=updated_date + datetime.timedelta(days=1),
+                    description=(
+                        f"Chapters: {entry.progress}{ch_suffix}\n"
+                        f"Volumes: {entry.progress_volumes}{vol_suffix}\n"
+                        f"Status: {entry.status}\n"
+                        f"{entry.media.get('siteUrl', '')}"
+                    ),
+                )
+            )
+        return events
+
+    @property
+    def event(self) -> CalendarEvent | None:
+        lang = _get_language(self._entry)
+        events = self._manga_events(lang)
+        if not events:
+            return None
+        today = datetime.date.today()
+        # Return the most recently updated entry
+        past = [e for e in events if isinstance(e.start, datetime.date) and e.start <= today]
+        return max(past, key=lambda e: e.start) if past else None
+
+    async def async_get_events(
+        self,
+        hass: HomeAssistant,
+        start_date: datetime.datetime,
+        end_date: datetime.datetime,
+    ) -> list[CalendarEvent]:
+        lang = _get_language(self._entry)
+        start_d = start_date.date() if isinstance(start_date, datetime.datetime) else start_date
+        end_d = end_date.date() if isinstance(end_date, datetime.datetime) else end_date
+        return [
+            e for e in self._manga_events(lang)
+            if isinstance(e.start, datetime.date)
+            and e.start < end_d
+            and (e.end if isinstance(e.end, datetime.date) else e.end.date()) > start_d
         ]

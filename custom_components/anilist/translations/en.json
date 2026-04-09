@@ -32,13 +32,22 @@
           "update_interval": "Update interval (minutes)",
           "title_language": "Anime title language",
           "include_adult": "Include adult content",
-          "watchlist_statuses": "Watchlist statuses to show in calendar",
-          "show_season_calendar": "Enable current season calendar",
-          "show_airing_calendar": "Enable airing schedule calendar"
+          "watchlist_statuses": "Anime watchlist statuses to show in calendar",
+          "show_season_calendar": "Enable current & next season calendar",
+          "show_airing_calendar": "Enable airing schedule calendar",
+          "airing_window_days": "Airing schedule lookahead (days)",
+          "media_formats": "Show only these anime formats (empty = all)",
+          "score_format": "Score display format",
+          "manga_statuses": "Manga list statuses to show in calendar",
+          "calendar_reminder_offset": "Calendar reminder offset (0 = no reminder)"
         },
         "data_description": {
           "update_interval": "How often to fetch new data from AniList (5–60 minutes)",
-          "watchlist_statuses": "Only anime with these statuses will appear in the watchlist calendar"
+          "watchlist_statuses": "Only anime with these statuses appear in the watchlist calendar",
+          "airing_window_days": "How many days ahead the airing schedule calendar looks (1–14)",
+          "media_formats": "Leave empty to include all formats (TV, Movie, OVA, etc.)",
+          "manga_statuses": "Only manga with these statuses appear in the manga calendar",
+          "calendar_reminder_offset": "Minutes before an episode airs to trigger a calendar reminder"
         }
       }
     }
@@ -53,43 +62,55 @@
     },
     "watchlist_status": {
       "options": {
-        "CURRENT": "Currently Watching",
+        "CURRENT": "Currently Watching / Reading",
         "PLANNING": "Planning",
         "COMPLETED": "Completed",
         "DROPPED": "Dropped",
         "PAUSED": "On Hold",
-        "REPEATING": "Rewatching"
+        "REPEATING": "Rewatching / Rereading"
+      }
+    },
+    "media_format": {
+      "options": {
+        "TV": "TV",
+        "TV_SHORT": "TV Short",
+        "MOVIE": "Movie",
+        "SPECIAL": "Special",
+        "OVA": "OVA",
+        "ONA": "ONA",
+        "MUSIC": "Music"
+      }
+    },
+    "score_format": {
+      "options": {
+        "POINT_10": "1–10 (e.g. 7.5)",
+        "POINT_100": "1–100 (e.g. 75)",
+        "POINT_5": "1–5 Stars",
+        "SMILEY": "Smiley (😊 😐 😞)"
       }
     }
   },
   "entity": {
     "sensor": {
-      "airing_today": {
-        "name": "Airing Today"
-      },
-      "episodes_this_week": {
-        "name": "Episodes This Week"
-      },
-      "watching_count": {
-        "name": "Currently Watching"
-      },
-      "next_episode_title": {
-        "name": "Next Airing Anime"
-      },
-      "next_episode_time": {
-        "name": "Next Episode Time"
-      }
+      "airing_today": { "name": "Airing Today" },
+      "episodes_this_week": { "name": "Episodes This Week" },
+      "next_episode_title": { "name": "Next Airing Anime" },
+      "next_episode_time": { "name": "Next Episode Time" },
+      "watching_count": { "name": "Currently Watching" },
+      "manga_reading_count": { "name": "Currently Reading" },
+      "total_anime_watched": { "name": "Total Anime Watched" },
+      "total_episodes_watched": { "name": "Total Episodes Watched" },
+      "total_hours_watched": { "name": "Total Hours Watched" },
+      "anime_mean_score": { "name": "Anime Mean Score" },
+      "manga_mean_score": { "name": "Manga Mean Score" },
+      "chapters_read": { "name": "Chapters Read" },
+      "top_genre": { "name": "Top Genre" }
     },
     "calendar": {
-      "airing_calendar": {
-        "name": "Airing Schedule"
-      },
-      "season_calendar": {
-        "name": "Season Anime"
-      },
-      "watchlist_calendar": {
-        "name": "Watchlist"
-      }
+      "airing_calendar": { "name": "Airing Schedule" },
+      "season_calendar": { "name": "Season Anime" },
+      "watchlist_calendar": { "name": "Watchlist" },
+      "manga_calendar": { "name": "Manga Reading List" }
     }
   }
 }
