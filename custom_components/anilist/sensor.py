@@ -207,10 +207,33 @@ def _attrs_season_anime(data: AniListData, lang: str) -> dict[str, Any] | None:
     return {"season_anime": entries}
 
 
+def _attrs_manga_list(data: AniListData, lang: str) -> dict[str, Any] | None:
+    if data.manga_list is None:
+        return None
+    return {
+        "manga_list": [
+            {
+                "media_id": e.media_id,
+                "title": _get_title(e.media, lang),
+                "status": e.status,
+                "progress": e.progress,
+                "progress_volumes": e.progress_volumes,
+                "chapters": e.media.get("chapters"),
+                "volumes": e.media.get("volumes"),
+                "score": e.score,
+                "cover_image": (e.media.get("coverImage") or {}).get("medium"),
+                "site_url": e.media.get("siteUrl"),
+            }
+            for e in data.manga_list
+        ],
+    }
+
+
 def _attrs_top_genre(data: AniListData, _lang: str) -> dict[str, Any] | None:
     stats = data.user_stats
     if not stats:
         return None
+    viewer = data.viewer or {}
     return {
         "top_genres": stats.top_genres,
         "favourite_anime": [
@@ -221,6 +244,8 @@ def _attrs_top_genre(data: AniListData, _lang: str) -> dict[str, Any] | None:
             }
             for m in stats.favourite_anime
         ],
+        "viewer_name": viewer.get("name"),
+        "viewer_avatar": (viewer.get("avatar") or {}).get("medium"),
     }
 
 
@@ -290,6 +315,7 @@ SENSOR_DESCRIPTIONS: tuple[AniListSensorEntityDescription, ...] = (
         state_class=SensorStateClass.MEASUREMENT,
         requires_auth=True,
         value_fn=_manga_reading_count,
+        attrs_fn=_attrs_manga_list,
     ),
     AniListSensorEntityDescription(
         key="total_anime_watched",

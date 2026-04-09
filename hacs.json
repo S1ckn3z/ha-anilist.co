@@ -2,5 +2,5 @@
   "name": "AniList",
   "homeassistant": "2024.1.0",
   "hacs": "2.0.5",
-  "frontend_script": "www/anilist-card/anilist-card.js"
+  "render_readme": true
 }
