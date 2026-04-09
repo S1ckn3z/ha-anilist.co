@@ -1,0 +1,95 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "AniList Einrichtung",
+        "menu_options": {
+          "oauth": "Mit AniList-Account anmelden (OAuth2)",
+          "public_only": "Nur öffentliche Daten (kein Account erforderlich)"
+        }
+      },
+      "reauth_confirm": {
+        "title": "AniList erneut authentifizieren",
+        "description": "Deine AniList-Sitzung ist abgelaufen. Klicke auf Senden, um dich erneut anzumelden."
+      }
+    },
+    "error": {
+      "invalid_auth": "Ungültiger Zugriffstoken. Bitte prüfen und erneut versuchen.",
+      "cannot_connect": "Verbindung zu AniList nicht möglich. Bitte erneut versuchen.",
+      "unknown": "Unbekannter Fehler. Bitte Logs prüfen."
+    },
+    "abort": {
+      "already_configured": "Dieser AniList-Account ist bereits konfiguriert.",
+      "invalid_auth": "Authentifizierung fehlgeschlagen — Token konnte nicht validiert werden.",
+      "cannot_connect": "Verbindung zu AniList während der Einrichtung nicht möglich."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "AniList Einstellungen",
+        "data": {
+          "update_interval": "Update-Intervall (Minuten)",
+          "title_language": "Anime-Titelsprache",
+          "include_adult": "Erwachseneninhalte anzeigen",
+          "watchlist_statuses": "Watchlist-Status für Kalender",
+          "show_season_calendar": "Season-Kalender aktivieren",
+          "show_airing_calendar": "Airing-Kalender aktivieren"
+        },
+        "data_description": {
+          "update_interval": "Wie oft neue Daten von AniList abgerufen werden (5–60 Minuten)",
+          "watchlist_statuses": "Nur Anime mit diesen Status werden im Watchlist-Kalender angezeigt"
+        }
+      }
+    }
+  },
+  "selector": {
+    "title_language": {
+      "options": {
+        "romaji": "Romaji",
+        "english": "Englisch",
+        "native": "Japanisch (original)"
+      }
+    },
+    "watchlist_status": {
+      "options": {
+        "CURRENT": "Schaue ich gerade",
+        "PLANNING": "Geplant",
+        "COMPLETED": "Abgeschlossen",
+        "DROPPED": "Abgebrochen",
+        "PAUSED": "Pausiert",
+        "REPEATING": "Schaue ich nochmal"
+      }
+    }
+  },
+  "entity": {
+    "sensor": {
+      "airing_today": {
+        "name": "Heute ausstrahlend"
+      },
+      "episodes_this_week": {
+        "name": "Episoden diese Woche"
+      },
+      "watching_count": {
+        "name": "Schaue ich gerade"
+      },
+      "next_episode_title": {
+        "name": "Nächster Anime"
+      },
+      "next_episode_time": {
+        "name": "Nächste Episode um"
+      }
+    },
+    "calendar": {
+      "airing_calendar": {
+        "name": "Ausstrahlungsplan"
+      },
+      "season_calendar": {
+        "name": "Season-Anime"
+      },
+      "watchlist_calendar": {
+        "name": "Watchlist"
+      }
+    }
+  }
+}

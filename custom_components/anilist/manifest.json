@@ -1,0 +1,16 @@
+{
+  "domain": "anilist",
+  "name": "AniList",
+  "version": "0.1.0",
+  "config_flow": true,
+  "integration_type": "service",
+  "iot_class": "cloud_polling",
+  "documentation": "https://github.com/S1CK/ha-anilist.co",
+  "issue_tracker": "https://github.com/S1CK/ha-anilist.co/issues",
+  "codeowners": ["@S1CK"],
+  "requirements": [],
+  "dependencies": ["application_credentials"],
+  "after_dependencies": ["http"],
+  "quality_scale": "bronze",
+  "loggers": ["custom_components.anilist"]
+}

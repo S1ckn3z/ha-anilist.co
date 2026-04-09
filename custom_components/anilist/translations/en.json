@@ -1,0 +1,95 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "AniList Setup",
+        "menu_options": {
+          "oauth": "Sign in with AniList account (OAuth2)",
+          "public_only": "Public data only (no account required)"
+        }
+      },
+      "reauth_confirm": {
+        "title": "Re-authenticate AniList",
+        "description": "Your AniList session has expired. Click Submit to sign in again."
+      }
+    },
+    "error": {
+      "invalid_auth": "Invalid access token. Please check and try again.",
+      "cannot_connect": "Unable to connect to AniList. Please try again.",
+      "unknown": "Unexpected error. Please check the logs."
+    },
+    "abort": {
+      "already_configured": "This AniList account is already configured.",
+      "invalid_auth": "Authentication failed — the token could not be validated.",
+      "cannot_connect": "Unable to connect to AniList during setup."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "AniList Options",
+        "data": {
+          "update_interval": "Update interval (minutes)",
+          "title_language": "Anime title language",
+          "include_adult": "Include adult content",
+          "watchlist_statuses": "Watchlist statuses to show in calendar",
+          "show_season_calendar": "Enable current season calendar",
+          "show_airing_calendar": "Enable airing schedule calendar"
+        },
+        "data_description": {
+          "update_interval": "How often to fetch new data from AniList (5–60 minutes)",
+          "watchlist_statuses": "Only anime with these statuses will appear in the watchlist calendar"
+        }
+      }
+    }
+  },
+  "selector": {
+    "title_language": {
+      "options": {
+        "romaji": "Romaji",
+        "english": "English",
+        "native": "Native"
+      }
+    },
+    "watchlist_status": {
+      "options": {
+        "CURRENT": "Currently Watching",
+        "PLANNING": "Planning",
+        "COMPLETED": "Completed",
+        "DROPPED": "Dropped",
+        "PAUSED": "On Hold",
+        "REPEATING": "Rewatching"
+      }
+    }
+  },
+  "entity": {
+    "sensor": {
+      "airing_today": {
+        "name": "Airing Today"
+      },
+      "episodes_this_week": {
+        "name": "Episodes This Week"
+      },
+      "watching_count": {
+        "name": "Currently Watching"
+      },
+      "next_episode_title": {
+        "name": "Next Airing Anime"
+      },
+      "next_episode_time": {
+        "name": "Next Episode Time"
+      }
+    },
+    "calendar": {
+      "airing_calendar": {
+        "name": "Airing Schedule"
+      },
+      "season_calendar": {
+        "name": "Season Anime"
+      },
+      "watchlist_calendar": {
+        "name": "Watchlist"
+      }
+    }
+  }
+}
