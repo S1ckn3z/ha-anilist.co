@@ -63,7 +63,7 @@ ha-anilist.co/
 ## 3. Setup
 
 ```bash
-git clone https://github.com/S1CK/ha-anilist.co.git
+git clone https://github.com/S1ckn3z/ha-anilist.co.git
 cd ha-anilist.co
 npm install
 ```

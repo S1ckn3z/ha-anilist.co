@@ -15,7 +15,7 @@ Bring your anime and manga tracking into your Home Assistant dashboard.
 - **Automation Events** — get notified when new episodes air
 - **Theme Integration** — automatically adapts to your HA theme
 - **Scroll Control** — pixel-perfect visible items, scroll-snap, fade indicators
-- **i18n** — English and German translations, with Japanese support in the card frontend only
+- **🌍 23 Languages** — Full i18n across integration, card, and visual editor
 
 ## Authentication
 
@@ -46,4 +46,4 @@ Bring your anime and manga tracking into your Home Assistant dashboard.
 
 The card and all frontend resources are installed and registered automatically — no manual Lovelace resource setup needed.
 
-See the [full documentation](https://github.com/S1CK/ha-anilist.co) for all configuration options and examples.
+See the [full documentation](https://github.com/S1ckn3z/ha-anilist.co) for all configuration options and examples.

@@ -474,48 +474,53 @@ The card defines custom properties on `:host` that map to HA theme variables. Us
 
 ### Supported Languages
 
-- `en` -- English
-- `de` -- German
-- `ja` -- Japanese
+The card and editor support 23 languages. Language is detected from `this.hass.language` (first 2 characters). Falls back to `en`.
 
-Language is detected from `this.hass.language` (first 2 characters). Falls back to `en`.
+:gb: `en` English · :de: `de` German · :jp: `ja` Japanese · :es: `es` Spanish · :fr: `fr` French · :it: `it` Italian · :portugal: `pt` Portuguese · :netherlands: `nl` Dutch · :poland: `pl` Polish · :sweden: `sv` Swedish · :denmark: `da` Danish · :norway: `nb` Norwegian · :finland: `fi` Finnish · :czech_republic: `cs` Czech · :slovakia: `sk` Slovak · :romania: `ro` Romanian · :hungary: `hu` Hungarian · :bulgaria: `bg` Bulgarian · :greece: `el` Greek · :tr: `tr` Turkish · :ukraine: `uk` Ukrainian · :ru: `ru` Russian · :croatia: `hr` Croatian
 
-### Translation Keys
+### Card Translation Keys (35 keys)
 
-| Key | en | de | ja |
-|---|---|---|---|
-| `next_episodes` | Next Episodes | Nachste Episoden | Next no Episode |
-| `watching` | Currently Watching | Schaue ich gerade | Viewing |
-| `this_season` | This Season | Diese Season | Konki |
-| `profile` | AniList Profile | AniList Profil | AniList Profile |
-| `manga` | Manga Reading | Manga Leseliste | Reading |
-| `no_episodes` | No episodes in the coming days. | Keine Episoden in den nachsten Tagen. | Kongo no Episode ha arimasen. |
-| `no_watchlist` | No anime in the watchlist. | Keine Anime in der Watchlist. | Watch list ni Anime ga arimasen. |
-| `no_season` | No season data available. | Keine Season-Daten verfugbar. | Season data ga arimasen. |
-| `no_profile` | No profile stats available. | Keine Profil-Statistiken verfugbar. | Profile toukei ga arimasen. |
-| `no_manga` | No manga in the list. | Keine Manga in der Liste. | List ni Manga ga arimasen. |
-| `auth_only` | Only for logged-in users. | Nur fur eingeloggte Nutzer. | Login user nomi. |
-| `episode` | Episode | Episode | Episode |
-| `ep` | Ep. | Ep. | Wa |
-| `aired` | Aired | Ausgestrahlt | Housou zumi |
-| `anime` | Anime | Anime | Anime |
-| `episodes` | Episodes | Episoden | Episode |
-| `hours` | Hours | Stunden | Jikan |
-| `score_avg` | Avg Score | O Score | Heikin Score |
-| `watching_now` | Watching | Schaue ich | Viewing |
-| `chapters` | Chapters | Kapitel | Shou |
-| `volumes` | Volumes | Bande | Kan |
-| `manga_count` | Manga | Manga | Manga |
-| `manga_score` | Manga Score | Manga Score | Manga Score |
-| `top_genres` | Top Genres | Top Genres | Top Genre |
-| `favourites` | Favourites | Favoriten | Okiniiri |
-| `search_placeholder` | Search... | Suchen... | Kensaku... |
-| `current` | Current | Aktuell | Viewing |
-| `planning` | Planning | Geplant | Yotei |
-| `completed` | Completed | Abgeschlossen | Kanryou |
-| `paused` | Paused | Pausiert | Ichiji teishi |
-| `dropped` | Dropped | Abgebrochen | Chuudan |
-| `next_season_label` | Next Season | Nachste Season | Raiki |
+| Key | English |
+|-----|---------|
+| `next_episodes` | Next Episodes |
+| `watching` | Currently Watching |
+| `this_season` | This Season |
+| `profile` | AniList Profile |
+| `manga` | Manga Reading |
+| `no_episodes` | No episodes in the coming days. |
+| `no_watchlist` | No anime in the watchlist. |
+| `no_season` | No season data available. |
+| `no_profile` | No profile stats available. |
+| `no_manga` | No manga in the list. |
+| `auth_only` | Only for logged-in users. |
+| `episode` | Episode |
+| `ep` | Ep. |
+| `aired` | Aired |
+| `anime` | Anime |
+| `episodes` | Episodes |
+| `hours` | Hours |
+| `score_avg` | Avg Score |
+| `watching_now` | Watching |
+| `chapters` | Chapters |
+| `volumes` | Volumes |
+| `manga_count` | Manga |
+| `manga_score` | Manga Score |
+| `top_genres` | Top Genres |
+| `favourites` | Favourites |
+| `search_placeholder` | Search... |
+| `current` | Current |
+| `planning` | Planning |
+| `completed` | Completed |
+| `paused` | Paused |
+| `dropped` | Dropped |
+| `repeating` | Repeating |
+| `next_season_label` | Next Season |
+| `airing` | Airing |
+| `min` | min |
+| `ch` | Ch. |
+| `vol` | Vol. |
+
+The editor has its own `EDITOR_TRANSLATIONS` object with ~100 keys covering all UI labels, option names, and section headers. Both objects follow the same pattern and support all 23 languages.
 
 ---
 

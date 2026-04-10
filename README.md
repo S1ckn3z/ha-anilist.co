@@ -22,7 +22,7 @@ A full-featured Home Assistant integration for [AniList.co](https://anilist.co) 
 - **Custom Lovelace Card** — Built with Lit 3.x, responsive, themeable
 - **Visual Card Editor** — Configure everything through the UI
 - **OAuth2 Authentication** — Secure login, or use public-only mode
-- **i18n** — English and German translations, with Japanese support in the card frontend only
+- **🌍 23 Languages** — Full i18n support across backend and frontend (see [Supported Languages](#supported-languages))
 - **HA Theme Integration** — Automatically adapts to your HA theme colors
 - **Scroll Control** — Pixel-perfect visible item count, scroll-snap, and fade indicators
 
@@ -42,6 +42,7 @@ A full-featured Home Assistant integration for [AniList.co](https://anilist.co) 
 - [Calendars](#calendars)
 - [Automations](#automations)
 - [FAQ](#faq)
+- [Supported Languages](#supported-languages)
 - [Contributing](#contributing)
 
 ---
@@ -52,7 +53,7 @@ A full-featured Home Assistant integration for [AniList.co](https://anilist.co) 
 
 1. Open HACS in your Home Assistant instance
 2. Click the three dots in the top-right corner and select **Custom repositories**
-3. Add `https://github.com/S1CK/ha-anilist.co` with category **Integration**
+3. Add `https://github.com/S1ckn3z/ha-anilist.co` with category **Integration**
 4. Search for **AniList** and click **Install**
 5. Restart Home Assistant
 
@@ -60,7 +61,7 @@ The Lovelace card is bundled with the integration and registers automatically �
 
 ### Manual
 
-1. Download `anilist.zip` from the [latest release](https://github.com/S1CK/ha-anilist.co/releases)
+1. Download `anilist.zip` from the [latest release](https://github.com/S1ckn3z/ha-anilist.co/releases)
 2. Extract to your HA `config/custom_components/anilist/` directory
 3. Restart Home Assistant
 
@@ -576,6 +577,23 @@ automation:
 - HACS **2.0.5** or newer (for HACS installation)
 - An AniList account (optional — public data works without one)
 
+## Supported Languages
+
+The integration, Lovelace card, and visual card editor are fully translated into 23 languages:
+
+| | Language | Code | | Language | Code | | Language | Code |
+|---|----------|------|-|----------|------|-|----------|------|
+| 🇬🇧 | English | `en` | 🇫🇮 | Finnish | `fi` | 🇷🇴 | Romanian | `ro` |
+| 🇩🇪 | German | `de` | 🇨🇿 | Czech | `cs` | 🇭🇺 | Hungarian | `hu` |
+| 🇪🇸 | Spanish | `es` | 🇸🇰 | Slovak | `sk` | 🇧🇬 | Bulgarian | `bg` |
+| 🇫🇷 | French | `fr` | 🇵🇱 | Polish | `pl` | 🇬🇷 | Greek | `el` |
+| 🇮🇹 | Italian | `it` | 🇸🇪 | Swedish | `sv` | 🇹🇷 | Turkish | `tr` |
+| 🇵🇹 | Portuguese | `pt` | 🇩🇰 | Danish | `da` | 🇺🇦 | Ukrainian | `uk` |
+| 🇳🇱 | Dutch | `nl` | 🇳🇴 | Norwegian | `nb` | 🇷🇺 | Russian | `ru` |
+| 🇯🇵 | Japanese | `ja` | 🇭🇷 | Croatian | `hr` | | | |
+
+The language is automatically detected from your Home Assistant language setting. The card and editor adapt instantly — no configuration needed.
+
 ## Contributing
 
 Contributions are welcome! Please open an issue first to discuss what you would like to change.
@@ -611,7 +629,7 @@ This project is licensed under the MIT License — see the [LICENSE](LICENSE) fi
 
 [hacs-badge]: https://img.shields.io/badge/HACS-Custom-41BDF5.svg
 [hacs-url]: https://github.com/hacs/integration
-[release-badge]: https://img.shields.io/github/v/release/S1CK/ha-anilist.co
-[release-url]: https://github.com/S1CK/ha-anilist.co/releases
-[license-badge]: https://img.shields.io/github/license/S1CK/ha-anilist.co
-[license-url]: https://github.com/S1CK/ha-anilist.co/blob/main/LICENSE
+[release-badge]: https://img.shields.io/github/v/release/S1ckn3z/ha-anilist.co
+[release-url]: https://github.com/S1ckn3z/ha-anilist.co/releases
+[license-badge]: https://img.shields.io/github/license/S1ckn3z/ha-anilist.co
+[license-url]: https://github.com/S1ckn3z/ha-anilist.co/blob/main/LICENSE

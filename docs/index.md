@@ -21,7 +21,7 @@ AniList for Home Assistant is a custom integration that connects your [AniList.c
 
 ## Quick Links
 
-- **GitHub**: [S1CK/ha-anilist.co](https://github.com/S1CK/ha-anilist.co)
-- **Issues**: [Bug reports & feature requests](https://github.com/S1CK/ha-anilist.co/issues)
+- **GitHub**: [S1ckn3z/ha-anilist.co](https://github.com/S1ckn3z/ha-anilist.co)
+- **Issues**: [Bug reports & feature requests](https://github.com/S1ckn3z/ha-anilist.co/issues)
 - **AniList API**: [AniList GraphQL API](https://anilist.gitbook.io/anilist-apiv2-docs/)
 - **License**: MIT

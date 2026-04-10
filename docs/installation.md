@@ -10,7 +10,7 @@
 
 1. Open **HACS** in your Home Assistant instance
 2. Click the three-dot menu (top-right) and select **Custom repositories**
-3. Add `https://github.com/S1CK/ha-anilist.co` with category **Integration**
+3. Add `https://github.com/S1ckn3z/ha-anilist.co` with category **Integration**
 4. Search for **AniList** and click **Install**
 5. **Restart Home Assistant**
 
@@ -18,7 +18,7 @@ The Lovelace card is bundled with the integration and registers automatically. N
 
 ## Manual Installation
 
-1. Download `anilist.zip` from the [latest release](https://github.com/S1CK/ha-anilist.co/releases)
+1. Download `anilist.zip` from the [latest release](https://github.com/S1ckn3z/ha-anilist.co/releases)
 2. Extract to `config/custom_components/anilist/`
 3. **Restart Home Assistant**
 
