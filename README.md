@@ -16,6 +16,16 @@
 
 ### Via HACS (Recommended)
 
+#### 🚀 One-Click Install
+
+Click the button below to open this repository directly in your HACS:
+
+[![Open in HACS](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=S1ckn3z&repository=ha-anilist.co&category=integration)
+
+Then click **Download** → **Restart Home Assistant**. That's it! 🎉
+
+#### 📝 Or Manually via HACS
+
 1. Open **HACS** in your Home Assistant
 2. Click **⋮** → **Custom repositories**
 3. Add `https://github.com/S1ckn3z/ha-anilist.co` → Category: **Integration**
@@ -44,9 +54,13 @@ resources:
 
 ## 🔧 Setup
 
+After installation and restart, add the integration:
+
+[![Add Integration](https://my.home-assistant.io/badges/config_flow_start.svg)](https://my.home-assistant.io/redirect/config_flow_start/?domain=anilist)
+
 ### 🔐 With AniList Account (Full Features)
 
-1. Go to **Settings → Devices & Services → Add Integration**
+1. Click the button above (or **Settings → Devices & Services → Add Integration**)
 2. Search for **AniList**
 3. Select **Sign in with AniList account (OAuth2)**
 4. Authorize with your AniList credentials
@@ -54,7 +68,7 @@ resources:
 
 ### 🌐 Public Data Only (No Account)
 
-1. Go to **Settings → Devices & Services → Add Integration**
+1. Click the button above (or **Settings → Devices & Services → Add Integration**)
 2. Search for **AniList**
 3. Select **Public data only (no account required)**
 4. ✅ Airing schedule and season data will be available
