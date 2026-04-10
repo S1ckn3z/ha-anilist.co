@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="https://raw.githubusercontent.com/S1ckn3z/ha-anilist.co/main/docs/images/icon.png" alt="AniList" width="160">
+</p>
+
 # 🎌 AniList for Home Assistant
 
 > Bring your anime & manga tracking into your Home Assistant dashboard.

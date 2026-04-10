@@ -5,6 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.2] - 2026-04-11
+
+### Added
+
+- **🎨 Project logo** — cute chibi anime girl mascot with the letter "A"
+- **Home Assistant brands PR** submitted to
+  [home-assistant/brands#10116](https://github.com/home-assistant/brands/pull/10116)
+  — once merged, the integration card in HA will show the logo instead of
+  a broken image
+- **README hero** — centered logo + badges + tagline layout
+
+### Changed
+
+- Cleaned up old reference-style badge definitions in README
+- Wire `icon.png` into README and info.md for HACS / GitHub display
+
 ## [0.4.1] - 2026-04-11
 
 ### Added
@@ -119,6 +135,7 @@ codebase and adds full internationalization across 23 languages.
 - Initial AniList integration with OAuth2 flow
 - Phases 4–8: Manga, Stats, Events, Season, Lovelace Card
 
+[0.4.2]: https://github.com/S1ckn3z/ha-anilist.co/releases/tag/v0.4.2
 [0.4.1]: https://github.com/S1ckn3z/ha-anilist.co/releases/tag/v0.4.1
 [0.4.0]: https://github.com/S1ckn3z/ha-anilist.co/releases/tag/v0.4.0
 [0.3.0]: https://github.com/S1ckn3z/ha-anilist.co/releases/tag/v0.3.0

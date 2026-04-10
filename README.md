@@ -1,14 +1,21 @@
-# 🎌 AniList for Home Assistant
+<p align="center">
+  <img src="docs/images/icon.png" alt="AniList for Home Assistant" width="180">
+</p>
 
-[![HACS][hacs-badge]][hacs-url]
-[![GitHub Release][release-badge]][release-url]
-[![License: MIT][license-badge]][license-url]
-[![HA Version][ha-badge]][ha-url]
-[![Languages](https://img.shields.io/badge/languages-23-blueviolet)](#-supported-languages)
+<h1 align="center">🎌 AniList for Home Assistant</h1>
 
-> **Bring your anime & manga tracking into your smart home dashboard.**
->
-> A full-featured [Home Assistant](https://www.home-assistant.io/) custom integration for [AniList.co](https://anilist.co) — with a custom Lovelace card, 5 views, HD covers, visual editor, and 23 languages.
+<p align="center">
+  <a href="https://github.com/hacs/integration"><img src="https://img.shields.io/badge/HACS-Custom-41BDF5.svg?style=flat-square" alt="HACS"></a>
+  <a href="https://github.com/S1ckn3z/ha-anilist.co/releases"><img src="https://img.shields.io/github/v/release/S1ckn3z/ha-anilist.co?style=flat-square" alt="GitHub Release"></a>
+  <a href="https://github.com/S1ckn3z/ha-anilist.co/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-MIT-green.svg?style=flat-square" alt="License: MIT"></a>
+  <a href="https://www.home-assistant.io/"><img src="https://img.shields.io/badge/HA-2025.2.0+-blue.svg?style=flat-square" alt="HA Version"></a>
+  <a href="#-supported-languages"><img src="https://img.shields.io/badge/languages-23-blueviolet?style=flat-square" alt="Languages"></a>
+</p>
+
+<p align="center">
+  <b>Bring your anime & manga tracking into your smart home dashboard.</b><br>
+  A full-featured <a href="https://www.home-assistant.io/">Home Assistant</a> custom integration for <a href="https://anilist.co">AniList.co</a> — with a custom Lovelace card, 5 views, HD covers, visual editor, and 23 languages.
+</p>
 
 ![AniList Dashboard Overview](docs/images/dashboard-overview.png)
 
@@ -633,11 +640,3 @@ This project is licensed under the **MIT License** — see the [LICENSE](LICENSE
   <a href="https://anilist.co">AniList.co</a> · <a href="https://www.home-assistant.io/">Home Assistant</a>
 </p>
 
-[hacs-badge]: https://img.shields.io/badge/HACS-Custom-41BDF5.svg?style=flat-square
-[hacs-url]: https://github.com/hacs/integration
-[release-badge]: https://img.shields.io/github/v/release/S1ckn3z/ha-anilist.co?style=flat-square
-[release-url]: https://github.com/S1ckn3z/ha-anilist.co/releases
-[license-badge]: https://img.shields.io/badge/license-MIT-green.svg?style=flat-square
-[license-url]: https://github.com/S1ckn3z/ha-anilist.co/blob/main/LICENSE
-[ha-badge]: https://img.shields.io/badge/HA-2025.2.0+-blue.svg?style=flat-square
-[ha-url]: https://www.home-assistant.io/
