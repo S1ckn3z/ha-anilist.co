@@ -59,7 +59,7 @@ def _count_airing_today(data: AniListData) -> int:
     )
 
 
-def _format_score(score: float, score_format: str) -> str | float | None:
+def _format_score(score: float, score_format: str) -> float | None:
     """Format a raw AniList meanScore (0–100 scale) to the configured display format."""
     if not score:
         return None  # unscored
@@ -67,13 +67,7 @@ def _format_score(score: float, score_format: str) -> str | float | None:
         return round(score, 1)          # 89.1 → 89.1
     if score_format == "POINT_5":
         return round(score / 20, 1)     # 89.1 → 4.5
-    if score_format == "SMILEY":
-        if score >= 75:
-            return "😊"
-        if score >= 50:
-            return "😐"
-        return "😞"
-    # Default: POINT_10
+    # Default: POINT_10 (also used for SMILEY — keep numeric for state)
     return round(score / 10, 1)         # 89.1 → 8.9
 
 
@@ -454,6 +448,15 @@ class AniListSensor(CoordinatorEntity[AniListCoordinator], SensorEntity):
 
     @property
     def extra_state_attributes(self) -> dict[str, Any] | None:
-        if self.entity_description.attrs_fn is None:
-            return None
-        return self.entity_description.attrs_fn(self.coordinator.data, self._lang())
+        attrs = None
+        if self.entity_description.attrs_fn is not None:
+            attrs = self.entity_description.attrs_fn(self.coordinator.data, self._lang())
+        # Add smiley decoration for score sensors in SMILEY mode
+        if self.entity_description.key in ("anime_mean_score", "manga_mean_score"):
+            score = self.entity_description.value_fn(self.coordinator.data, self._lang())
+            if score and self._score_format() == "SMILEY":
+                smiley = "😊" if score >= 75 else ("😐" if score >= 50 else "😞")
+                if attrs is None:
+                    attrs = {}
+                attrs["smiley"] = smiley
+        return attrs

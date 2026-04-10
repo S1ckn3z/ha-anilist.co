@@ -18,13 +18,6 @@ const COVER_SIZES = [
   { value: "large", label: "Large" },
 ];
 
-const SCORE_DISPLAYS = [
-  { value: "stars", label: "★ Stars" },
-  { value: "bar", label: "Bar" },
-  { value: "number", label: "Number" },
-  { value: "none", label: "None" },
-];
-
 const COUNTDOWN_FORMATS = [
   { value: "relative", label: "Relative (5h 30m)" },
   { value: "absolute", label: "Absolute (Apr 10, 14:00)" },
@@ -33,7 +26,6 @@ const COUNTDOWN_FORMATS = [
 
 const LINK_TARGETS = [
   { value: "anilist", label: "Open AniList" },
-  { value: "ha_more_info", label: "HA More-Info" },
   { value: "none", label: "No link" },
 ];
 
@@ -92,6 +84,7 @@ const STATUS_OPTIONS = [
   { value: "COMPLETED", label: "Completed" },
   { value: "PAUSED", label: "Paused" },
   { value: "DROPPED", label: "Dropped" },
+  { value: "REPEATING", label: "Repeating" },
 ];
 
 class AniListCardEditor extends LitElement {
@@ -226,7 +219,6 @@ class AniListCardEditor extends LitElement {
         ${this._config.overflow_mode === "scroll"
           ? this._number("scroll_height", "Scroll height (px)", 100, 1000)
           : nothing}
-        ${this._select("score_display", "Score display", SCORE_DISPLAYS)}
         ${this._toggle("show_progress", "Show progress")}
         ${this._config.show_progress !== false ? this._toggle("show_progress_bar", "Show progress bar") : nothing}
 
@@ -265,9 +257,6 @@ class AniListCardEditor extends LitElement {
         <div class="section-header">Season Settings</div>
         ${this._select("layout_mode", "Layout", LAYOUT_MODES)}
         ${this._number("max_season", "Max items", 1, 50)}
-        ${this._toggle("show_next_season", "Include next season")}
-        ${this._select("score_display", "Score display", SCORE_DISPLAYS)}
-
         <div class="section-header">Filters</div>
         <label class="field-label">Genre filter (comma-separated)</label>
         <input
@@ -322,7 +311,6 @@ class AniListCardEditor extends LitElement {
         ${this._config.overflow_mode === "scroll"
           ? this._number("scroll_height", "Scroll height (px)", 100, 1000)
           : nothing}
-        ${this._select("score_display", "Score display", SCORE_DISPLAYS)}
         ${this._toggle("show_progress", "Show progress")}
         ${this._config.show_progress !== false ? this._toggle("show_progress_bar", "Show progress bar") : nothing}
 

@@ -51,6 +51,7 @@ const TRANSLATIONS: Record<string, Record<string, string>> = {
     completed: "Completed",
     paused: "Paused",
     dropped: "Dropped",
+    repeating: "Repeating",
     next_season_label: "Next Season",
   },
   de: {
@@ -85,6 +86,7 @@ const TRANSLATIONS: Record<string, Record<string, string>> = {
     completed: "Abgeschlossen",
     paused: "Pausiert",
     dropped: "Abgebrochen",
+    repeating: "Wiederholen",
     next_season_label: "Nächste Season",
   },
   ja: {
@@ -119,6 +121,7 @@ const TRANSLATIONS: Record<string, Record<string, string>> = {
     completed: "完了",
     paused: "一時停止",
     dropped: "中断",
+    repeating: "リピート",
     next_season_label: "来期",
   },
 };
@@ -211,7 +214,6 @@ class AniListCard extends LitElement {
       countdown_format: "relative",
       show_progress: true,
       show_progress_bar: true,
-      score_display: "number",
       show_badges: true,
       show_search: false,
       show_tooltips: false,
@@ -226,7 +228,6 @@ class AniListCard extends LitElement {
       show_status_tabs: true,
       genre_filter: [],
       format_filter: [],
-      show_next_season: false,
       chart_type: "bar",
       overflow_mode: "scroll",
       scroll_height: 400,
@@ -336,8 +337,18 @@ class AniListCard extends LitElement {
           ...(entryId ? { entry_id: entryId } : {}),
         });
       }
-    } catch {
-      // WS failed — fall back to entity attributes (already rendered)
+    } catch (err: unknown) {
+      // WS failed — clear stale cache
+      if (view === "airing") this._wsAiring = null;
+      else if (view === "season") this._wsSeason = null;
+
+      // For private views (watchlist/manga/profile), a WS failure likely means
+      // the user is not admin (require_admin gate). Set cache to empty/sentinel
+      // instead of null so the fallback entity scan is NOT triggered — entity
+      // attributes still contain private data and would bypass the admin gate.
+      if (view === "watchlist") { this._wsWatchlist = []; this._wsLoadedViews.add(view); }
+      else if (view === "manga") { this._wsManga = []; this._wsLoadedViews.add(view); }
+      else if (view === "profile") { this._wsProfile = null; this._wsLoadedViews.add(view); }
     } finally {
       this._wsLoading = false;
     }
@@ -518,6 +529,7 @@ class AniListCard extends LitElement {
       <div class="search-bar">
         <input
           type="text"
+          aria-label=${this._t("search_placeholder")}
           placeholder=${this._t("search_placeholder")}
           .value=${this._searchQuery}
           @input=${(e: Event) => {
@@ -555,6 +567,7 @@ class AniListCard extends LitElement {
       COMPLETED: this._t("completed"),
       PAUSED: this._t("paused"),
       DROPPED: this._t("dropped"),
+      REPEATING: this._t("repeating"),
     };
     return html`
       <div class="status-tabs">
@@ -588,6 +601,9 @@ class AniListCard extends LitElement {
           <div
             class="list-item"
             @click=${() => this._handleClick(item.site_url)}
+            @keydown=${(e: KeyboardEvent) => { if ((e.key === "Enter" || e.key === " ") && this._shouldLink()) { e.preventDefault(); this._handleClick(item.site_url); }}}
+            role=${this._shouldLink() && item.site_url ? "button" : nothing}
+            tabindex=${this._shouldLink() && item.site_url ? "0" : nothing}
             style=${this._shouldLink() && item.site_url ? "cursor:pointer" : ""}
             title=${cfg.show_tooltips ? `${t} - ${this._t("episode")} ${item.episode}` : ""}
           >
@@ -636,6 +652,9 @@ class AniListCard extends LitElement {
     if (this._wsAiring) {
       items = [...this._wsAiring];
     } else {
+      // If entry_id is configured, don't scan entities (could be wrong account)
+      if (this._config.entry_id) return [];
+
       // Fallback: read from entity attributes
       items = [];
       Object.entries(this.hass.states)
@@ -660,14 +679,10 @@ class AniListCard extends LitElement {
           }
         });
 
-      // Fallback to simple sensors
+      // Fallback to simple sensors (English translation_key IDs only)
       if (!items.length) {
-        const title =
-          getEntityState(this.hass, "sensor.anilist_nachster_anime") ||
-          getEntityState(this.hass, "sensor.anilist_next_airing_anime");
-        const time =
-          getEntityState(this.hass, "sensor.anilist_nachste_episode_um") ||
-          getEntityState(this.hass, "sensor.anilist_next_episode_time");
+        const title = getEntityState(this.hass, "sensor.anilist_next_airing_anime");
+        const time = getEntityState(this.hass, "sensor.anilist_next_episode_time");
         if (title && title !== "unknown") {
           items.push({ media_id: 0, title, episode: 1, airing_at: time });
         }
@@ -687,6 +702,10 @@ class AniListCard extends LitElement {
   private _renderWatchlist() {
     const statuses = this._config.watchlist_statuses ?? ["CURRENT"];
     const showTabs = this._config.show_status_tabs && statuses.length > 1;
+    // Auto-select first configured status if activeTab is invalid
+    if (showTabs && !statuses.includes(this._activeTab)) {
+      this._activeTab = statuses[0] ?? "CURRENT";
+    }
     let items = this._getWatchlistItems();
 
     // Filter by active tab
@@ -724,6 +743,9 @@ class AniListCard extends LitElement {
         ${items.map((item) => { const t = this._title(item.title); const cUrl = this._coverUrl(item); const sc = this._pickScore(item, "watchlist"); return html`
           <div class="list-item"
             @click=${() => this._handleClick(item.site_url)}
+            @keydown=${(e: KeyboardEvent) => { if ((e.key === "Enter" || e.key === " ") && this._shouldLink()) { e.preventDefault(); this._handleClick(item.site_url); }}}
+            role=${this._shouldLink() && item.site_url ? "button" : nothing}
+            tabindex=${this._shouldLink() && item.site_url ? "0" : nothing}
             style=${this._shouldLink() && item.site_url ? "cursor:pointer" : ""}>
             ${cfg.show_cover ? html`
               <div class="cover-wrap" style="width:${w}px;height:${h}px">
@@ -761,6 +783,9 @@ class AniListCard extends LitElement {
           <div
             class="grid-item"
             @click=${() => this._handleClick(item.site_url)}
+            @keydown=${(e: KeyboardEvent) => { if ((e.key === "Enter" || e.key === " ") && this._shouldLink()) { e.preventDefault(); this._handleClick(item.site_url); }}}
+            role=${this._shouldLink() && item.site_url ? "button" : nothing}
+            tabindex=${this._shouldLink() && item.site_url ? "0" : nothing}
             style=${this._shouldLink() && item.site_url ? "cursor:pointer" : ""}
             title=${cfg.show_tooltips ? `${t} - ${item.progress}/${item.episodes ?? "?"}` : ""}
           >
@@ -793,7 +818,11 @@ class AniListCard extends LitElement {
   }
 
   private _getWatchlistItems(): WatchlistAnime[] {
-    if (this._wsWatchlist) return [...this._wsWatchlist];
+    // wsWatchlist is [] when WS was attempted (incl. admin-denied), null only before first attempt
+    if (this._wsWatchlist !== null) return [...this._wsWatchlist];
+
+    // If entry_id is configured, don't scan entities (could be wrong account)
+    if (this._config.entry_id) return [];
 
     // Fallback: entity attributes
     const items: WatchlistAnime[] = [];
@@ -838,6 +867,9 @@ class AniListCard extends LitElement {
           <div
             class="season-item"
             @click=${() => this._handleClick(item.site_url)}
+            @keydown=${(e: KeyboardEvent) => { if ((e.key === "Enter" || e.key === " ") && this._shouldLink()) { e.preventDefault(); this._handleClick(item.site_url); }}}
+            role=${this._shouldLink() && item.site_url ? "button" : nothing}
+            tabindex=${this._shouldLink() && item.site_url ? "0" : nothing}
             style=${this._shouldLink() && item.site_url ? "cursor:pointer" : ""}
             title=${cfg.show_tooltips ? `${t} - ${item.genres?.join(", ") ?? ""}` : ""}
           >
@@ -875,6 +907,9 @@ class AniListCard extends LitElement {
     if (this._wsSeason) {
       items = [...this._wsSeason];
     } else {
+      // If entry_id is configured, don't scan entities (could be wrong account)
+      if (this._config.entry_id) return [];
+
       // Fallback: entity attributes
       items = [];
       Object.entries(this.hass.states)
@@ -918,6 +953,10 @@ class AniListCard extends LitElement {
   private _renderManga() {
     const statuses = this._config.watchlist_statuses ?? ["CURRENT"];
     const showTabs = this._config.show_status_tabs && statuses.length > 1;
+    // Auto-select first configured status if activeTab is invalid
+    if (showTabs && !statuses.includes(this._activeTab)) {
+      this._activeTab = statuses[0] ?? "CURRENT";
+    }
     let items = this._getMangaItems();
 
     if (showTabs) {
@@ -952,6 +991,9 @@ class AniListCard extends LitElement {
         ${items.map((item) => { const t = this._title(item.title); const cUrl = this._coverUrl(item); const sc = this._pickScore(item, "manga"); return html`
           <div class="list-item"
             @click=${() => this._handleClick(item.site_url)}
+            @keydown=${(e: KeyboardEvent) => { if ((e.key === "Enter" || e.key === " ") && this._shouldLink()) { e.preventDefault(); this._handleClick(item.site_url); }}}
+            role=${this._shouldLink() && item.site_url ? "button" : nothing}
+            tabindex=${this._shouldLink() && item.site_url ? "0" : nothing}
             style=${this._shouldLink() && item.site_url ? "cursor:pointer" : ""}>
             ${cfg.show_cover ? html`
               <div class="cover-wrap" style="width:${w}px;height:${h}px">
@@ -984,6 +1026,9 @@ class AniListCard extends LitElement {
           <div
             class="grid-item"
             @click=${() => this._handleClick(item.site_url)}
+            @keydown=${(e: KeyboardEvent) => { if ((e.key === "Enter" || e.key === " ") && this._shouldLink()) { e.preventDefault(); this._handleClick(item.site_url); }}}
+            role=${this._shouldLink() && item.site_url ? "button" : nothing}
+            tabindex=${this._shouldLink() && item.site_url ? "0" : nothing}
             style=${this._shouldLink() && item.site_url ? "cursor:pointer" : ""}
             title=${cfg.show_tooltips ? `${t} - Ch.${item.progress}/${item.chapters ?? "?"}` : ""}
           >
@@ -1013,7 +1058,11 @@ class AniListCard extends LitElement {
   }
 
   private _getMangaItems(): MangaItem[] {
-    if (this._wsManga) return [...this._wsManga];
+    // wsManga is [] when WS was attempted (incl. admin-denied), null only before first attempt
+    if (this._wsManga !== null) return [...this._wsManga];
+
+    // If entry_id is configured, don't scan entities (could be wrong account)
+    if (this._config.entry_id) return [];
 
     // Fallback: entity attributes
     const items: MangaItem[] = [];
@@ -1079,31 +1128,21 @@ class AniListCard extends LitElement {
       viewerName = p.viewer.name;
       viewerAvatar = p.viewer.avatar;
     } else {
-      // Fallback: entity states
-      animeCount =
-        getEntityState(this.hass, "sensor.anilist_anime_gesamt_geschaut") ||
-        getEntityState(this.hass, "sensor.anilist_total_anime_watched");
-      episodes =
-        getEntityState(this.hass, "sensor.anilist_episoden_gesamt") ||
-        getEntityState(this.hass, "sensor.anilist_total_episodes_watched");
-      hours =
-        getEntityState(this.hass, "sensor.anilist_stunden_gesamt") ||
-        getEntityState(this.hass, "sensor.anilist_total_hours_watched");
-      animeScore =
-        getEntityState(this.hass, "sensor.anilist_anime_durchschnittsscore") ||
-        getEntityState(this.hass, "sensor.anilist_anime_mean_score");
-      mangaScore =
-        getEntityState(this.hass, "sensor.anilist_manga_durchschnittsscore") ||
-        getEntityState(this.hass, "sensor.anilist_manga_mean_score");
-      watching =
-        getEntityState(this.hass, "sensor.anilist_schaue_ich_gerade") ||
-        getEntityState(this.hass, "sensor.anilist_watching_count");
-      chaptersRead =
-        getEntityState(this.hass, "sensor.anilist_kapitel_gelesen") ||
-        getEntityState(this.hass, "sensor.anilist_chapters_read");
-      mangaCount =
-        getEntityState(this.hass, "sensor.anilist_manga_lese_ich") ||
-        getEntityState(this.hass, "sensor.anilist_manga_reading_count");
+      // Don't fall back to entity attributes when WS was attempted (incl. admin-denied)
+      // or when entry_id is configured — entity attrs contain private data
+      if (this._wsLoadedViews.has("profile") || this._config.entry_id) {
+        return this._renderEmpty("no_profile");
+      }
+
+      // Fallback: entity states (only when WS has not been attempted yet)
+      animeCount = getEntityState(this.hass, "sensor.anilist_total_anime_watched");
+      episodes = getEntityState(this.hass, "sensor.anilist_total_episodes_watched");
+      hours = getEntityState(this.hass, "sensor.anilist_total_hours_watched");
+      animeScore = getEntityState(this.hass, "sensor.anilist_anime_mean_score");
+      mangaScore = getEntityState(this.hass, "sensor.anilist_manga_mean_score");
+      watching = getEntityState(this.hass, "sensor.anilist_watching_count");
+      chaptersRead = getEntityState(this.hass, "sensor.anilist_chapters_read");
+      mangaCount = getEntityState(this.hass, "sensor.anilist_manga_reading_count");
 
       const topGenreEntity = this.hass.states["sensor.anilist_top_genre"];
       topGenres = (topGenreEntity?.attributes?.["top_genres"] ?? []) as string[];

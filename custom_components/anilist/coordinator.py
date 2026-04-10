@@ -133,7 +133,10 @@ def _get_next_season_year() -> tuple[str, int]:
 
 
 def _get_airing_window(days: int = DEFAULT_AIRING_WINDOW_DAYS) -> tuple[int, int]:
-    """Return (now_ts, future_ts) unix timestamps for the airing schedule query."""
+    """Return (now_ts, future_ts) unix timestamps for the airing schedule query.
+
+    .. deprecated:: Use AniListCoordinator._get_airing_window() instead.
+    """
     now = int(time.time()) - 1
     return now, now + (days * 24 * 3600) + 1
 
@@ -271,6 +274,10 @@ class AniListCoordinator(DataUpdateCoordinator[AniListData]):
         self._viewer: dict[str, Any] | None = None
         # Tracks IDs of airing entries for which we have already fired an event
         self._fired_airing_ids: set[int] = set()
+        # Tracks when each airing ID was fired, for periodic pruning
+        self._fired_airing_times: dict[int, float] = {}
+        # Timestamp of last successful data refresh (for airing window lookback)
+        self._last_successful_refresh: int = int(time.time())
 
     async def _async_setup(self) -> None:
         """One-time setup: fetch the viewer's identity."""
@@ -285,6 +292,17 @@ class AniListCoordinator(DataUpdateCoordinator[AniListData]):
             )
         except AniListAuthError as err:
             raise ConfigEntryAuthFailed("AniList token is invalid or revoked") from err
+
+    # ------------------------------------------------------------------
+    # Airing window calculation
+    # ------------------------------------------------------------------
+
+    def _get_airing_window(self, days: int = DEFAULT_AIRING_WINDOW_DAYS) -> tuple[int, int]:
+        """Return (start_ts, end_ts) for airing schedule query."""
+        lookback = int(self.update_interval.total_seconds()) + 30
+        now_ts = int(time.time())
+        start_ts = min(self._last_successful_refresh - 1, now_ts - lookback)
+        return start_ts, now_ts + (days * 24 * 3600)
 
     # ------------------------------------------------------------------
     # Schedule pagination
@@ -316,18 +334,56 @@ class AniListCoordinator(DataUpdateCoordinator[AniListData]):
         return entries
 
     # ------------------------------------------------------------------
+    # Season pagination
+    # ------------------------------------------------------------------
+
+    async def _fetch_all_season_pages(
+        self,
+        first_block: dict[str, Any],
+        season: str,
+        season_year: int,
+        include_adult: bool,
+    ) -> list[dict[str, Any]]:
+        """Collect all season anime across pages."""
+        media = list(first_block.get("media", []))
+        page_info = first_block.get("pageInfo", {})
+        page = 2
+        while page_info.get("hasNextPage"):
+            LOGGER.debug("Fetching season %s page %d", season, page)
+            raw = await self.client.fetch_season_page(
+                season=season, season_year=season_year,
+                include_adult=include_adult, page=page,
+            )
+            block = raw.get("seasonMedia", {})
+            media.extend(block.get("media", []))
+            page_info = block.get("pageInfo", {})
+            page += 1
+        return media
+
+    # ------------------------------------------------------------------
     # Airing events (polling-based)
     # ------------------------------------------------------------------
 
     def _fire_new_airing_events(self, data: AniListData) -> None:
         """Fire HA events for episodes that have aired since the last update."""
         now = time.time()
+
+        # Prune fired IDs older than 24 hours to prevent unbounded growth
+        cutoff = now - 86400
+        expired = [
+            aid for aid, ts in self._fired_airing_times.items() if ts < cutoff
+        ]
+        for aid in expired:
+            self._fired_airing_ids.discard(aid)
+            del self._fired_airing_times[aid]
+
         for entry in data.airing_schedule:
             if entry.airing_at > now:
                 continue  # Not yet aired
             if entry.id in self._fired_airing_ids:
                 continue  # Already fired in a previous update cycle
             self._fired_airing_ids.add(entry.id)
+            self._fired_airing_times[entry.id] = now
             self.hass.bus.async_fire(
                 EVENT_EPISODE_AIRING,
                 {
@@ -362,6 +418,14 @@ class AniListCoordinator(DataUpdateCoordinator[AniListData]):
                 e for e in schedule
                 if e.media.get("format") in allowed_formats
             ]
+            season_anime = [
+                a for a in season_anime
+                if a.get("format") in allowed_formats
+            ]
+            next_season_anime = [
+                a for a in next_season_anime
+                if a.get("format") in allowed_formats
+            ]
 
         if excluded_genres:
             excluded = set(excluded_genres)
@@ -387,7 +451,7 @@ class AniListCoordinator(DataUpdateCoordinator[AniListData]):
         next_season, next_season_year = _get_next_season_year()
         window_days = opts.get(OPT_AIRING_WINDOW_DAYS, DEFAULT_AIRING_WINDOW_DAYS)
         include_adult = opts.get(OPT_INCLUDE_ADULT, DEFAULT_INCLUDE_ADULT)
-        now_ts, end_ts = _get_airing_window(window_days)
+        now_ts, end_ts = self._get_airing_window(window_days)
 
         try:
             if self.client.is_authenticated and self._viewer:
@@ -410,8 +474,14 @@ class AniListCoordinator(DataUpdateCoordinator[AniListData]):
                 schedule = await self._fetch_all_schedule_pages(
                     raw.get("schedule", {}), now_ts, end_ts
                 )
-                season_anime = raw.get("seasonMedia", {}).get("media", [])
-                next_season_anime = raw.get("nextSeasonMedia", {}).get("media", [])
+                season_anime = await self._fetch_all_season_pages(
+                    raw.get("seasonMedia", {}),
+                    season, season_year, include_adult,
+                )
+                next_season_anime = await self._fetch_all_season_pages(
+                    raw.get("nextSeasonMedia", {}),
+                    next_season, next_season_year, include_adult,
+                )
                 schedule, season_anime, next_season_anime = self._apply_filters(
                     schedule, season_anime, next_season_anime
                 )
@@ -429,6 +499,7 @@ class AniListCoordinator(DataUpdateCoordinator[AniListData]):
                     viewer=self._viewer,
                 )
                 self._fire_new_airing_events(data)
+                self._last_successful_refresh = int(time.time())
                 return data
 
             # ── Unauthenticated path ──
@@ -444,8 +515,14 @@ class AniListCoordinator(DataUpdateCoordinator[AniListData]):
             schedule = await self._fetch_all_schedule_pages(
                 raw.get("schedule", {}), now_ts, end_ts
             )
-            season_anime = raw.get("seasonMedia", {}).get("media", [])
-            next_season_anime = raw.get("nextSeasonMedia", {}).get("media", [])
+            season_anime = await self._fetch_all_season_pages(
+                raw.get("seasonMedia", {}),
+                season, season_year, include_adult,
+            )
+            next_season_anime = await self._fetch_all_season_pages(
+                raw.get("nextSeasonMedia", {}),
+                next_season, next_season_year, include_adult,
+            )
             schedule, season_anime, next_season_anime = self._apply_filters(
                 schedule, season_anime, next_season_anime
             )
@@ -456,11 +533,14 @@ class AniListCoordinator(DataUpdateCoordinator[AniListData]):
                 next_season_anime=next_season_anime,
             )
             self._fire_new_airing_events(data)
+            self._last_successful_refresh = int(time.time())
             return data
 
         except AniListAuthError as err:
             raise ConfigEntryAuthFailed("AniList token invalid or expired") from err
         except AniListRateLimitError as err:
-            raise UpdateFailed(retry_after=err.retry_after) from err
+            raise UpdateFailed(
+                f"AniList rate limited — retry after {err.retry_after}s"
+            ) from err
         except AniListError as err:
             raise UpdateFailed(f"AniList API error: {err}") from err

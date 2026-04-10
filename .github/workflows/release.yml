@@ -46,6 +46,24 @@ jobs:
             exit 1
           fi
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: TypeScript type check
+        run: npx tsc --noEmit
+
+      - name: Build frontend
+        run: npm run build
+
+      - name: Verify bundle is up to date
+        run: git diff --exit-code -- custom_components/anilist/www/anilist-card.js www/anilist-card/anilist-card.js
+
       - name: Create release archive
         run: |
           cd custom_components/anilist

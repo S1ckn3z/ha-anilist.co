@@ -24,7 +24,7 @@ class AniListOAuth2Implementation(LocalOAuth2Implementation):
     async def async_resolve_external_data(self, external_data: dict) -> dict:
         """Exchange the authorization code for tokens using a JSON body."""
         session = async_get_clientsession(self.hass)
-        resp = await session.post(
+        async with session.post(
             TOKEN_URL,
             json={
                 "grant_type": "authorization_code",
@@ -33,9 +33,9 @@ class AniListOAuth2Implementation(LocalOAuth2Implementation):
                 "redirect_uri": external_data["state"]["redirect_uri"],
                 "code": external_data["code"],
             },
-        )
-        resp.raise_for_status()
-        return await resp.json()
+        ) as resp:
+            resp.raise_for_status()
+            return await resp.json()
 
     async def _async_refresh_token(self, token: dict) -> dict:
         """AniList tokens do not expire — return the existing token unchanged.

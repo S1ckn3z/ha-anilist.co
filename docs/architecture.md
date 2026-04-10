@@ -124,8 +124,9 @@ The rate limiting strategy in `AniListClient.query()`:
 2. When `remaining < RATE_LIMIT_BUFFER` (5), the client sleeps until
    `X-RateLimit-Reset + 1 second` before returning.
 3. On HTTP 429, `AniListRateLimitError` is raised with the `Retry-After` value;
-   the coordinator converts this to `UpdateFailed(retry_after=...)`.
-4. On HTTP 403, a generic `AniListError` is raised.
+   the coordinator converts this to `UpdateFailed(...)` and relies on the
+   built-in exponential backoff for retries.
+4. On HTTP 401 or 403, `AniListAuthError` is raised.
 5. GraphQL-level errors (HTTP 200 with `errors[]`) are inspected: status 401/403
    errors become `AniListAuthError`, others become `AniListError`.
 

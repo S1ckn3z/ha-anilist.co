@@ -21,7 +21,8 @@
     "abort": {
       "already_configured": "Dieser AniList-Account ist bereits konfiguriert.",
       "invalid_auth": "Authentifizierung fehlgeschlagen — Token konnte nicht validiert werden.",
-      "cannot_connect": "Verbindung zu AniList während der Einrichtung nicht möglich."
+      "cannot_connect": "Verbindung zu AniList während der Einrichtung nicht möglich.",
+      "account_mismatch": "Das erneut authentifizierte Konto stimmt nicht mit dem ursprünglichen AniList-Konto überein."
     }
   },
   "options": {
@@ -39,6 +40,7 @@
           "media_formats": "Nur diese Anime-Formate anzeigen (leer = alle)",
           "score_format": "Score-Anzeigeformat",
           "manga_statuses": "Manga-Status für Kalender",
+          "excluded_genres": "Ausgeschlossene Genres",
           "calendar_reminder_offset": "Kalender-Erinnerungsvorlauf (0 = keine)"
         },
         "data_description": {
@@ -47,6 +49,7 @@
           "airing_window_days": "Wie viele Tage der Airing-Kalender vorausschaut (1–14)",
           "media_formats": "Leer lassen um alle Formate zu sehen (TV, Film, OVA, usw.)",
           "manga_statuses": "Nur Manga mit diesen Status werden im Manga-Kalender angezeigt",
+          "excluded_genres": "Anime mit einem dieser Genres werden aus Season-Daten ausgeblendet (z.B. Hentai, Ecchi)",
           "calendar_reminder_offset": "Minuten vor Ausstrahlung für eine Kalender-Erinnerung"
         }
       }

@@ -42,11 +42,11 @@ Views that require authentication will show a message prompting the user to conf
 | Countdown format | `countdown_format` | string | `relative` | Countdown style: `relative` ("in 2h 30m"), `absolute` ("Sat 20:00"), `both` |
 | Show progress | `show_progress` | bool | `true` | Display episode/chapter progress text (e.g., "5/12") |
 | Show progress bar | `show_progress_bar` | bool | `true` | Display a visual progress bar beneath entries |
-| Score display | `score_display` | string | `number` | How scores are rendered: `stars`, `bar`, `number`, `none` |
+| ~~Score display~~ | `score_display` | string | `number` | **Deprecated.** Use `score_position` and `score_source` instead. Will be removed in a future release. |
 | Show badges | `show_badges` | bool | `true` | Display status and format badges on entries |
 | Show search | `show_search` | bool | `false` | Enable the search/filter input field |
 | Show tooltips | `show_tooltips` | bool | `false` | Show hover tooltips with additional media details |
-| Link target | `link_target` | string | `anilist` | Click behavior: `anilist` (open AniList page), `none` (no action), `ha_more_info` (open HA more-info dialog) |
+| Link target | `link_target` | string | `anilist` | Click behavior: `anilist` (open AniList page), `none` (no action) |
 | ~~Link to AniList~~ | `link_to_anilist` | bool | — | **Deprecated.** Use `link_target` instead. Will be removed in a future release. |
 | Sort by | `sort_by` | string | `time` | Sort order for entries: `time`, `title`, `score` |
 | Card padding | `card_padding` | string | `normal` | Internal spacing: `compact`, `normal`, `relaxed` |
@@ -94,7 +94,7 @@ These options only apply when the active view is `season`.
 |--------|-----|------|---------|-------------|
 | Genre filter | `genre_filter` | string[] | `[]` | Only show anime matching these genres (empty = show all) |
 | Format filter | `format_filter` | string[] | `[]` | Only show anime matching these formats: `TV`, `TV_SHORT`, `MOVIE`, `SPECIAL`, `OVA`, `ONA`, `MUSIC` (empty = show all) |
-| Show next season | `show_next_season` | bool | `false` | Include a preview section for the upcoming season |
+| ~~Show next season~~ | `show_next_season` | bool | `false` | **Deprecated.** Not currently implemented. Will be removed in a future release. |
 
 ### Profile
 
@@ -154,7 +154,6 @@ Contains the core settings shared across all views:
 - Display toggles (cover, countdown, progress, badges, search, tooltips)
 - Cover size selector
 - Countdown format
-- Score display mode
 - Link target
 - Sort order
 - Card padding
@@ -168,7 +167,7 @@ The label and content of this tab change based on the currently selected view:
 | Airing | Airing | show_duration, show_genres, show_average_score, show_format_badge |
 | Watchlist | Watchlist | watchlist_statuses, show_status_tabs, overflow_mode, scroll_height |
 | Manga | Manga | watchlist_statuses (for manga), show_status_tabs, overflow_mode, scroll_height |
-| Season | Season | genre_filter, format_filter, show_next_season |
+| Season | Season | genre_filter, format_filter |
 | Profile | Profile | show_avatar, show_username, show_anime_stats, show_manga_stats, show_genre_chart, chart_type, show_favourites |
 
 ### Tab 3: Colors
@@ -212,7 +211,8 @@ scroll_height: 500
 max_watchlist: 20
 show_progress: true
 show_progress_bar: true
-score_display: stars
+score_position: top-right
+score_source: user
 ```
 
 ### Manga Reading List
@@ -245,7 +245,6 @@ genre_filter:
 format_filter:
   - TV
   - ONA
-show_next_season: true
 sort_by: score
 ```
 
@@ -301,7 +300,6 @@ scroll_fade: true
 max_watchlist: 30
 show_progress: true
 show_progress_bar: true
-score_display: number
 ```
 
 ### Airing with Cover Badges and HD Covers
@@ -349,7 +347,8 @@ sections:
         show_status_tabs: true
         overflow_mode: scroll
         scroll_height: 450
-        score_display: number
+        score_position: inline
+        score_source: user
 
       - type: custom:anilist-card
         view: season
@@ -358,7 +357,6 @@ sections:
         format_filter:
           - TV
         sort_by: score
-        show_next_season: false
 
       - type: custom:anilist-card
         view: profile

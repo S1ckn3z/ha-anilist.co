@@ -83,7 +83,7 @@ automation:
           title: "Anime Airing Today"
           message: >-
             {{ states('sensor.anilist_airing_today') }} anime airing today:
-            {% for entry in state_attr('sensor.anilist_airing_today', 'entries') %}
+            {% for entry in state_attr('sensor.anilist_airing_today', 'season_anime') %}
             - {{ entry.title }} (Ep {{ entry.episode }})
             {% endfor %}
 ```
@@ -109,7 +109,7 @@ automation:
           message: >-
             Currently watching: {{ states('sensor.anilist_watching_count') }} anime
             Episodes this week: {{ states('sensor.anilist_episodes_this_week') }}
-            {% set entries = state_attr('sensor.anilist_watching_count', 'entries') %}
+            {% set entries = state_attr('sensor.anilist_watching_count', 'watchlist') %}
             {% if entries %}
             {% for entry in entries %}
             - {{ entry.title }}: {{ entry.progress }}/{{ entry.episodes | default('?') }}
@@ -151,7 +151,7 @@ template:
         unique_id: anilist_total_hours_watched
         unit_of_measurement: "hours"
         state: >-
-          {% set entries = state_attr('sensor.anilist_watching_count', 'entries') %}
+          {% set entries = state_attr('sensor.anilist_watching_count', 'watchlist') %}
           {% if entries %}
             {% set ns = namespace(total=0) %}
             {% for entry in entries %}
@@ -196,7 +196,7 @@ automation:
     condition:
       - condition: template
         value_template: >-
-          {% set airing = state_attr('sensor.anilist_airing_today', 'entries') %}
+          {% set airing = state_attr('sensor.anilist_airing_today', 'season_anime') %}
           {% set media_id = trigger.event.data.media_id %}
           {% set match = airing | selectattr('media_id', 'eq', media_id) | list %}
           {% if match | length > 0 %}
@@ -224,7 +224,7 @@ automation:
 Display a formatted list of all anime airing today.
 
 ```jinja2
-{% set entries = state_attr('sensor.anilist_airing_today', 'entries') %}
+{% set entries = state_attr('sensor.anilist_airing_today', 'season_anime') %}
 {% if entries and entries | length > 0 %}
   Airing today ({{ entries | length }} anime):
   {% for entry in entries %}
@@ -240,7 +240,7 @@ Display a formatted list of all anime airing today.
 Calculate overall watchlist completion.
 
 ```jinja2
-{% set entries = state_attr('sensor.anilist_watching_count', 'entries') %}
+{% set entries = state_attr('sensor.anilist_watching_count', 'watchlist') %}
 {% if entries and entries | length > 0 %}
   {% set ns = namespace(watched=0, total=0) %}
   {% for entry in entries %}
@@ -264,7 +264,7 @@ Calculate overall watchlist completion.
 Show how many episodes are left to watch across all currently watching anime.
 
 ```jinja2
-{% set entries = state_attr('sensor.anilist_watching_count', 'entries') %}
+{% set entries = state_attr('sensor.anilist_watching_count', 'watchlist') %}
 {% if entries and entries | length > 0 %}
   {% set ns = namespace(remaining=0, unknown=0) %}
   {% for entry in entries %}
@@ -329,7 +329,7 @@ Check whether a particular anime (by title) is on the currently watching list be
 condition:
   - condition: template
     value_template: >-
-      {% set entries = state_attr('sensor.anilist_watching_count', 'entries') %}
+      {% set entries = state_attr('sensor.anilist_watching_count', 'watchlist') %}
       {% if entries %}
         {{ entries | selectattr('title', 'search', 'Oshi no Ko') | list | length > 0 }}
       {% else %}
@@ -356,7 +356,7 @@ When receiving an `anilist_episode_airing` event, check if the anime is on your 
 condition:
   - condition: template
     value_template: >-
-      {% set entries = state_attr('sensor.anilist_watching_count', 'entries') %}
+      {% set entries = state_attr('sensor.anilist_watching_count', 'watchlist') %}
       {% if entries %}
         {{ entries | selectattr('media_id', 'eq', trigger.event.data.media_id) | list | length > 0 }}
       {% else %}

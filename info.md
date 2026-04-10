@@ -15,7 +15,7 @@ Bring your anime and manga tracking into your Home Assistant dashboard.
 - **Automation Events** — get notified when new episodes air
 - **Theme Integration** — automatically adapts to your HA theme
 - **Scroll Control** — pixel-perfect visible items, scroll-snap, fade indicators
-- **i18n** — English, German, and Japanese
+- **i18n** — English and German translations, with Japanese support in the card frontend only
 
 ## Authentication
 

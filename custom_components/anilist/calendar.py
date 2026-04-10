@@ -370,7 +370,7 @@ class MangaCalendarEntity(CoordinatorEntity[AniListCoordinator], CalendarEntity)
             if not entry.updated_at:
                 continue
             # Show as all-day event on the last-updated date
-            updated_date = datetime.date.fromtimestamp(entry.updated_at)
+            updated_date = dt_util.as_local(dt_util.utc_from_timestamp(entry.updated_at)).date()
             title = _get_title(entry.media, lang)
             total_ch = entry.media.get("chapters")
             ch_suffix = f" of {total_ch}" if total_ch else ""
@@ -398,7 +398,7 @@ class MangaCalendarEntity(CoordinatorEntity[AniListCoordinator], CalendarEntity)
         events = self._manga_events(lang)
         if not events:
             return None
-        today = datetime.date.today()
+        today = dt_util.as_local(dt_util.utcnow()).date()
         # Return the most recently updated entry
         past = [e for e in events if isinstance(e.start, datetime.date) and e.start <= today]
         return max(past, key=lambda e: e.start) if past else None

@@ -88,4 +88,10 @@ async def async_setup_entry(hass: HomeAssistant, entry: AniListConfigEntry) -> b
 
 async def async_unload_entry(hass: HomeAssistant, entry: AniListConfigEntry) -> bool:
     """Unload a config entry."""
-    return await hass.config_entries.async_unload_platforms(entry, PLATFORMS)
+    unload_ok = await hass.config_entries.async_unload_platforms(entry, PLATFORMS)
+    if unload_ok:
+        # Clean up domain data when the last entry is unloaded
+        remaining = hass.config_entries.async_entries(DOMAIN)
+        if not any(e.entry_id != entry.entry_id for e in remaining):
+            hass.data.pop(DOMAIN, None)
+    return unload_ok

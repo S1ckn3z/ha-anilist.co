@@ -10,7 +10,7 @@ After adding the AniList integration, click the gear icon on the integration car
 | Title language | `title_language` | string | `romaji` | — | Anime title display language |
 | Include adult | `include_adult` | bool | `false` | — | Include adult-rated content in results |
 | Airing window | `airing_window_days` | int | `7` | 1–14 | Days ahead to fetch for airing schedule |
-| Media formats | `media_formats` | list | `[]` (all) | — | Filter by format (empty = show all) |
+| Media formats | `media_formats` | list | `[]` (all) | — | Filter airing schedule and season data by format (empty = show all) |
 | Excluded genres | `excluded_genres` | list | `[]` | — | Genres to exclude from season data |
 | Score format | `score_format` | string | `POINT_10` | — | Score display format for sensors |
 | Watchlist statuses | `watchlist_statuses` | list | `CURRENT, REPEATING` | — | Statuses shown in watchlist calendar |

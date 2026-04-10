@@ -18,10 +18,12 @@ export interface AniListCardConfig {
   countdown_format?: "relative" | "absolute" | "both";
   show_progress?: boolean;
   show_progress_bar?: boolean;
+  /** @deprecated Not implemented — score rendering uses score_position and score_source instead. */
   score_display?: "stars" | "bar" | "number" | "none";
   show_badges?: boolean;
   show_search?: boolean;
   show_tooltips?: boolean;
+  /** Note: "ha_more_info" is not yet implemented — only "anilist" and "none" are functional. */
   link_target?: "anilist" | "none" | "ha_more_info";
   sort_by?: "time" | "title" | "score";
   card_padding?: "compact" | "normal" | "relaxed";
@@ -59,6 +61,7 @@ export interface AniListCardConfig {
   // --- Season ---
   genre_filter?: string[];
   format_filter?: string[];
+  /** @deprecated Not implemented — season data always shows current season only. */
   show_next_season?: boolean;
 
   // --- Profile ---

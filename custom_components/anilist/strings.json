@@ -21,7 +21,8 @@
     "abort": {
       "already_configured": "This AniList account is already configured.",
       "invalid_auth": "Authentication failed — the token could not be validated.",
-      "cannot_connect": "Unable to connect to AniList during setup."
+      "cannot_connect": "Unable to connect to AniList during setup.",
+      "account_mismatch": "The re-authenticated account does not match the original AniList account."
     }
   },
   "options": {
@@ -39,6 +40,7 @@
           "media_formats": "Show only these anime formats (empty = all)",
           "score_format": "Score display format",
           "manga_statuses": "Manga list statuses to show in calendar",
+          "excluded_genres": "Excluded genres",
           "calendar_reminder_offset": "Calendar reminder offset (0 = no reminder)"
         },
         "data_description": {
@@ -47,6 +49,7 @@
           "airing_window_days": "How many days ahead the airing schedule calendar looks (1–14)",
           "media_formats": "Leave empty to include all formats (TV, Movie, OVA, etc.)",
           "manga_statuses": "Only manga with these statuses appear in the manga calendar",
+          "excluded_genres": "Anime with any of these genres will be hidden from season data (e.g. Hentai, Ecchi)",
           "calendar_reminder_offset": "Minutes before an episode airs to trigger a calendar reminder"
         }
       }

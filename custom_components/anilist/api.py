@@ -20,6 +20,7 @@ query WhoAmI {
     name
     avatar { large medium }
     bannerImage
+    siteUrl
     mediaListOptions { scoreFormat }
   }
 }
@@ -278,6 +279,41 @@ query SchedulePage(
 }
 """
 
+# Standalone query for season anime pagination (pages 2+)
+QUERY_SEASON_PAGE = """
+query SeasonPage($season: MediaSeason, $seasonYear: Int, $isAdult: Boolean, $page: Int) {
+  seasonMedia: Page(page: $page, perPage: 50) {
+    pageInfo { hasNextPage currentPage }
+    media(
+      season: $season
+      seasonYear: $seasonYear
+      type: ANIME
+      sort: POPULARITY_DESC
+      isAdult: $isAdult
+    ) {
+      id
+      title { romaji english native }
+      status
+      season
+      seasonYear
+      episodes
+      duration
+      format
+      genres
+      averageScore
+      popularity
+      coverImage { extraLarge large medium color }
+      bannerImage
+      startDate { year month day }
+      endDate { year month day }
+      nextAiringEpisode { id airingAt timeUntilAiring episode }
+      studios(isMain: true) { nodes { id name } }
+      siteUrl
+    }
+  }
+}
+"""
+
 # User statistics, favourites, and manga list in one request (auth-only).
 # Uses Viewer (authenticated user) for statistics/favourites to ensure
 # full data access, and userName for the manga list.
@@ -423,8 +459,8 @@ class AniListClient:
                     retry_after = int(resp.headers.get("Retry-After", 60))
                     raise AniListRateLimitError(retry_after=retry_after)
 
-                if resp.status == 403:
-                    raise AniListError("AniList API returned 403 Forbidden")
+                if resp.status in (401, 403):
+                    raise AniListAuthError("AniList authentication failed")
 
                 resp.raise_for_status()
 
@@ -520,6 +556,24 @@ class AniListClient:
             variables={
                 "airingAt_greater": airing_at_greater,
                 "airingAt_lesser": airing_at_lesser,
+                "page": page,
+            },
+        )
+
+    async def fetch_season_page(
+        self,
+        season: str,
+        season_year: int,
+        include_adult: bool,
+        page: int,
+    ) -> dict[str, Any]:
+        """Fetch a single page of season anime (pagination, page 2+)."""
+        return await self.query(
+            QUERY_SEASON_PAGE,
+            variables={
+                "season": season,
+                "seasonYear": season_year,
+                "isAdult": include_adult if include_adult else False,
                 "page": page,
             },
         )

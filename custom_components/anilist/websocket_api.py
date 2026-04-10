@@ -260,6 +260,7 @@ async def ws_airing_schedule(
         vol.Optional("offset"): vol.All(int, vol.Range(min=0)),
     }
 )
+@websocket_api.require_admin
 @websocket_api.async_response
 async def ws_watchlist(
     hass: HomeAssistant,
@@ -355,6 +356,7 @@ async def ws_season(
         vol.Optional("offset"): vol.All(int, vol.Range(min=0)),
     }
 )
+@websocket_api.require_admin
 @websocket_api.async_response
 async def ws_manga(
     hass: HomeAssistant,
@@ -396,6 +398,7 @@ async def ws_manga(
         vol.Optional("entry_id"): str,
     }
 )
+@websocket_api.require_admin
 @websocket_api.async_response
 async def ws_profile(
     hass: HomeAssistant,

@@ -1,6 +1,7 @@
 {
   "domain": "anilist",
   "name": "AniList",
+  "homeassistant": "2025.2.0",
   "version": "0.3.0",
   "config_flow": true,
   "integration_type": "service",

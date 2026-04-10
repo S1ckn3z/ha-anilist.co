@@ -22,7 +22,7 @@ A full-featured Home Assistant integration for [AniList.co](https://anilist.co) 
 - **Custom Lovelace Card** — Built with Lit 3.x, responsive, themeable
 - **Visual Card Editor** — Configure everything through the UI
 - **OAuth2 Authentication** — Secure login, or use public-only mode
-- **i18n** — Card UI available in English, German, and Japanese
+- **i18n** — English and German translations, with Japanese support in the card frontend only
 - **HA Theme Integration** — Automatically adapts to your HA theme colors
 - **Scroll Control** — Pixel-perfect visible item count, scroll-snap, and fade indicators
 
@@ -103,7 +103,7 @@ After setup, click the gear icon on the AniList integration card to configure:
 | `title_language` | `romaji` | Anime title language: `romaji`, `english`, `native` |
 | `include_adult` | `false` | Include adult-rated content |
 | `airing_window_days` | `7` | How many days ahead to show in airing schedule (1-14) |
-| `media_formats` | all | Filter by format: `TV`, `TV_SHORT`, `MOVIE`, `SPECIAL`, `OVA`, `ONA`, `MUSIC` |
+| `media_formats` | all | Filter airing schedule and season data by format: `TV`, `TV_SHORT`, `MOVIE`, `SPECIAL`, `OVA`, `ONA`, `MUSIC` |
 | `excluded_genres` | none | Genres to exclude from season data |
 | `score_format` | `POINT_10` | Score display: `POINT_10`, `POINT_100`, `POINT_5`, `SMILEY` |
 | `watchlist_statuses` | `CURRENT, REPEATING` | Which anime statuses to include in calendar |
@@ -154,11 +154,11 @@ The AniList card appears as **"AniList"** in the card picker when adding a new c
 | `countdown_format` | string | `relative` | Countdown style: `relative` (5h 30m), `absolute` (Apr 10, 14:00), `both` |
 | `show_progress` | boolean | `true` | Show episode/chapter progress |
 | `show_progress_bar` | boolean | `true` | Show visual progress bar |
-| `score_display` | string | `number` | Score style: `stars`, `bar`, `number`, `none` |
+| ~~`score_display`~~ | string | `number` | **Deprecated.** Use `score_position` and `score_source` instead. |
 | `show_badges` | boolean | `true` | Show status badges on covers |
 | `show_search` | boolean | `false` | Show search/filter input |
 | `show_tooltips` | boolean | `false` | Show details on hover |
-| `link_target` | string | `anilist` | Click behavior: `anilist` (open in new tab), `ha_more_info`, `none` |
+| `link_target` | string | `anilist` | Click behavior: `anilist` (open in new tab), `none` |
 | `sort_by` | string | `time` | Airing sort order: `time`, `title`, `score` |
 | `card_padding` | string | `normal` | Inner spacing: `compact`, `normal`, `relaxed` |
 
@@ -205,7 +205,7 @@ The AniList card appears as **"AniList"** in the card picker when adding a new c
 |--------|------|---------|-------------|
 | `genre_filter` | string[] | `[]` | Only show anime matching these genres |
 | `format_filter` | string[] | `[]` | Only show anime matching these formats (TV, MOVIE, etc.) |
-| `show_next_season` | boolean | `false` | Include next season anime |
+| ~~`show_next_season`~~ | boolean | `false` | **Deprecated.** Not currently implemented. |
 
 #### Profile
 
@@ -265,7 +265,8 @@ watchlist_statuses:
   - DROPPED
 overflow_mode: scroll
 scroll_height: 500
-score_display: stars
+score_position: top-right
+score_source: user
 ```
 
 **Manga reading list:**
@@ -290,7 +291,6 @@ genre_filter:
   - Fantasy
 format_filter:
   - TV
-show_next_season: true
 ```
 
 **Minimal profile:**
@@ -331,7 +331,6 @@ layout_mode: list
 score_position: inline
 score_source: average
 max_season: 20
-show_next_season: true
 ```
 
 **Custom styled card:**

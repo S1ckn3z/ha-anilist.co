@@ -31,11 +31,11 @@ The main configuration object for the card. All fields except `type` are optiona
 | `countdown_format` | `"relative" \| "absolute" \| "both"` | `"relative"` | Countdown display style |
 | `show_progress` | `boolean` | `true` | Show episode/chapter progress |
 | `show_progress_bar` | `boolean` | `true` | Show visual progress bar |
-| `score_display` | `"stars" \| "bar" \| "number" \| "none"` | `"number"` | Score visualization mode |
+| `score_display` | `"stars" \| "bar" \| "number" \| "none"` | `"number"` | **Deprecated.** Use `score_position` and `score_source` instead. |
 | `show_badges` | `boolean` | `true` | Show status badges |
 | `show_search` | `boolean` | `false` | Show search input |
 | `show_tooltips` | `boolean` | `false` | Show hover tooltips |
-| `link_target` | `"anilist" \| "none" \| "ha_more_info"` | `"anilist"` | Click behavior |
+| `link_target` | `"anilist" \| "none"` | `"anilist"` | Click behavior |
 | `sort_by` | `"time" \| "title" \| "score"` | `"time"` | Sort order for airing view |
 | `card_padding` | `"compact" \| "normal" \| "relaxed"` | `"normal"` | Card spacing (8px / 12px / 16px) |
 | **Airing extras** | | | |
@@ -68,7 +68,7 @@ The main configuration object for the card. All fields except `type` are optiona
 | **Season** | | | |
 | `genre_filter` | `string[]` | `[]` | Filter by genres (empty = all) |
 | `format_filter` | `string[]` | `[]` | Filter by format (TV, MOVIE, OVA, etc.) |
-| `show_next_season` | `boolean` | `false` | Include next season entries |
+| `show_next_season` | `boolean` | `false` | **Deprecated.** Not currently implemented. |
 | **Colors** | | | |
 | `accent_color` | `string` | -- | Override accent color |
 | `secondary_color` | `string` | -- | Override secondary color |
@@ -413,7 +413,7 @@ Renders view-specific settings based on the current `view` value:
 
 - **Airing** (`_renderAiringSettings`): max items, sort by, countdown toggle + format, badges, duration, genres, average score, format badge
 - **Watchlist** (`_renderWatchlistSettings`): max items, overflow mode (+ scroll height), score display, progress toggles, status tabs toggle, status checkbox group
-- **Season** (`_renderSeasonSettings`): max items, next season toggle, score display, genre filter (comma-separated text), format filter (comma-separated text)
+- **Season** (`_renderSeasonSettings`): max items, score display, genre filter (comma-separated text), format filter (comma-separated text)
 - **Profile** (`_renderProfileSettings`): avatar, username, anime stats, manga stats, genre chart (+ chart type), favourites toggles
 - **Manga** (`_renderMangaSettings`): max items, overflow mode (+ scroll height), score display, progress toggles, status tabs toggle, status checkbox group
 

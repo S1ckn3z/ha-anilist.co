@@ -65,6 +65,8 @@ class AniListConfigFlow(AbstractOAuth2FlowHandler, domain=DOMAIN):
     DOMAIN = DOMAIN
     VERSION = 1
 
+    _reauth_entry: ConfigEntry | None = None
+
     @property
     def logger(self):  # type: ignore[override]
         return LOGGER
@@ -138,6 +140,16 @@ class AniListConfigFlow(AbstractOAuth2FlowHandler, domain=DOMAIN):
         except AniListError:
             return self.async_abort(reason="cannot_connect")
 
+        # Reauth: update existing entry in place
+        if self._reauth_entry is not None:
+            existing_user_id = self._reauth_entry.data.get(CONF_USER_ID)
+            if existing_user_id and str(viewer["id"]) != str(existing_user_id):
+                return self.async_abort(reason="account_mismatch")
+            return self.async_update_reload_and_abort(
+                self._reauth_entry,
+                data={**self._reauth_entry.data, **data},
+            )
+
         await self.async_set_unique_id(str(viewer["id"]))
         self._abort_if_unique_id_configured(
             updates={
@@ -164,6 +176,9 @@ class AniListConfigFlow(AbstractOAuth2FlowHandler, domain=DOMAIN):
         self, entry_data: dict[str, Any]
     ) -> ConfigFlowResult:
         """Start re-authentication after token expiry."""
+        self._reauth_entry = self.hass.config_entries.async_get_entry(
+            self.context["entry_id"]
+        )
         return await self.async_step_reauth_confirm()
 
     async def async_step_reauth_confirm(
@@ -280,6 +295,17 @@ class AniListOptionsFlow(OptionsFlowWithReload):
                         multiple=True,
                         mode=SelectSelectorMode.LIST,
                         translation_key="media_format",
+                    )
+                ),
+                vol.Optional(
+                    OPT_EXCLUDED_GENRES,
+                    default=opts.get(OPT_EXCLUDED_GENRES, DEFAULT_EXCLUDED_GENRES),
+                ): SelectSelector(
+                    SelectSelectorConfig(
+                        options=[],
+                        custom_value=True,
+                        multiple=True,
+                        mode=SelectSelectorMode.LIST,
                     )
                 ),
                 vol.Optional(
