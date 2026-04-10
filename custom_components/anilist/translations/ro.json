@@ -65,55 +65,89 @@
     },
     "watchlist_status": {
       "options": {
-        "CURRENT": "Vizionez / Citesc în prezent",
-        "PLANNING": "Planificat",
-        "COMPLETED": "Finalizat",
-        "DROPPED": "Abandonat",
-        "PAUSED": "În pauză",
-        "REPEATING": "Revizionez / Recitesc"
+        "current": "Vizionez / Citesc în prezent",
+        "planning": "Planificat",
+        "completed": "Finalizat",
+        "dropped": "Abandonat",
+        "paused": "În pauză",
+        "repeating": "Revizionez / Recitesc"
       }
     },
     "media_format": {
       "options": {
-        "TV": "TV",
-        "TV_SHORT": "TV Scurt",
-        "MOVIE": "Film",
-        "SPECIAL": "Special",
-        "OVA": "OVA",
-        "ONA": "ONA",
-        "MUSIC": "Muzică"
+        "tv": "TV",
+        "tv_short": "TV Scurt",
+        "movie": "Film",
+        "special": "Special",
+        "ova": "OVA",
+        "ona": "ONA",
+        "music": "Muzică"
       }
     },
     "score_format": {
       "options": {
-        "POINT_10": "1–10 (de ex. 7.5)",
-        "POINT_100": "1–100 (de ex. 75)",
-        "POINT_5": "1–5 Stele",
-        "SMILEY": "Emoticon (😊 😐 😞)"
+        "point_10": "1–10 (de ex. 7.5)",
+        "point_100": "1–100 (de ex. 75)",
+        "point_5": "1–5 Stele",
+        "smiley": "Emoticon (😊 😐 😞)"
       }
     }
   },
   "entity": {
     "sensor": {
-      "airing_today": { "name": "Se difuzează azi" },
-      "episodes_this_week": { "name": "Episoade săptămâna aceasta" },
-      "next_episode_title": { "name": "Următorul anime difuzat" },
-      "next_episode_time": { "name": "Ora următorului episod" },
-      "watching_count": { "name": "Vizionez în prezent" },
-      "manga_reading_count": { "name": "Citesc în prezent" },
-      "total_anime_watched": { "name": "Total anime vizionate" },
-      "total_episodes_watched": { "name": "Total episoade vizionate" },
-      "total_hours_watched": { "name": "Total ore vizionate" },
-      "anime_mean_score": { "name": "Scor mediu anime" },
-      "manga_mean_score": { "name": "Scor mediu manga" },
-      "chapters_read": { "name": "Capitole citite" },
-      "top_genre": { "name": "Gen favorit" }
+      "airing_today": {
+        "name": "Se difuzează azi"
+      },
+      "episodes_this_week": {
+        "name": "Episoade săptămâna aceasta"
+      },
+      "next_episode_title": {
+        "name": "Următorul anime difuzat"
+      },
+      "next_episode_time": {
+        "name": "Ora următorului episod"
+      },
+      "watching_count": {
+        "name": "Vizionez în prezent"
+      },
+      "manga_reading_count": {
+        "name": "Citesc în prezent"
+      },
+      "total_anime_watched": {
+        "name": "Total anime vizionate"
+      },
+      "total_episodes_watched": {
+        "name": "Total episoade vizionate"
+      },
+      "total_hours_watched": {
+        "name": "Total ore vizionate"
+      },
+      "anime_mean_score": {
+        "name": "Scor mediu anime"
+      },
+      "manga_mean_score": {
+        "name": "Scor mediu manga"
+      },
+      "chapters_read": {
+        "name": "Capitole citite"
+      },
+      "top_genre": {
+        "name": "Gen favorit"
+      }
     },
     "calendar": {
-      "airing_calendar": { "name": "Program de difuzare" },
-      "season_calendar": { "name": "Anime de sezon" },
-      "watchlist_calendar": { "name": "Lista de vizionare" },
-      "manga_calendar": { "name": "Lista de lectură manga" }
+      "airing_calendar": {
+        "name": "Program de difuzare"
+      },
+      "season_calendar": {
+        "name": "Anime de sezon"
+      },
+      "watchlist_calendar": {
+        "name": "Lista de vizionare"
+      },
+      "manga_calendar": {
+        "name": "Lista de lectură manga"
+      }
     }
   }
 }

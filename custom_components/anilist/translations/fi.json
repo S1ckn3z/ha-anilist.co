@@ -65,55 +65,89 @@
     },
     "watchlist_status": {
       "options": {
-        "CURRENT": "Katsellaan / Luetaan parhaillaan",
-        "PLANNING": "Suunniteltu",
-        "COMPLETED": "Valmis",
-        "DROPPED": "Keskeytetty",
-        "PAUSED": "Tauolla",
-        "REPEATING": "Uudelleenkatselu / Uudelleenluku"
+        "current": "Katsellaan / Luetaan parhaillaan",
+        "planning": "Suunniteltu",
+        "completed": "Valmis",
+        "dropped": "Keskeytetty",
+        "paused": "Tauolla",
+        "repeating": "Uudelleenkatselu / Uudelleenluku"
       }
     },
     "media_format": {
       "options": {
-        "TV": "TV",
-        "TV_SHORT": "TV lyhyt",
-        "MOVIE": "Elokuva",
-        "SPECIAL": "Erikoisjakso",
-        "OVA": "OVA",
-        "ONA": "ONA",
-        "MUSIC": "Musiikki"
+        "tv": "TV",
+        "tv_short": "TV lyhyt",
+        "movie": "Elokuva",
+        "special": "Erikoisjakso",
+        "ova": "OVA",
+        "ona": "ONA",
+        "music": "Musiikki"
       }
     },
     "score_format": {
       "options": {
-        "POINT_10": "1–10 (esim. 7.5)",
-        "POINT_100": "1–100 (esim. 75)",
-        "POINT_5": "1–5 Tähteä",
-        "SMILEY": "Hymiö (😊 😐 😞)"
+        "point_10": "1–10 (esim. 7.5)",
+        "point_100": "1–100 (esim. 75)",
+        "point_5": "1–5 Tähteä",
+        "smiley": "Hymiö (😊 😐 😞)"
       }
     }
   },
   "entity": {
     "sensor": {
-      "airing_today": { "name": "Lähetetään tänään" },
-      "episodes_this_week": { "name": "Jaksot tällä viikolla" },
-      "next_episode_title": { "name": "Seuraava lähetettävä anime" },
-      "next_episode_time": { "name": "Seuraavan jakson aika" },
-      "watching_count": { "name": "Katsellaan parhaillaan" },
-      "manga_reading_count": { "name": "Luetaan parhaillaan" },
-      "total_anime_watched": { "name": "Animea katsottu yhteensä" },
-      "total_episodes_watched": { "name": "Jaksoja katsottu yhteensä" },
-      "total_hours_watched": { "name": "Tunteja katsottu yhteensä" },
-      "anime_mean_score": { "name": "Animen keskiarvopisteet" },
-      "manga_mean_score": { "name": "Mangan keskiarvopisteet" },
-      "chapters_read": { "name": "Lukuja luettu" },
-      "top_genre": { "name": "Suosikkilajityyppi" }
+      "airing_today": {
+        "name": "Lähetetään tänään"
+      },
+      "episodes_this_week": {
+        "name": "Jaksot tällä viikolla"
+      },
+      "next_episode_title": {
+        "name": "Seuraava lähetettävä anime"
+      },
+      "next_episode_time": {
+        "name": "Seuraavan jakson aika"
+      },
+      "watching_count": {
+        "name": "Katsellaan parhaillaan"
+      },
+      "manga_reading_count": {
+        "name": "Luetaan parhaillaan"
+      },
+      "total_anime_watched": {
+        "name": "Animea katsottu yhteensä"
+      },
+      "total_episodes_watched": {
+        "name": "Jaksoja katsottu yhteensä"
+      },
+      "total_hours_watched": {
+        "name": "Tunteja katsottu yhteensä"
+      },
+      "anime_mean_score": {
+        "name": "Animen keskiarvopisteet"
+      },
+      "manga_mean_score": {
+        "name": "Mangan keskiarvopisteet"
+      },
+      "chapters_read": {
+        "name": "Lukuja luettu"
+      },
+      "top_genre": {
+        "name": "Suosikkilajityyppi"
+      }
     },
     "calendar": {
-      "airing_calendar": { "name": "Lähetysaikataulu" },
-      "season_calendar": { "name": "Kauden anime" },
-      "watchlist_calendar": { "name": "Seurantalista" },
-      "manga_calendar": { "name": "Mangan lukulista" }
+      "airing_calendar": {
+        "name": "Lähetysaikataulu"
+      },
+      "season_calendar": {
+        "name": "Kauden anime"
+      },
+      "watchlist_calendar": {
+        "name": "Seurantalista"
+      },
+      "manga_calendar": {
+        "name": "Mangan lukulista"
+      }
     }
   }
 }

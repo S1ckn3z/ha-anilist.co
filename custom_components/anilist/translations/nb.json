@@ -65,55 +65,89 @@
     },
     "watchlist_status": {
       "options": {
-        "CURRENT": "Ser / Leser nå",
-        "PLANNING": "Planlagt",
-        "COMPLETED": "Fullført",
-        "DROPPED": "Droppet",
-        "PAUSED": "Satt på pause",
-        "REPEATING": "Ser om igjen / Leser om igjen"
+        "current": "Ser / Leser nå",
+        "planning": "Planlagt",
+        "completed": "Fullført",
+        "dropped": "Droppet",
+        "paused": "Satt på pause",
+        "repeating": "Ser om igjen / Leser om igjen"
       }
     },
     "media_format": {
       "options": {
-        "TV": "TV",
-        "TV_SHORT": "TV Kort",
-        "MOVIE": "Film",
-        "SPECIAL": "Spesial",
-        "OVA": "OVA",
-        "ONA": "ONA",
-        "MUSIC": "Musikk"
+        "tv": "TV",
+        "tv_short": "TV Kort",
+        "movie": "Film",
+        "special": "Spesial",
+        "ova": "OVA",
+        "ona": "ONA",
+        "music": "Musikk"
       }
     },
     "score_format": {
       "options": {
-        "POINT_10": "1–10 (f.eks. 7.5)",
-        "POINT_100": "1–100 (f.eks. 75)",
-        "POINT_5": "1–5 Stjerner",
-        "SMILEY": "Smiley (😊 😐 😞)"
+        "point_10": "1–10 (f.eks. 7.5)",
+        "point_100": "1–100 (f.eks. 75)",
+        "point_5": "1–5 Stjerner",
+        "smiley": "Smiley (😊 😐 😞)"
       }
     }
   },
   "entity": {
     "sensor": {
-      "airing_today": { "name": "Sendes i dag" },
-      "episodes_this_week": { "name": "Episoder denne uken" },
-      "next_episode_title": { "name": "Neste anime som sendes" },
-      "next_episode_time": { "name": "Tidspunkt for neste episode" },
-      "watching_count": { "name": "Ser nå" },
-      "manga_reading_count": { "name": "Leser nå" },
-      "total_anime_watched": { "name": "Totalt anime sett" },
-      "total_episodes_watched": { "name": "Totalt episoder sett" },
-      "total_hours_watched": { "name": "Totalt timer sett" },
-      "anime_mean_score": { "name": "Gjennomsnittlig animepoengsum" },
-      "manga_mean_score": { "name": "Gjennomsnittlig mangapoengsum" },
-      "chapters_read": { "name": "Kapitler lest" },
-      "top_genre": { "name": "Favorittsjanger" }
+      "airing_today": {
+        "name": "Sendes i dag"
+      },
+      "episodes_this_week": {
+        "name": "Episoder denne uken"
+      },
+      "next_episode_title": {
+        "name": "Neste anime som sendes"
+      },
+      "next_episode_time": {
+        "name": "Tidspunkt for neste episode"
+      },
+      "watching_count": {
+        "name": "Ser nå"
+      },
+      "manga_reading_count": {
+        "name": "Leser nå"
+      },
+      "total_anime_watched": {
+        "name": "Totalt anime sett"
+      },
+      "total_episodes_watched": {
+        "name": "Totalt episoder sett"
+      },
+      "total_hours_watched": {
+        "name": "Totalt timer sett"
+      },
+      "anime_mean_score": {
+        "name": "Gjennomsnittlig animepoengsum"
+      },
+      "manga_mean_score": {
+        "name": "Gjennomsnittlig mangapoengsum"
+      },
+      "chapters_read": {
+        "name": "Kapitler lest"
+      },
+      "top_genre": {
+        "name": "Favorittsjanger"
+      }
     },
     "calendar": {
-      "airing_calendar": { "name": "Sendeplan" },
-      "season_calendar": { "name": "Sesonganime" },
-      "watchlist_calendar": { "name": "Følgeliste" },
-      "manga_calendar": { "name": "Manga-leseliste" }
+      "airing_calendar": {
+        "name": "Sendeplan"
+      },
+      "season_calendar": {
+        "name": "Sesonganime"
+      },
+      "watchlist_calendar": {
+        "name": "Følgeliste"
+      },
+      "manga_calendar": {
+        "name": "Manga-leseliste"
+      }
     }
   }
 }

@@ -65,55 +65,89 @@
     },
     "watchlist_status": {
       "options": {
-        "CURRENT": "Παρακολουθώ / Διαβάζω τώρα",
-        "PLANNING": "Προγραμματισμένο",
-        "COMPLETED": "Ολοκληρωμένο",
-        "DROPPED": "Εγκαταλειμμένο",
-        "PAUSED": "Σε παύση",
-        "REPEATING": "Ξαναβλέπω / Ξαναδιαβάζω"
+        "current": "Παρακολουθώ / Διαβάζω τώρα",
+        "planning": "Προγραμματισμένο",
+        "completed": "Ολοκληρωμένο",
+        "dropped": "Εγκαταλειμμένο",
+        "paused": "Σε παύση",
+        "repeating": "Ξαναβλέπω / Ξαναδιαβάζω"
       }
     },
     "media_format": {
       "options": {
-        "TV": "TV",
-        "TV_SHORT": "TV Σύντομο",
-        "MOVIE": "Ταινία",
-        "SPECIAL": "Ειδικό",
-        "OVA": "OVA",
-        "ONA": "ONA",
-        "MUSIC": "Μουσική"
+        "tv": "TV",
+        "tv_short": "TV Σύντομο",
+        "movie": "Ταινία",
+        "special": "Ειδικό",
+        "ova": "OVA",
+        "ona": "ONA",
+        "music": "Μουσική"
       }
     },
     "score_format": {
       "options": {
-        "POINT_10": "1–10 (π.χ. 7.5)",
-        "POINT_100": "1–100 (π.χ. 75)",
-        "POINT_5": "1–5 Αστέρια",
-        "SMILEY": "Φατσούλα (😊 😐 😞)"
+        "point_10": "1–10 (π.χ. 7.5)",
+        "point_100": "1–100 (π.χ. 75)",
+        "point_5": "1–5 Αστέρια",
+        "smiley": "Φατσούλα (😊 😐 😞)"
       }
     }
   },
   "entity": {
     "sensor": {
-      "airing_today": { "name": "Μεταδίδεται σήμερα" },
-      "episodes_this_week": { "name": "Επεισόδια αυτή την εβδομάδα" },
-      "next_episode_title": { "name": "Επόμενο anime που μεταδίδεται" },
-      "next_episode_time": { "name": "Ώρα επόμενου επεισοδίου" },
-      "watching_count": { "name": "Παρακολουθώ τώρα" },
-      "manga_reading_count": { "name": "Διαβάζω τώρα" },
-      "total_anime_watched": { "name": "Σύνολο anime που είδα" },
-      "total_episodes_watched": { "name": "Σύνολο επεισοδίων που είδα" },
-      "total_hours_watched": { "name": "Σύνολο ωρών παρακολούθησης" },
-      "anime_mean_score": { "name": "Μέση βαθμολογία anime" },
-      "manga_mean_score": { "name": "Μέση βαθμολογία manga" },
-      "chapters_read": { "name": "Κεφάλαια που διαβάστηκαν" },
-      "top_genre": { "name": "Κορυφαίο είδος" }
+      "airing_today": {
+        "name": "Μεταδίδεται σήμερα"
+      },
+      "episodes_this_week": {
+        "name": "Επεισόδια αυτή την εβδομάδα"
+      },
+      "next_episode_title": {
+        "name": "Επόμενο anime που μεταδίδεται"
+      },
+      "next_episode_time": {
+        "name": "Ώρα επόμενου επεισοδίου"
+      },
+      "watching_count": {
+        "name": "Παρακολουθώ τώρα"
+      },
+      "manga_reading_count": {
+        "name": "Διαβάζω τώρα"
+      },
+      "total_anime_watched": {
+        "name": "Σύνολο anime που είδα"
+      },
+      "total_episodes_watched": {
+        "name": "Σύνολο επεισοδίων που είδα"
+      },
+      "total_hours_watched": {
+        "name": "Σύνολο ωρών παρακολούθησης"
+      },
+      "anime_mean_score": {
+        "name": "Μέση βαθμολογία anime"
+      },
+      "manga_mean_score": {
+        "name": "Μέση βαθμολογία manga"
+      },
+      "chapters_read": {
+        "name": "Κεφάλαια που διαβάστηκαν"
+      },
+      "top_genre": {
+        "name": "Κορυφαίο είδος"
+      }
     },
     "calendar": {
-      "airing_calendar": { "name": "Πρόγραμμα μετάδοσης" },
-      "season_calendar": { "name": "Anime σεζόν" },
-      "watchlist_calendar": { "name": "Λίστα παρακολούθησης" },
-      "manga_calendar": { "name": "Λίστα ανάγνωσης manga" }
+      "airing_calendar": {
+        "name": "Πρόγραμμα μετάδοσης"
+      },
+      "season_calendar": {
+        "name": "Anime σεζόν"
+      },
+      "watchlist_calendar": {
+        "name": "Λίστα παρακολούθησης"
+      },
+      "manga_calendar": {
+        "name": "Λίστα ανάγνωσης manga"
+      }
     }
   }
 }

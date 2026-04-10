@@ -65,55 +65,89 @@
     },
     "watchlist_status": {
       "options": {
-        "CURRENT": "視聴中 / 読書中",
-        "PLANNING": "視聴予定",
-        "COMPLETED": "完了",
-        "DROPPED": "中断",
-        "PAUSED": "一時停止",
-        "REPEATING": "再視聴 / 再読"
+        "current": "視聴中 / 読書中",
+        "planning": "視聴予定",
+        "completed": "完了",
+        "dropped": "中断",
+        "paused": "一時停止",
+        "repeating": "再視聴 / 再読"
       }
     },
     "media_format": {
       "options": {
-        "TV": "TV",
-        "TV_SHORT": "TVショート",
-        "MOVIE": "映画",
-        "SPECIAL": "特別編",
-        "OVA": "OVA",
-        "ONA": "ONA",
-        "MUSIC": "音楽"
+        "tv": "TV",
+        "tv_short": "TVショート",
+        "movie": "映画",
+        "special": "特別編",
+        "ova": "OVA",
+        "ona": "ONA",
+        "music": "音楽"
       }
     },
     "score_format": {
       "options": {
-        "POINT_10": "1〜10（例：7.5）",
-        "POINT_100": "1〜100（例：75）",
-        "POINT_5": "1〜5 星",
-        "SMILEY": "スマイリー (😊 😐 😞)"
+        "point_10": "1〜10（例：7.5）",
+        "point_100": "1〜100（例：75）",
+        "point_5": "1〜5 星",
+        "smiley": "スマイリー (😊 😐 😞)"
       }
     }
   },
   "entity": {
     "sensor": {
-      "airing_today": { "name": "本日放送" },
-      "episodes_this_week": { "name": "今週のエピソード" },
-      "next_episode_title": { "name": "次の放送アニメ" },
-      "next_episode_time": { "name": "次のエピソード時間" },
-      "watching_count": { "name": "現在視聴中" },
-      "manga_reading_count": { "name": "現在読書中" },
-      "total_anime_watched": { "name": "視聴済みアニメ合計" },
-      "total_episodes_watched": { "name": "視聴済みエピソード合計" },
-      "total_hours_watched": { "name": "視聴時間合計" },
-      "anime_mean_score": { "name": "アニメ平均スコア" },
-      "manga_mean_score": { "name": "マンガ平均スコア" },
-      "chapters_read": { "name": "読了チャプター数" },
-      "top_genre": { "name": "トップジャンル" }
+      "airing_today": {
+        "name": "本日放送"
+      },
+      "episodes_this_week": {
+        "name": "今週のエピソード"
+      },
+      "next_episode_title": {
+        "name": "次の放送アニメ"
+      },
+      "next_episode_time": {
+        "name": "次のエピソード時間"
+      },
+      "watching_count": {
+        "name": "現在視聴中"
+      },
+      "manga_reading_count": {
+        "name": "現在読書中"
+      },
+      "total_anime_watched": {
+        "name": "視聴済みアニメ合計"
+      },
+      "total_episodes_watched": {
+        "name": "視聴済みエピソード合計"
+      },
+      "total_hours_watched": {
+        "name": "視聴時間合計"
+      },
+      "anime_mean_score": {
+        "name": "アニメ平均スコア"
+      },
+      "manga_mean_score": {
+        "name": "マンガ平均スコア"
+      },
+      "chapters_read": {
+        "name": "読了チャプター数"
+      },
+      "top_genre": {
+        "name": "トップジャンル"
+      }
     },
     "calendar": {
-      "airing_calendar": { "name": "放送スケジュール" },
-      "season_calendar": { "name": "シーズンアニメ" },
-      "watchlist_calendar": { "name": "視聴リスト" },
-      "manga_calendar": { "name": "マンガ読書リスト" }
+      "airing_calendar": {
+        "name": "放送スケジュール"
+      },
+      "season_calendar": {
+        "name": "シーズンアニメ"
+      },
+      "watchlist_calendar": {
+        "name": "視聴リスト"
+      },
+      "manga_calendar": {
+        "name": "マンガ読書リスト"
+      }
     }
   }
 }

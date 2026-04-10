@@ -65,55 +65,89 @@
     },
     "watchlist_status": {
       "options": {
-        "CURRENT": "Trenutno gledam / čitam",
-        "PLANNING": "Planirano",
-        "COMPLETED": "Završeno",
-        "DROPPED": "Odbačeno",
-        "PAUSED": "Pauzirano",
-        "REPEATING": "Ponovno gledam / čitam"
+        "current": "Trenutno gledam / čitam",
+        "planning": "Planirano",
+        "completed": "Završeno",
+        "dropped": "Odbačeno",
+        "paused": "Pauzirano",
+        "repeating": "Ponovno gledam / čitam"
       }
     },
     "media_format": {
       "options": {
-        "TV": "TV",
-        "TV_SHORT": "TV kratki",
-        "MOVIE": "Film",
-        "SPECIAL": "Specijal",
-        "OVA": "OVA",
-        "ONA": "ONA",
-        "MUSIC": "Glazba"
+        "tv": "TV",
+        "tv_short": "TV kratki",
+        "movie": "Film",
+        "special": "Specijal",
+        "ova": "OVA",
+        "ona": "ONA",
+        "music": "Glazba"
       }
     },
     "score_format": {
       "options": {
-        "POINT_10": "1–10 (npr. 7.5)",
-        "POINT_100": "1–100 (npr. 75)",
-        "POINT_5": "1–5 Zvjezdica",
-        "SMILEY": "Smajlić (😊 😐 😞)"
+        "point_10": "1–10 (npr. 7.5)",
+        "point_100": "1–100 (npr. 75)",
+        "point_5": "1–5 Zvjezdica",
+        "smiley": "Smajlić (😊 😐 😞)"
       }
     }
   },
   "entity": {
     "sensor": {
-      "airing_today": { "name": "Emitira se danas" },
-      "episodes_this_week": { "name": "Epizode ovaj tjedan" },
-      "next_episode_title": { "name": "Sljedeći anime na rasporedu" },
-      "next_episode_time": { "name": "Vrijeme sljedeće epizode" },
-      "watching_count": { "name": "Trenutno gledam" },
-      "manga_reading_count": { "name": "Trenutno čitam" },
-      "total_anime_watched": { "name": "Ukupno pogledanih animea" },
-      "total_episodes_watched": { "name": "Ukupno pogledanih epizoda" },
-      "total_hours_watched": { "name": "Ukupno sati gledanja" },
-      "anime_mean_score": { "name": "Prosječna ocjena animea" },
-      "manga_mean_score": { "name": "Prosječna ocjena mange" },
-      "chapters_read": { "name": "Pročitana poglavlja" },
-      "top_genre": { "name": "Omiljeni žanr" }
+      "airing_today": {
+        "name": "Emitira se danas"
+      },
+      "episodes_this_week": {
+        "name": "Epizode ovaj tjedan"
+      },
+      "next_episode_title": {
+        "name": "Sljedeći anime na rasporedu"
+      },
+      "next_episode_time": {
+        "name": "Vrijeme sljedeće epizode"
+      },
+      "watching_count": {
+        "name": "Trenutno gledam"
+      },
+      "manga_reading_count": {
+        "name": "Trenutno čitam"
+      },
+      "total_anime_watched": {
+        "name": "Ukupno pogledanih animea"
+      },
+      "total_episodes_watched": {
+        "name": "Ukupno pogledanih epizoda"
+      },
+      "total_hours_watched": {
+        "name": "Ukupno sati gledanja"
+      },
+      "anime_mean_score": {
+        "name": "Prosječna ocjena animea"
+      },
+      "manga_mean_score": {
+        "name": "Prosječna ocjena mange"
+      },
+      "chapters_read": {
+        "name": "Pročitana poglavlja"
+      },
+      "top_genre": {
+        "name": "Omiljeni žanr"
+      }
     },
     "calendar": {
-      "airing_calendar": { "name": "Raspored emitiranja" },
-      "season_calendar": { "name": "Sezonski anime" },
-      "watchlist_calendar": { "name": "Popis za gledanje" },
-      "manga_calendar": { "name": "Popis za čitanje mange" }
+      "airing_calendar": {
+        "name": "Raspored emitiranja"
+      },
+      "season_calendar": {
+        "name": "Sezonski anime"
+      },
+      "watchlist_calendar": {
+        "name": "Popis za gledanje"
+      },
+      "manga_calendar": {
+        "name": "Popis za čitanje mange"
+      }
     }
   }
 }

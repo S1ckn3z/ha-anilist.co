@@ -65,55 +65,89 @@
     },
     "watchlist_status": {
       "options": {
-        "CURRENT": "Зараз дивлюся / читаю",
-        "PLANNING": "Заплановано",
-        "COMPLETED": "Завершено",
-        "DROPPED": "Покинуто",
-        "PAUSED": "На паузі",
-        "REPEATING": "Передивляюсь / Перечитую"
+        "current": "Зараз дивлюся / читаю",
+        "planning": "Заплановано",
+        "completed": "Завершено",
+        "dropped": "Покинуто",
+        "paused": "На паузі",
+        "repeating": "Передивляюсь / Перечитую"
       }
     },
     "media_format": {
       "options": {
-        "TV": "ТБ",
-        "TV_SHORT": "ТБ Коротке",
-        "MOVIE": "Фільм",
-        "SPECIAL": "Спеціальний",
-        "OVA": "OVA",
-        "ONA": "ONA",
-        "MUSIC": "Музика"
+        "tv": "ТБ",
+        "tv_short": "ТБ Коротке",
+        "movie": "Фільм",
+        "special": "Спеціальний",
+        "ova": "OVA",
+        "ona": "ONA",
+        "music": "Музика"
       }
     },
     "score_format": {
       "options": {
-        "POINT_10": "1–10 (напр. 7.5)",
-        "POINT_100": "1–100 (напр. 75)",
-        "POINT_5": "1–5 Зірок",
-        "SMILEY": "Смайлик (😊 😐 😞)"
+        "point_10": "1–10 (напр. 7.5)",
+        "point_100": "1–100 (напр. 75)",
+        "point_5": "1–5 Зірок",
+        "smiley": "Смайлик (😊 😐 😞)"
       }
     }
   },
   "entity": {
     "sensor": {
-      "airing_today": { "name": "В ефірі сьогодні" },
-      "episodes_this_week": { "name": "Епізоди цього тижня" },
-      "next_episode_title": { "name": "Наступне аніме в ефірі" },
-      "next_episode_time": { "name": "Час наступного епізоду" },
-      "watching_count": { "name": "Зараз дивлюся" },
-      "manga_reading_count": { "name": "Зараз читаю" },
-      "total_anime_watched": { "name": "Усього переглянуто аніме" },
-      "total_episodes_watched": { "name": "Усього переглянуто епізодів" },
-      "total_hours_watched": { "name": "Усього годин перегляду" },
-      "anime_mean_score": { "name": "Середня оцінка аніме" },
-      "manga_mean_score": { "name": "Середня оцінка манги" },
-      "chapters_read": { "name": "Прочитано розділів" },
-      "top_genre": { "name": "Улюблений жанр" }
+      "airing_today": {
+        "name": "В ефірі сьогодні"
+      },
+      "episodes_this_week": {
+        "name": "Епізоди цього тижня"
+      },
+      "next_episode_title": {
+        "name": "Наступне аніме в ефірі"
+      },
+      "next_episode_time": {
+        "name": "Час наступного епізоду"
+      },
+      "watching_count": {
+        "name": "Зараз дивлюся"
+      },
+      "manga_reading_count": {
+        "name": "Зараз читаю"
+      },
+      "total_anime_watched": {
+        "name": "Усього переглянуто аніме"
+      },
+      "total_episodes_watched": {
+        "name": "Усього переглянуто епізодів"
+      },
+      "total_hours_watched": {
+        "name": "Усього годин перегляду"
+      },
+      "anime_mean_score": {
+        "name": "Середня оцінка аніме"
+      },
+      "manga_mean_score": {
+        "name": "Середня оцінка манги"
+      },
+      "chapters_read": {
+        "name": "Прочитано розділів"
+      },
+      "top_genre": {
+        "name": "Улюблений жанр"
+      }
     },
     "calendar": {
-      "airing_calendar": { "name": "Розклад трансляцій" },
-      "season_calendar": { "name": "Аніме сезону" },
-      "watchlist_calendar": { "name": "Список перегляду" },
-      "manga_calendar": { "name": "Список читання манги" }
+      "airing_calendar": {
+        "name": "Розклад трансляцій"
+      },
+      "season_calendar": {
+        "name": "Аніме сезону"
+      },
+      "watchlist_calendar": {
+        "name": "Список перегляду"
+      },
+      "manga_calendar": {
+        "name": "Список читання манги"
+      }
     }
   }
 }

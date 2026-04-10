@@ -65,55 +65,89 @@
     },
     "watchlist_status": {
       "options": {
-        "CURRENT": "Jelenleg nézem / olvasom",
-        "PLANNING": "Tervezett",
-        "COMPLETED": "Befejezett",
-        "DROPPED": "Félbehagyott",
-        "PAUSED": "Szüneteltetve",
-        "REPEATING": "Újranézem / Újraolvasom"
+        "current": "Jelenleg nézem / olvasom",
+        "planning": "Tervezett",
+        "completed": "Befejezett",
+        "dropped": "Félbehagyott",
+        "paused": "Szüneteltetve",
+        "repeating": "Újranézem / Újraolvasom"
       }
     },
     "media_format": {
       "options": {
-        "TV": "TV",
-        "TV_SHORT": "TV rövid",
-        "MOVIE": "Film",
-        "SPECIAL": "Különkiadás",
-        "OVA": "OVA",
-        "ONA": "ONA",
-        "MUSIC": "Zene"
+        "tv": "TV",
+        "tv_short": "TV rövid",
+        "movie": "Film",
+        "special": "Különkiadás",
+        "ova": "OVA",
+        "ona": "ONA",
+        "music": "Zene"
       }
     },
     "score_format": {
       "options": {
-        "POINT_10": "1–10 (pl. 7.5)",
-        "POINT_100": "1–100 (pl. 75)",
-        "POINT_5": "1–5 Csillag",
-        "SMILEY": "Hangulatjel (😊 😐 😞)"
+        "point_10": "1–10 (pl. 7.5)",
+        "point_100": "1–100 (pl. 75)",
+        "point_5": "1–5 Csillag",
+        "smiley": "Hangulatjel (😊 😐 😞)"
       }
     }
   },
   "entity": {
     "sensor": {
-      "airing_today": { "name": "Ma adásban" },
-      "episodes_this_week": { "name": "Epizódok ezen a héten" },
-      "next_episode_title": { "name": "Következő adásban lévő anime" },
-      "next_episode_time": { "name": "Következő epizód időpontja" },
-      "watching_count": { "name": "Jelenleg nézem" },
-      "manga_reading_count": { "name": "Jelenleg olvasom" },
-      "total_anime_watched": { "name": "Összes megnézett anime" },
-      "total_episodes_watched": { "name": "Összes megnézett epizód" },
-      "total_hours_watched": { "name": "Összes nézett óra" },
-      "anime_mean_score": { "name": "Anime átlagpontszám" },
-      "manga_mean_score": { "name": "Manga átlagpontszám" },
-      "chapters_read": { "name": "Olvasott fejezetek" },
-      "top_genre": { "name": "Kedvenc műfaj" }
+      "airing_today": {
+        "name": "Ma adásban"
+      },
+      "episodes_this_week": {
+        "name": "Epizódok ezen a héten"
+      },
+      "next_episode_title": {
+        "name": "Következő adásban lévő anime"
+      },
+      "next_episode_time": {
+        "name": "Következő epizód időpontja"
+      },
+      "watching_count": {
+        "name": "Jelenleg nézem"
+      },
+      "manga_reading_count": {
+        "name": "Jelenleg olvasom"
+      },
+      "total_anime_watched": {
+        "name": "Összes megnézett anime"
+      },
+      "total_episodes_watched": {
+        "name": "Összes megnézett epizód"
+      },
+      "total_hours_watched": {
+        "name": "Összes nézett óra"
+      },
+      "anime_mean_score": {
+        "name": "Anime átlagpontszám"
+      },
+      "manga_mean_score": {
+        "name": "Manga átlagpontszám"
+      },
+      "chapters_read": {
+        "name": "Olvasott fejezetek"
+      },
+      "top_genre": {
+        "name": "Kedvenc műfaj"
+      }
     },
     "calendar": {
-      "airing_calendar": { "name": "Adási ütemterv" },
-      "season_calendar": { "name": "Szezon anime" },
-      "watchlist_calendar": { "name": "Figyelőlista" },
-      "manga_calendar": { "name": "Manga olvasólista" }
+      "airing_calendar": {
+        "name": "Adási ütemterv"
+      },
+      "season_calendar": {
+        "name": "Szezon anime"
+      },
+      "watchlist_calendar": {
+        "name": "Figyelőlista"
+      },
+      "manga_calendar": {
+        "name": "Manga olvasólista"
+      }
     }
   }
 }

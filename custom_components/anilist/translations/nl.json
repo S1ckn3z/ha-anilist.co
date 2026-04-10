@@ -65,55 +65,89 @@
     },
     "watchlist_status": {
       "options": {
-        "CURRENT": "Momenteel aan het kijken / lezen",
-        "PLANNING": "Gepland",
-        "COMPLETED": "Voltooid",
-        "DROPPED": "Gestopt",
-        "PAUSED": "Gepauzeerd",
-        "REPEATING": "Opnieuw kijken / lezen"
+        "current": "Momenteel aan het kijken / lezen",
+        "planning": "Gepland",
+        "completed": "Voltooid",
+        "dropped": "Gestopt",
+        "paused": "Gepauzeerd",
+        "repeating": "Opnieuw kijken / lezen"
       }
     },
     "media_format": {
       "options": {
-        "TV": "TV",
-        "TV_SHORT": "TV Kort",
-        "MOVIE": "Film",
-        "SPECIAL": "Speciaal",
-        "OVA": "OVA",
-        "ONA": "ONA",
-        "MUSIC": "Muziek"
+        "tv": "TV",
+        "tv_short": "TV Kort",
+        "movie": "Film",
+        "special": "Speciaal",
+        "ova": "OVA",
+        "ona": "ONA",
+        "music": "Muziek"
       }
     },
     "score_format": {
       "options": {
-        "POINT_10": "1–10 (bijv. 7.5)",
-        "POINT_100": "1–100 (bijv. 75)",
-        "POINT_5": "1–5 Sterren",
-        "SMILEY": "Smiley (😊 😐 😞)"
+        "point_10": "1–10 (bijv. 7.5)",
+        "point_100": "1–100 (bijv. 75)",
+        "point_5": "1–5 Sterren",
+        "smiley": "Smiley (😊 😐 😞)"
       }
     }
   },
   "entity": {
     "sensor": {
-      "airing_today": { "name": "Vandaag uitgezonden" },
-      "episodes_this_week": { "name": "Afleveringen deze week" },
-      "next_episode_title": { "name": "Volgende anime-uitzending" },
-      "next_episode_time": { "name": "Tijd volgende aflevering" },
-      "watching_count": { "name": "Momenteel aan het kijken" },
-      "manga_reading_count": { "name": "Momenteel aan het lezen" },
-      "total_anime_watched": { "name": "Totaal anime bekeken" },
-      "total_episodes_watched": { "name": "Totaal afleveringen bekeken" },
-      "total_hours_watched": { "name": "Totaal uren bekeken" },
-      "anime_mean_score": { "name": "Gemiddelde animescore" },
-      "manga_mean_score": { "name": "Gemiddelde mangascore" },
-      "chapters_read": { "name": "Hoofdstukken gelezen" },
-      "top_genre": { "name": "Favoriete genre" }
+      "airing_today": {
+        "name": "Vandaag uitgezonden"
+      },
+      "episodes_this_week": {
+        "name": "Afleveringen deze week"
+      },
+      "next_episode_title": {
+        "name": "Volgende anime-uitzending"
+      },
+      "next_episode_time": {
+        "name": "Tijd volgende aflevering"
+      },
+      "watching_count": {
+        "name": "Momenteel aan het kijken"
+      },
+      "manga_reading_count": {
+        "name": "Momenteel aan het lezen"
+      },
+      "total_anime_watched": {
+        "name": "Totaal anime bekeken"
+      },
+      "total_episodes_watched": {
+        "name": "Totaal afleveringen bekeken"
+      },
+      "total_hours_watched": {
+        "name": "Totaal uren bekeken"
+      },
+      "anime_mean_score": {
+        "name": "Gemiddelde animescore"
+      },
+      "manga_mean_score": {
+        "name": "Gemiddelde mangascore"
+      },
+      "chapters_read": {
+        "name": "Hoofdstukken gelezen"
+      },
+      "top_genre": {
+        "name": "Favoriete genre"
+      }
     },
     "calendar": {
-      "airing_calendar": { "name": "Uitzendschema" },
-      "season_calendar": { "name": "Seizoensanime" },
-      "watchlist_calendar": { "name": "Volglijst" },
-      "manga_calendar": { "name": "Manga-leeslijst" }
+      "airing_calendar": {
+        "name": "Uitzendschema"
+      },
+      "season_calendar": {
+        "name": "Seizoensanime"
+      },
+      "watchlist_calendar": {
+        "name": "Volglijst"
+      },
+      "manga_calendar": {
+        "name": "Manga-leeslijst"
+      }
     }
   }
 }

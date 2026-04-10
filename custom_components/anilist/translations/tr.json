@@ -65,55 +65,89 @@
     },
     "watchlist_status": {
       "options": {
-        "CURRENT": "Şu anda izliyor / okuyor",
-        "PLANNING": "Planlanmış",
-        "COMPLETED": "Tamamlanmış",
-        "DROPPED": "Bırakılmış",
-        "PAUSED": "Duraklatılmış",
-        "REPEATING": "Yeniden izliyor / okuyor"
+        "current": "Şu anda izliyor / okuyor",
+        "planning": "Planlanmış",
+        "completed": "Tamamlanmış",
+        "dropped": "Bırakılmış",
+        "paused": "Duraklatılmış",
+        "repeating": "Yeniden izliyor / okuyor"
       }
     },
     "media_format": {
       "options": {
-        "TV": "TV",
-        "TV_SHORT": "TV Kısa",
-        "MOVIE": "Film",
-        "SPECIAL": "Özel",
-        "OVA": "OVA",
-        "ONA": "ONA",
-        "MUSIC": "Müzik"
+        "tv": "TV",
+        "tv_short": "TV Kısa",
+        "movie": "Film",
+        "special": "Özel",
+        "ova": "OVA",
+        "ona": "ONA",
+        "music": "Müzik"
       }
     },
     "score_format": {
       "options": {
-        "POINT_10": "1–10 (ör. 7.5)",
-        "POINT_100": "1–100 (ör. 75)",
-        "POINT_5": "1–5 Yıldız",
-        "SMILEY": "Gülen yüz (😊 😐 😞)"
+        "point_10": "1–10 (ör. 7.5)",
+        "point_100": "1–100 (ör. 75)",
+        "point_5": "1–5 Yıldız",
+        "smiley": "Gülen yüz (😊 😐 😞)"
       }
     }
   },
   "entity": {
     "sensor": {
-      "airing_today": { "name": "Bugün yayında" },
-      "episodes_this_week": { "name": "Bu haftaki bölümler" },
-      "next_episode_title": { "name": "Sonraki yayınlanacak anime" },
-      "next_episode_time": { "name": "Sonraki bölüm zamanı" },
-      "watching_count": { "name": "Şu anda izleniyor" },
-      "manga_reading_count": { "name": "Şu anda okunuyor" },
-      "total_anime_watched": { "name": "Toplam izlenen anime" },
-      "total_episodes_watched": { "name": "Toplam izlenen bölüm" },
-      "total_hours_watched": { "name": "Toplam izlenen saat" },
-      "anime_mean_score": { "name": "Anime ortalama puanı" },
-      "manga_mean_score": { "name": "Manga ortalama puanı" },
-      "chapters_read": { "name": "Okunan bölümler" },
-      "top_genre": { "name": "En sevilen tür" }
+      "airing_today": {
+        "name": "Bugün yayında"
+      },
+      "episodes_this_week": {
+        "name": "Bu haftaki bölümler"
+      },
+      "next_episode_title": {
+        "name": "Sonraki yayınlanacak anime"
+      },
+      "next_episode_time": {
+        "name": "Sonraki bölüm zamanı"
+      },
+      "watching_count": {
+        "name": "Şu anda izleniyor"
+      },
+      "manga_reading_count": {
+        "name": "Şu anda okunuyor"
+      },
+      "total_anime_watched": {
+        "name": "Toplam izlenen anime"
+      },
+      "total_episodes_watched": {
+        "name": "Toplam izlenen bölüm"
+      },
+      "total_hours_watched": {
+        "name": "Toplam izlenen saat"
+      },
+      "anime_mean_score": {
+        "name": "Anime ortalama puanı"
+      },
+      "manga_mean_score": {
+        "name": "Manga ortalama puanı"
+      },
+      "chapters_read": {
+        "name": "Okunan bölümler"
+      },
+      "top_genre": {
+        "name": "En sevilen tür"
+      }
     },
     "calendar": {
-      "airing_calendar": { "name": "Yayın programı" },
-      "season_calendar": { "name": "Sezon animesi" },
-      "watchlist_calendar": { "name": "İzleme listesi" },
-      "manga_calendar": { "name": "Manga okuma listesi" }
+      "airing_calendar": {
+        "name": "Yayın programı"
+      },
+      "season_calendar": {
+        "name": "Sezon animesi"
+      },
+      "watchlist_calendar": {
+        "name": "İzleme listesi"
+      },
+      "manga_calendar": {
+        "name": "Manga okuma listesi"
+      }
     }
   }
 }

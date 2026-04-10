@@ -65,55 +65,89 @@
     },
     "watchlist_status": {
       "options": {
-        "CURRENT": "В момента гледам / чета",
-        "PLANNING": "Планирано",
-        "COMPLETED": "Завършено",
-        "DROPPED": "Изоставено",
-        "PAUSED": "На пауза",
-        "REPEATING": "Преглеждам / Препрочитам"
+        "current": "В момента гледам / чета",
+        "planning": "Планирано",
+        "completed": "Завършено",
+        "dropped": "Изоставено",
+        "paused": "На пауза",
+        "repeating": "Преглеждам / Препрочитам"
       }
     },
     "media_format": {
       "options": {
-        "TV": "ТВ",
-        "TV_SHORT": "ТВ Кратко",
-        "MOVIE": "Филм",
-        "SPECIAL": "Специален",
-        "OVA": "OVA",
-        "ONA": "ONA",
-        "MUSIC": "Музика"
+        "tv": "ТВ",
+        "tv_short": "ТВ Кратко",
+        "movie": "Филм",
+        "special": "Специален",
+        "ova": "OVA",
+        "ona": "ONA",
+        "music": "Музика"
       }
     },
     "score_format": {
       "options": {
-        "POINT_10": "1–10 (напр. 7.5)",
-        "POINT_100": "1–100 (напр. 75)",
-        "POINT_5": "1–5 Звезди",
-        "SMILEY": "Усмивка (😊 😐 😞)"
+        "point_10": "1–10 (напр. 7.5)",
+        "point_100": "1–100 (напр. 75)",
+        "point_5": "1–5 Звезди",
+        "smiley": "Усмивка (😊 😐 😞)"
       }
     }
   },
   "entity": {
     "sensor": {
-      "airing_today": { "name": "Излъчва се днес" },
-      "episodes_this_week": { "name": "Епизоди тази седмица" },
-      "next_episode_title": { "name": "Следващо аниме в ефир" },
-      "next_episode_time": { "name": "Време на следващия епизод" },
-      "watching_count": { "name": "В момента гледам" },
-      "manga_reading_count": { "name": "В момента чета" },
-      "total_anime_watched": { "name": "Общо гледани аниме" },
-      "total_episodes_watched": { "name": "Общо гледани епизоди" },
-      "total_hours_watched": { "name": "Общо часове гледане" },
-      "anime_mean_score": { "name": "Средна оценка на аниме" },
-      "manga_mean_score": { "name": "Средна оценка на манга" },
-      "chapters_read": { "name": "Прочетени глави" },
-      "top_genre": { "name": "Любим жанр" }
+      "airing_today": {
+        "name": "Излъчва се днес"
+      },
+      "episodes_this_week": {
+        "name": "Епизоди тази седмица"
+      },
+      "next_episode_title": {
+        "name": "Следващо аниме в ефир"
+      },
+      "next_episode_time": {
+        "name": "Време на следващия епизод"
+      },
+      "watching_count": {
+        "name": "В момента гледам"
+      },
+      "manga_reading_count": {
+        "name": "В момента чета"
+      },
+      "total_anime_watched": {
+        "name": "Общо гледани аниме"
+      },
+      "total_episodes_watched": {
+        "name": "Общо гледани епизоди"
+      },
+      "total_hours_watched": {
+        "name": "Общо часове гледане"
+      },
+      "anime_mean_score": {
+        "name": "Средна оценка на аниме"
+      },
+      "manga_mean_score": {
+        "name": "Средна оценка на манга"
+      },
+      "chapters_read": {
+        "name": "Прочетени глави"
+      },
+      "top_genre": {
+        "name": "Любим жанр"
+      }
     },
     "calendar": {
-      "airing_calendar": { "name": "Програма за излъчване" },
-      "season_calendar": { "name": "Сезонно аниме" },
-      "watchlist_calendar": { "name": "Списък за гледане" },
-      "manga_calendar": { "name": "Списък за четене на манга" }
+      "airing_calendar": {
+        "name": "Програма за излъчване"
+      },
+      "season_calendar": {
+        "name": "Сезонно аниме"
+      },
+      "watchlist_calendar": {
+        "name": "Списък за гледане"
+      },
+      "manga_calendar": {
+        "name": "Списък за четене на манга"
+      }
     }
   }
 }

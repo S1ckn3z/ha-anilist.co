@@ -65,55 +65,89 @@
     },
     "watchlist_status": {
       "options": {
-        "CURRENT": "En cours de visionnage / lecture",
-        "PLANNING": "Planifié",
-        "COMPLETED": "Terminé",
-        "DROPPED": "Abandonné",
-        "PAUSED": "En pause",
-        "REPEATING": "En revisionnage / relecture"
+        "current": "En cours de visionnage / lecture",
+        "planning": "Planifié",
+        "completed": "Terminé",
+        "dropped": "Abandonné",
+        "paused": "En pause",
+        "repeating": "En revisionnage / relecture"
       }
     },
     "media_format": {
       "options": {
-        "TV": "TV",
-        "TV_SHORT": "TV Court",
-        "MOVIE": "Film",
-        "SPECIAL": "Spécial",
-        "OVA": "OVA",
-        "ONA": "ONA",
-        "MUSIC": "Musique"
+        "tv": "TV",
+        "tv_short": "TV Court",
+        "movie": "Film",
+        "special": "Spécial",
+        "ova": "OVA",
+        "ona": "ONA",
+        "music": "Musique"
       }
     },
     "score_format": {
       "options": {
-        "POINT_10": "1–10 (ex. 7.5)",
-        "POINT_100": "1–100 (ex. 75)",
-        "POINT_5": "1–5 Étoiles",
-        "SMILEY": "Émoticône (😊 😐 😞)"
+        "point_10": "1–10 (ex. 7.5)",
+        "point_100": "1–100 (ex. 75)",
+        "point_5": "1–5 Étoiles",
+        "smiley": "Émoticône (😊 😐 😞)"
       }
     }
   },
   "entity": {
     "sensor": {
-      "airing_today": { "name": "Diffusé aujourd'hui" },
-      "episodes_this_week": { "name": "Épisodes cette semaine" },
-      "next_episode_title": { "name": "Prochain anime diffusé" },
-      "next_episode_time": { "name": "Heure du prochain épisode" },
-      "watching_count": { "name": "En cours de visionnage" },
-      "manga_reading_count": { "name": "En cours de lecture" },
-      "total_anime_watched": { "name": "Total d'anime regardés" },
-      "total_episodes_watched": { "name": "Total d'épisodes regardés" },
-      "total_hours_watched": { "name": "Total d'heures regardées" },
-      "anime_mean_score": { "name": "Note moyenne anime" },
-      "manga_mean_score": { "name": "Note moyenne manga" },
-      "chapters_read": { "name": "Chapitres lus" },
-      "top_genre": { "name": "Genre favori" }
+      "airing_today": {
+        "name": "Diffusé aujourd'hui"
+      },
+      "episodes_this_week": {
+        "name": "Épisodes cette semaine"
+      },
+      "next_episode_title": {
+        "name": "Prochain anime diffusé"
+      },
+      "next_episode_time": {
+        "name": "Heure du prochain épisode"
+      },
+      "watching_count": {
+        "name": "En cours de visionnage"
+      },
+      "manga_reading_count": {
+        "name": "En cours de lecture"
+      },
+      "total_anime_watched": {
+        "name": "Total d'anime regardés"
+      },
+      "total_episodes_watched": {
+        "name": "Total d'épisodes regardés"
+      },
+      "total_hours_watched": {
+        "name": "Total d'heures regardées"
+      },
+      "anime_mean_score": {
+        "name": "Note moyenne anime"
+      },
+      "manga_mean_score": {
+        "name": "Note moyenne manga"
+      },
+      "chapters_read": {
+        "name": "Chapitres lus"
+      },
+      "top_genre": {
+        "name": "Genre favori"
+      }
     },
     "calendar": {
-      "airing_calendar": { "name": "Programme de diffusion" },
-      "season_calendar": { "name": "Anime de saison" },
-      "watchlist_calendar": { "name": "Liste de suivi" },
-      "manga_calendar": { "name": "Liste de lecture manga" }
+      "airing_calendar": {
+        "name": "Programme de diffusion"
+      },
+      "season_calendar": {
+        "name": "Anime de saison"
+      },
+      "watchlist_calendar": {
+        "name": "Liste de suivi"
+      },
+      "manga_calendar": {
+        "name": "Liste de lecture manga"
+      }
     }
   }
 }

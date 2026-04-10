@@ -65,55 +65,89 @@
     },
     "watchlist_status": {
       "options": {
-        "CURRENT": "Aktuálne sledujem / čítam",
-        "PLANNING": "Plánované",
-        "COMPLETED": "Dokončené",
-        "DROPPED": "Zanechané",
-        "PAUSED": "Pozastavené",
-        "REPEATING": "Znovu sledujem / čítam"
+        "current": "Aktuálne sledujem / čítam",
+        "planning": "Plánované",
+        "completed": "Dokončené",
+        "dropped": "Zanechané",
+        "paused": "Pozastavené",
+        "repeating": "Znovu sledujem / čítam"
       }
     },
     "media_format": {
       "options": {
-        "TV": "TV",
-        "TV_SHORT": "TV krátke",
-        "MOVIE": "Film",
-        "SPECIAL": "Špeciál",
-        "OVA": "OVA",
-        "ONA": "ONA",
-        "MUSIC": "Hudba"
+        "tv": "TV",
+        "tv_short": "TV krátke",
+        "movie": "Film",
+        "special": "Špeciál",
+        "ova": "OVA",
+        "ona": "ONA",
+        "music": "Hudba"
       }
     },
     "score_format": {
       "options": {
-        "POINT_10": "1–10 (napr. 7.5)",
-        "POINT_100": "1–100 (napr. 75)",
-        "POINT_5": "1–5 Hviezd",
-        "SMILEY": "Smajlík (😊 😐 😞)"
+        "point_10": "1–10 (napr. 7.5)",
+        "point_100": "1–100 (napr. 75)",
+        "point_5": "1–5 Hviezd",
+        "smiley": "Smajlík (😊 😐 😞)"
       }
     }
   },
   "entity": {
     "sensor": {
-      "airing_today": { "name": "Vysiela sa dnes" },
-      "episodes_this_week": { "name": "Epizódy tento týždeň" },
-      "next_episode_title": { "name": "Ďalšie vysielané anime" },
-      "next_episode_time": { "name": "Čas ďalšej epizódy" },
-      "watching_count": { "name": "Aktuálne sledujem" },
-      "manga_reading_count": { "name": "Aktuálne čítam" },
-      "total_anime_watched": { "name": "Celkom vzhliadnutých anime" },
-      "total_episodes_watched": { "name": "Celkom vzhliadnutých epizód" },
-      "total_hours_watched": { "name": "Celkom hodín sledovania" },
-      "anime_mean_score": { "name": "Priemerné hodnotenie anime" },
-      "manga_mean_score": { "name": "Priemerné hodnotenie mangy" },
-      "chapters_read": { "name": "Prečítané kapitoly" },
-      "top_genre": { "name": "Obľúbený žáner" }
+      "airing_today": {
+        "name": "Vysiela sa dnes"
+      },
+      "episodes_this_week": {
+        "name": "Epizódy tento týždeň"
+      },
+      "next_episode_title": {
+        "name": "Ďalšie vysielané anime"
+      },
+      "next_episode_time": {
+        "name": "Čas ďalšej epizódy"
+      },
+      "watching_count": {
+        "name": "Aktuálne sledujem"
+      },
+      "manga_reading_count": {
+        "name": "Aktuálne čítam"
+      },
+      "total_anime_watched": {
+        "name": "Celkom vzhliadnutých anime"
+      },
+      "total_episodes_watched": {
+        "name": "Celkom vzhliadnutých epizód"
+      },
+      "total_hours_watched": {
+        "name": "Celkom hodín sledovania"
+      },
+      "anime_mean_score": {
+        "name": "Priemerné hodnotenie anime"
+      },
+      "manga_mean_score": {
+        "name": "Priemerné hodnotenie mangy"
+      },
+      "chapters_read": {
+        "name": "Prečítané kapitoly"
+      },
+      "top_genre": {
+        "name": "Obľúbený žáner"
+      }
     },
     "calendar": {
-      "airing_calendar": { "name": "Vysielací plán" },
-      "season_calendar": { "name": "Sezónne anime" },
-      "watchlist_calendar": { "name": "Zoznam sledovania" },
-      "manga_calendar": { "name": "Zoznam čítania mangy" }
+      "airing_calendar": {
+        "name": "Vysielací plán"
+      },
+      "season_calendar": {
+        "name": "Sezónne anime"
+      },
+      "watchlist_calendar": {
+        "name": "Zoznam sledovania"
+      },
+      "manga_calendar": {
+        "name": "Zoznam čítania mangy"
+      }
     }
   }
 }
