@@ -1,0 +1,119 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "AniList beállítás",
+        "menu_options": {
+          "oauth": "Bejelentkezés AniList-fiókkal (OAuth2)",
+          "public_only": "Csak nyilvános adatok (fiók nem szükséges)"
+        }
+      },
+      "reauth_confirm": {
+        "title": "AniList újrahitelesítés",
+        "description": "Az AniList munkameneted lejárt. Kattints a Küldés gombra az újbóli bejelentkezéshez."
+      }
+    },
+    "error": {
+      "invalid_auth": "Érvénytelen hozzáférési token. Ellenőrizd és próbáld újra.",
+      "cannot_connect": "Nem sikerült csatlakozni az AniListhez. Próbáld újra.",
+      "unknown": "Váratlan hiba. Ellenőrizd a naplókat."
+    },
+    "abort": {
+      "already_configured": "Ez az AniList-fiók már konfigurálva van.",
+      "invalid_auth": "A hitelesítés sikertelen — a token nem ellenőrizhető.",
+      "cannot_connect": "Nem sikerült csatlakozni az AniListhez a beállítás során.",
+      "account_mismatch": "Az újrahitelesített fiók nem egyezik az eredeti AniList-fiókkal."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "AniList beállítások",
+        "data": {
+          "update_interval": "Frissítési időköz (perc)",
+          "title_language": "Anime címének nyelve",
+          "include_adult": "Felnőtt tartalom megjelenítése",
+          "watchlist_statuses": "Anime figyelőlista állapotok a naptárban",
+          "show_season_calendar": "Jelenlegi és következő szezon naptár engedélyezése",
+          "show_airing_calendar": "Adási ütemterv naptár engedélyezése",
+          "airing_window_days": "Adási ütemterv előretekintés (napok)",
+          "media_formats": "Csak ezeket az anime formátumokat mutasd (üres = összes)",
+          "score_format": "Pontszám formátum",
+          "manga_statuses": "Manga lista állapotok a naptárban",
+          "excluded_genres": "Kizárt műfajok",
+          "calendar_reminder_offset": "Naptár emlékeztető előretekintés (0 = nincs emlékeztető)"
+        },
+        "data_description": {
+          "update_interval": "Milyen gyakran kérjen le új adatokat az AniListből (5–60 perc)",
+          "watchlist_statuses": "Csak az ilyen állapotú anime jelenik meg a figyelőlista naptárban",
+          "airing_window_days": "Hány napra előre mutatja az adási naptár (1–14)",
+          "media_formats": "Hagyd üresen az összes formátum megjelenítéséhez (TV, Film, OVA stb.)",
+          "manga_statuses": "Csak az ilyen állapotú manga jelenik meg a manga naptárban",
+          "excluded_genres": "Az ilyen műfajú anime el lesz rejtve a szezonadatokból (pl. Hentai, Ecchi)",
+          "calendar_reminder_offset": "Perccel az epizód adása előtt naptár emlékeztető aktiválásához"
+        }
+      }
+    }
+  },
+  "selector": {
+    "title_language": {
+      "options": {
+        "romaji": "Romaji",
+        "english": "Angol",
+        "native": "Eredeti"
+      }
+    },
+    "watchlist_status": {
+      "options": {
+        "CURRENT": "Jelenleg nézem / olvasom",
+        "PLANNING": "Tervezett",
+        "COMPLETED": "Befejezett",
+        "DROPPED": "Félbehagyott",
+        "PAUSED": "Szüneteltetve",
+        "REPEATING": "Újranézem / Újraolvasom"
+      }
+    },
+    "media_format": {
+      "options": {
+        "TV": "TV",
+        "TV_SHORT": "TV rövid",
+        "MOVIE": "Film",
+        "SPECIAL": "Különkiadás",
+        "OVA": "OVA",
+        "ONA": "ONA",
+        "MUSIC": "Zene"
+      }
+    },
+    "score_format": {
+      "options": {
+        "POINT_10": "1–10 (pl. 7.5)",
+        "POINT_100": "1–100 (pl. 75)",
+        "POINT_5": "1–5 Csillag",
+        "SMILEY": "Hangulatjel (😊 😐 😞)"
+      }
+    }
+  },
+  "entity": {
+    "sensor": {
+      "airing_today": { "name": "Ma adásban" },
+      "episodes_this_week": { "name": "Epizódok ezen a héten" },
+      "next_episode_title": { "name": "Következő adásban lévő anime" },
+      "next_episode_time": { "name": "Következő epizód időpontja" },
+      "watching_count": { "name": "Jelenleg nézem" },
+      "manga_reading_count": { "name": "Jelenleg olvasom" },
+      "total_anime_watched": { "name": "Összes megnézett anime" },
+      "total_episodes_watched": { "name": "Összes megnézett epizód" },
+      "total_hours_watched": { "name": "Összes nézett óra" },
+      "anime_mean_score": { "name": "Anime átlagpontszám" },
+      "manga_mean_score": { "name": "Manga átlagpontszám" },
+      "chapters_read": { "name": "Olvasott fejezetek" },
+      "top_genre": { "name": "Kedvenc műfaj" }
+    },
+    "calendar": {
+      "airing_calendar": { "name": "Adási ütemterv" },
+      "season_calendar": { "name": "Szezon anime" },
+      "watchlist_calendar": { "name": "Figyelőlista" },
+      "manga_calendar": { "name": "Manga olvasólista" }
+    }
+  }
+}

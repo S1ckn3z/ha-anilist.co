@@ -1,0 +1,119 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Configurare AniList",
+        "menu_options": {
+          "oauth": "Autentificare cu cont AniList (OAuth2)",
+          "public_only": "Doar date publice (fără cont necesar)"
+        }
+      },
+      "reauth_confirm": {
+        "title": "Reautentificare AniList",
+        "description": "Sesiunea ta AniList a expirat. Apasă Trimite pentru a te autentifica din nou."
+      }
+    },
+    "error": {
+      "invalid_auth": "Token de acces invalid. Verifică și încearcă din nou.",
+      "cannot_connect": "Nu se poate conecta la AniList. Încearcă din nou.",
+      "unknown": "Eroare neașteptată. Verifică jurnalele."
+    },
+    "abort": {
+      "already_configured": "Acest cont AniList este deja configurat.",
+      "invalid_auth": "Autentificarea a eșuat — tokenul nu a putut fi validat.",
+      "cannot_connect": "Nu se poate conecta la AniList în timpul configurării.",
+      "account_mismatch": "Contul reautentificat nu corespunde contului AniList original."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Opțiuni AniList",
+        "data": {
+          "update_interval": "Interval de actualizare (minute)",
+          "title_language": "Limba titlului anime",
+          "include_adult": "Include conținut pentru adulți",
+          "watchlist_statuses": "Statusuri din lista de vizionare anime în calendar",
+          "show_season_calendar": "Activează calendarul sezonului curent și următor",
+          "show_airing_calendar": "Activează calendarul programului de difuzare",
+          "airing_window_days": "Fereastră de anticipare a difuzării (zile)",
+          "media_formats": "Afișează doar aceste formate anime (gol = toate)",
+          "score_format": "Format de scor",
+          "manga_statuses": "Statusuri din lista de manga în calendar",
+          "excluded_genres": "Genuri excluse",
+          "calendar_reminder_offset": "Decalaj memento calendar (0 = fără memento)"
+        },
+        "data_description": {
+          "update_interval": "Cât de des se preiau date noi de la AniList (5–60 minute)",
+          "watchlist_statuses": "Doar anime cu aceste statusuri apar în calendarul listei de vizionare",
+          "airing_window_days": "Câte zile înainte arată calendarul de difuzare (1–14)",
+          "media_formats": "Lasă gol pentru a include toate formatele (TV, Film, OVA etc.)",
+          "manga_statuses": "Doar manga cu aceste statusuri apar în calendarul manga",
+          "excluded_genres": "Anime cu oricare dintre aceste genuri vor fi ascunse din datele sezoniere (de ex. Hentai, Ecchi)",
+          "calendar_reminder_offset": "Minute înainte de difuzarea unui episod pentru a declanșa un memento din calendar"
+        }
+      }
+    }
+  },
+  "selector": {
+    "title_language": {
+      "options": {
+        "romaji": "Romaji",
+        "english": "Engleză",
+        "native": "Nativ"
+      }
+    },
+    "watchlist_status": {
+      "options": {
+        "CURRENT": "Vizionez / Citesc în prezent",
+        "PLANNING": "Planificat",
+        "COMPLETED": "Finalizat",
+        "DROPPED": "Abandonat",
+        "PAUSED": "În pauză",
+        "REPEATING": "Revizionez / Recitesc"
+      }
+    },
+    "media_format": {
+      "options": {
+        "TV": "TV",
+        "TV_SHORT": "TV Scurt",
+        "MOVIE": "Film",
+        "SPECIAL": "Special",
+        "OVA": "OVA",
+        "ONA": "ONA",
+        "MUSIC": "Muzică"
+      }
+    },
+    "score_format": {
+      "options": {
+        "POINT_10": "1–10 (de ex. 7.5)",
+        "POINT_100": "1–100 (de ex. 75)",
+        "POINT_5": "1–5 Stele",
+        "SMILEY": "Emoticon (😊 😐 😞)"
+      }
+    }
+  },
+  "entity": {
+    "sensor": {
+      "airing_today": { "name": "Se difuzează azi" },
+      "episodes_this_week": { "name": "Episoade săptămâna aceasta" },
+      "next_episode_title": { "name": "Următorul anime difuzat" },
+      "next_episode_time": { "name": "Ora următorului episod" },
+      "watching_count": { "name": "Vizionez în prezent" },
+      "manga_reading_count": { "name": "Citesc în prezent" },
+      "total_anime_watched": { "name": "Total anime vizionate" },
+      "total_episodes_watched": { "name": "Total episoade vizionate" },
+      "total_hours_watched": { "name": "Total ore vizionate" },
+      "anime_mean_score": { "name": "Scor mediu anime" },
+      "manga_mean_score": { "name": "Scor mediu manga" },
+      "chapters_read": { "name": "Capitole citite" },
+      "top_genre": { "name": "Gen favorit" }
+    },
+    "calendar": {
+      "airing_calendar": { "name": "Program de difuzare" },
+      "season_calendar": { "name": "Anime de sezon" },
+      "watchlist_calendar": { "name": "Lista de vizionare" },
+      "manga_calendar": { "name": "Lista de lectură manga" }
+    }
+  }
+}

@@ -1,0 +1,119 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Konfiguracja AniList",
+        "menu_options": {
+          "oauth": "Zaloguj się kontem AniList (OAuth2)",
+          "public_only": "Tylko dane publiczne (konto nie jest wymagane)"
+        }
+      },
+      "reauth_confirm": {
+        "title": "Ponowna autoryzacja AniList",
+        "description": "Twoja sesja AniList wygasła. Kliknij Wyślij, aby zalogować się ponownie."
+      }
+    },
+    "error": {
+      "invalid_auth": "Nieprawidłowy token dostępu. Sprawdź i spróbuj ponownie.",
+      "cannot_connect": "Nie można połączyć się z AniList. Spróbuj ponownie.",
+      "unknown": "Nieoczekiwany błąd. Sprawdź logi."
+    },
+    "abort": {
+      "already_configured": "To konto AniList jest już skonfigurowane.",
+      "invalid_auth": "Uwierzytelnianie nie powiodło się — token nie mógł zostać zweryfikowany.",
+      "cannot_connect": "Nie można połączyć się z AniList podczas konfiguracji.",
+      "account_mismatch": "Ponownie uwierzytelnione konto nie pasuje do oryginalnego konta AniList."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Opcje AniList",
+        "data": {
+          "update_interval": "Interwał aktualizacji (minuty)",
+          "title_language": "Język tytułu anime",
+          "include_adult": "Uwzględnij treści dla dorosłych",
+          "watchlist_statuses": "Statusy listy anime do wyświetlenia w kalendarzu",
+          "show_season_calendar": "Włącz kalendarz bieżącego i następnego sezonu",
+          "show_airing_calendar": "Włącz kalendarz emisji",
+          "airing_window_days": "Wyprzedzenie harmonogramu emisji (dni)",
+          "media_formats": "Pokaż tylko te formaty anime (puste = wszystkie)",
+          "score_format": "Format oceny",
+          "manga_statuses": "Statusy listy mangi do wyświetlenia w kalendarzu",
+          "excluded_genres": "Wykluczone gatunki",
+          "calendar_reminder_offset": "Wyprzedzenie przypomnienia kalendarza (0 = brak przypomnienia)"
+        },
+        "data_description": {
+          "update_interval": "Jak często pobierać nowe dane z AniList (5–60 minut)",
+          "watchlist_statuses": "Tylko anime z tymi statusami pojawiają się w kalendarzu listy do obejrzenia",
+          "airing_window_days": "Na ile dni do przodu patrzy kalendarz emisji (1–14)",
+          "media_formats": "Pozostaw puste, aby uwzględnić wszystkie formaty (TV, Film, OVA itp.)",
+          "manga_statuses": "Tylko manga z tymi statusami pojawiają się w kalendarzu mangi",
+          "excluded_genres": "Anime z którymkolwiek z tych gatunków zostaną ukryte z danych sezonowych (np. Hentai, Ecchi)",
+          "calendar_reminder_offset": "Minuty przed emisją odcinka, aby uruchomić przypomnienie kalendarza"
+        }
+      }
+    }
+  },
+  "selector": {
+    "title_language": {
+      "options": {
+        "romaji": "Romaji",
+        "english": "Angielski",
+        "native": "Rodzimy"
+      }
+    },
+    "watchlist_status": {
+      "options": {
+        "CURRENT": "Aktualnie oglądam / czytam",
+        "PLANNING": "Planowane",
+        "COMPLETED": "Ukończone",
+        "DROPPED": "Porzucone",
+        "PAUSED": "Wstrzymane",
+        "REPEATING": "Ponowne oglądanie / czytanie"
+      }
+    },
+    "media_format": {
+      "options": {
+        "TV": "TV",
+        "TV_SHORT": "TV Krótki",
+        "MOVIE": "Film",
+        "SPECIAL": "Specjalny",
+        "OVA": "OVA",
+        "ONA": "ONA",
+        "MUSIC": "Muzyka"
+      }
+    },
+    "score_format": {
+      "options": {
+        "POINT_10": "1–10 (np. 7.5)",
+        "POINT_100": "1–100 (np. 75)",
+        "POINT_5": "1–5 Gwiazdek",
+        "SMILEY": "Emotikon (😊 😐 😞)"
+      }
+    }
+  },
+  "entity": {
+    "sensor": {
+      "airing_today": { "name": "Emitowane dzisiaj" },
+      "episodes_this_week": { "name": "Odcinki w tym tygodniu" },
+      "next_episode_title": { "name": "Następne emitowane anime" },
+      "next_episode_time": { "name": "Czas następnego odcinka" },
+      "watching_count": { "name": "Aktualnie oglądam" },
+      "manga_reading_count": { "name": "Aktualnie czytam" },
+      "total_anime_watched": { "name": "Łącznie obejrzanych anime" },
+      "total_episodes_watched": { "name": "Łącznie obejrzanych odcinków" },
+      "total_hours_watched": { "name": "Łącznie godzin oglądania" },
+      "anime_mean_score": { "name": "Średnia ocena anime" },
+      "manga_mean_score": { "name": "Średnia ocena mangi" },
+      "chapters_read": { "name": "Przeczytane rozdziały" },
+      "top_genre": { "name": "Ulubiony gatunek" }
+    },
+    "calendar": {
+      "airing_calendar": { "name": "Harmonogram emisji" },
+      "season_calendar": { "name": "Anime sezonu" },
+      "watchlist_calendar": { "name": "Lista do obejrzenia" },
+      "manga_calendar": { "name": "Lista do przeczytania mangi" }
+    }
+  }
+}

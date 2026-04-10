@@ -1,0 +1,119 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Настройка на AniList",
+        "menu_options": {
+          "oauth": "Вход с акаунт в AniList (OAuth2)",
+          "public_only": "Само публични данни (не е необходим акаунт)"
+        }
+      },
+      "reauth_confirm": {
+        "title": "Повторно удостоверяване на AniList",
+        "description": "Вашата сесия в AniList е изтекла. Натиснете Изпрати, за да влезете отново."
+      }
+    },
+    "error": {
+      "invalid_auth": "Невалиден токен за достъп. Проверете и опитайте отново.",
+      "cannot_connect": "Неуспешно свързване с AniList. Опитайте отново.",
+      "unknown": "Неочаквана грешка. Проверете логовете."
+    },
+    "abort": {
+      "already_configured": "Този акаунт в AniList вече е конфигуриран.",
+      "invalid_auth": "Удостоверяването е неуспешно — токенът не може да бъде валидиран.",
+      "cannot_connect": "Неуспешно свързване с AniList по време на настройката.",
+      "account_mismatch": "Повторно удостовереният акаунт не съвпада с оригиналния акаунт в AniList."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Опции на AniList",
+        "data": {
+          "update_interval": "Интервал на обновяване (минути)",
+          "title_language": "Език на заглавието на аниме",
+          "include_adult": "Включване на съдържание за възрастни",
+          "watchlist_statuses": "Статуси от списъка за гледане на аниме в календара",
+          "show_season_calendar": "Активиране на календар за текущ и следващ сезон",
+          "show_airing_calendar": "Активиране на календар за програмата на излъчване",
+          "airing_window_days": "Предварителен преглед на програмата (дни)",
+          "media_formats": "Показване само на тези формати аниме (празно = всички)",
+          "score_format": "Формат на оценката",
+          "manga_statuses": "Статуси от списъка на манга в календара",
+          "excluded_genres": "Изключени жанрове",
+          "calendar_reminder_offset": "Изместване на напомнянето в календара (0 = без напомняне)"
+        },
+        "data_description": {
+          "update_interval": "Колко често да се извличат нови данни от AniList (5–60 минути)",
+          "watchlist_statuses": "Само аниме с тези статуси се показват в календара на списъка за гледане",
+          "airing_window_days": "Колко дни напред показва календарът за излъчване (1–14)",
+          "media_formats": "Оставете празно за включване на всички формати (ТВ, Филм, OVA и др.)",
+          "manga_statuses": "Само манга с тези статуси се показват в календара на манга",
+          "excluded_genres": "Аниме с някой от тези жанрове ще бъдат скрити от сезонните данни (напр. Hentai, Ecchi)",
+          "calendar_reminder_offset": "Минути преди излъчване на епизод за задействане на напомняне от календара"
+        }
+      }
+    }
+  },
+  "selector": {
+    "title_language": {
+      "options": {
+        "romaji": "Ромаджи",
+        "english": "Английски",
+        "native": "Роден"
+      }
+    },
+    "watchlist_status": {
+      "options": {
+        "CURRENT": "В момента гледам / чета",
+        "PLANNING": "Планирано",
+        "COMPLETED": "Завършено",
+        "DROPPED": "Изоставено",
+        "PAUSED": "На пауза",
+        "REPEATING": "Преглеждам / Препрочитам"
+      }
+    },
+    "media_format": {
+      "options": {
+        "TV": "ТВ",
+        "TV_SHORT": "ТВ Кратко",
+        "MOVIE": "Филм",
+        "SPECIAL": "Специален",
+        "OVA": "OVA",
+        "ONA": "ONA",
+        "MUSIC": "Музика"
+      }
+    },
+    "score_format": {
+      "options": {
+        "POINT_10": "1–10 (напр. 7.5)",
+        "POINT_100": "1–100 (напр. 75)",
+        "POINT_5": "1–5 Звезди",
+        "SMILEY": "Усмивка (😊 😐 😞)"
+      }
+    }
+  },
+  "entity": {
+    "sensor": {
+      "airing_today": { "name": "Излъчва се днес" },
+      "episodes_this_week": { "name": "Епизоди тази седмица" },
+      "next_episode_title": { "name": "Следващо аниме в ефир" },
+      "next_episode_time": { "name": "Време на следващия епизод" },
+      "watching_count": { "name": "В момента гледам" },
+      "manga_reading_count": { "name": "В момента чета" },
+      "total_anime_watched": { "name": "Общо гледани аниме" },
+      "total_episodes_watched": { "name": "Общо гледани епизоди" },
+      "total_hours_watched": { "name": "Общо часове гледане" },
+      "anime_mean_score": { "name": "Средна оценка на аниме" },
+      "manga_mean_score": { "name": "Средна оценка на манга" },
+      "chapters_read": { "name": "Прочетени глави" },
+      "top_genre": { "name": "Любим жанр" }
+    },
+    "calendar": {
+      "airing_calendar": { "name": "Програма за излъчване" },
+      "season_calendar": { "name": "Сезонно аниме" },
+      "watchlist_calendar": { "name": "Списък за гледане" },
+      "manga_calendar": { "name": "Списък за четене на манга" }
+    }
+  }
+}

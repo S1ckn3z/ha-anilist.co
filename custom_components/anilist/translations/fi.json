@@ -1,0 +1,119 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "AniList-asetukset",
+        "menu_options": {
+          "oauth": "Kirjaudu AniList-tilillä (OAuth2)",
+          "public_only": "Vain julkiset tiedot (tiliä ei tarvita)"
+        }
+      },
+      "reauth_confirm": {
+        "title": "Todenna AniList uudelleen",
+        "description": "AniList-istuntosi on vanhentunut. Napsauta Lähetä kirjautuaksesi uudelleen."
+      }
+    },
+    "error": {
+      "invalid_auth": "Virheellinen käyttöoikeustunnus. Tarkista ja yritä uudelleen.",
+      "cannot_connect": "AniListiin ei saada yhteyttä. Yritä uudelleen.",
+      "unknown": "Odottamaton virhe. Tarkista lokit."
+    },
+    "abort": {
+      "already_configured": "Tämä AniList-tili on jo määritetty.",
+      "invalid_auth": "Todennus epäonnistui — tunnusta ei voitu vahvistaa.",
+      "cannot_connect": "AniListiin ei saada yhteyttä asennuksen aikana.",
+      "account_mismatch": "Uudelleen todennettu tili ei vastaa alkuperäistä AniList-tiliä."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "AniList-valinnat",
+        "data": {
+          "update_interval": "Päivitysväli (minuuttia)",
+          "title_language": "Animen otsikon kieli",
+          "include_adult": "Sisällytä aikuissisältö",
+          "watchlist_statuses": "Anime-seurantalistan tilat kalenterissa",
+          "show_season_calendar": "Ota käyttöön nykyisen ja seuraavan kauden kalenteri",
+          "show_airing_calendar": "Ota käyttöön lähetysaikataululkalenteri",
+          "airing_window_days": "Lähetysaikataulun ennakkoikkuna (päiviä)",
+          "media_formats": "Näytä vain nämä anime-formaatit (tyhjä = kaikki)",
+          "score_format": "Pisteytysmuoto",
+          "manga_statuses": "Manga-listan tilat kalenterissa",
+          "excluded_genres": "Poissuljetut lajityypit",
+          "calendar_reminder_offset": "Kalenterimuistutuksen aikaväli (0 = ei muistutusta)"
+        },
+        "data_description": {
+          "update_interval": "Kuinka usein uudet tiedot haetaan AniLististä (5–60 minuuttia)",
+          "watchlist_statuses": "Vain näillä tiloilla olevat animet näkyvät seurantalistakalenterissa",
+          "airing_window_days": "Kuinka monta päivää eteenpäin lähetyskalenteri näyttää (1–14)",
+          "media_formats": "Jätä tyhjäksi sisällyttääksesi kaikki formaatit (TV, Elokuva, OVA jne.)",
+          "manga_statuses": "Vain näillä tiloilla olevat mangat näkyvät mangakalenterissa",
+          "excluded_genres": "Animet, joilla on jokin näistä lajityypeistä, piilotetaan kausidata-aineistosta (esim. Hentai, Ecchi)",
+          "calendar_reminder_offset": "Minuuttia ennen jakson lähetystä kalenterimuistutuksen laukaisemiseksi"
+        }
+      }
+    }
+  },
+  "selector": {
+    "title_language": {
+      "options": {
+        "romaji": "Romaji",
+        "english": "Englanti",
+        "native": "Alkuperäinen"
+      }
+    },
+    "watchlist_status": {
+      "options": {
+        "CURRENT": "Katsellaan / Luetaan parhaillaan",
+        "PLANNING": "Suunniteltu",
+        "COMPLETED": "Valmis",
+        "DROPPED": "Keskeytetty",
+        "PAUSED": "Tauolla",
+        "REPEATING": "Uudelleenkatselu / Uudelleenluku"
+      }
+    },
+    "media_format": {
+      "options": {
+        "TV": "TV",
+        "TV_SHORT": "TV lyhyt",
+        "MOVIE": "Elokuva",
+        "SPECIAL": "Erikoisjakso",
+        "OVA": "OVA",
+        "ONA": "ONA",
+        "MUSIC": "Musiikki"
+      }
+    },
+    "score_format": {
+      "options": {
+        "POINT_10": "1–10 (esim. 7.5)",
+        "POINT_100": "1–100 (esim. 75)",
+        "POINT_5": "1–5 Tähteä",
+        "SMILEY": "Hymiö (😊 😐 😞)"
+      }
+    }
+  },
+  "entity": {
+    "sensor": {
+      "airing_today": { "name": "Lähetetään tänään" },
+      "episodes_this_week": { "name": "Jaksot tällä viikolla" },
+      "next_episode_title": { "name": "Seuraava lähetettävä anime" },
+      "next_episode_time": { "name": "Seuraavan jakson aika" },
+      "watching_count": { "name": "Katsellaan parhaillaan" },
+      "manga_reading_count": { "name": "Luetaan parhaillaan" },
+      "total_anime_watched": { "name": "Animea katsottu yhteensä" },
+      "total_episodes_watched": { "name": "Jaksoja katsottu yhteensä" },
+      "total_hours_watched": { "name": "Tunteja katsottu yhteensä" },
+      "anime_mean_score": { "name": "Animen keskiarvopisteet" },
+      "manga_mean_score": { "name": "Mangan keskiarvopisteet" },
+      "chapters_read": { "name": "Lukuja luettu" },
+      "top_genre": { "name": "Suosikkilajityyppi" }
+    },
+    "calendar": {
+      "airing_calendar": { "name": "Lähetysaikataulu" },
+      "season_calendar": { "name": "Kauden anime" },
+      "watchlist_calendar": { "name": "Seurantalista" },
+      "manga_calendar": { "name": "Mangan lukulista" }
+    }
+  }
+}

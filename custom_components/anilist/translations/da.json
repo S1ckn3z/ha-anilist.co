@@ -1,0 +1,119 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "AniList-opsætning",
+        "menu_options": {
+          "oauth": "Log ind med AniList-konto (OAuth2)",
+          "public_only": "Kun offentlige data (ingen konto påkrævet)"
+        }
+      },
+      "reauth_confirm": {
+        "title": "Genautentificer AniList",
+        "description": "Din AniList-session er udløbet. Klik på Send for at logge ind igen."
+      }
+    },
+    "error": {
+      "invalid_auth": "Ugyldig adgangstoken. Kontrollér og prøv igen.",
+      "cannot_connect": "Kan ikke oprette forbindelse til AniList. Prøv igen.",
+      "unknown": "Uventet fejl. Kontrollér logfilerne."
+    },
+    "abort": {
+      "already_configured": "Denne AniList-konto er allerede konfigureret.",
+      "invalid_auth": "Autentificering mislykkedes — tokenet kunne ikke valideres.",
+      "cannot_connect": "Kan ikke oprette forbindelse til AniList under opsætningen.",
+      "account_mismatch": "Den genautentificerede konto matcher ikke den oprindelige AniList-konto."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "AniList-indstillinger",
+        "data": {
+          "update_interval": "Opdateringsinterval (minutter)",
+          "title_language": "Sprog for animetitel",
+          "include_adult": "Inkludér voksenindhold",
+          "watchlist_statuses": "Anime-følgelistestatusser i kalenderen",
+          "show_season_calendar": "Aktivér kalender for nuværende og næste sæson",
+          "show_airing_calendar": "Aktivér sendetidskalender",
+          "airing_window_days": "Sendetidskalender fremskue (dage)",
+          "media_formats": "Vis kun disse animeformater (tomt = alle)",
+          "score_format": "Bedømmelsesformat",
+          "manga_statuses": "Manga-listestatusser i kalenderen",
+          "excluded_genres": "Ekskluderede genrer",
+          "calendar_reminder_offset": "Kalenderpåmindelse forskydning (0 = ingen påmindelse)"
+        },
+        "data_description": {
+          "update_interval": "Hvor ofte nye data hentes fra AniList (5–60 minutter)",
+          "watchlist_statuses": "Kun anime med disse statusser vises i følgelistekalenderen",
+          "airing_window_days": "Hvor mange dage frem sendetidskalenderen viser (1–14)",
+          "media_formats": "Lad være tomt for at inkludere alle formater (TV, Film, OVA osv.)",
+          "manga_statuses": "Kun manga med disse statusser vises i mangakalenderen",
+          "excluded_genres": "Anime med nogen af disse genrer skjules fra sæsondata (f.eks. Hentai, Ecchi)",
+          "calendar_reminder_offset": "Minutter før en episode sendes for at udløse en kalenderpåmindelse"
+        }
+      }
+    }
+  },
+  "selector": {
+    "title_language": {
+      "options": {
+        "romaji": "Romaji",
+        "english": "Engelsk",
+        "native": "Oprindelig"
+      }
+    },
+    "watchlist_status": {
+      "options": {
+        "CURRENT": "Ser / Læser i øjeblikket",
+        "PLANNING": "Planlagt",
+        "COMPLETED": "Fuldført",
+        "DROPPED": "Droppet",
+        "PAUSED": "Sat på pause",
+        "REPEATING": "Genser / Genlæser"
+      }
+    },
+    "media_format": {
+      "options": {
+        "TV": "TV",
+        "TV_SHORT": "TV Kort",
+        "MOVIE": "Film",
+        "SPECIAL": "Speciel",
+        "OVA": "OVA",
+        "ONA": "ONA",
+        "MUSIC": "Musik"
+      }
+    },
+    "score_format": {
+      "options": {
+        "POINT_10": "1–10 (f.eks. 7.5)",
+        "POINT_100": "1–100 (f.eks. 75)",
+        "POINT_5": "1–5 Stjerner",
+        "SMILEY": "Smiley (😊 😐 😞)"
+      }
+    }
+  },
+  "entity": {
+    "sensor": {
+      "airing_today": { "name": "Sendes i dag" },
+      "episodes_this_week": { "name": "Episoder denne uge" },
+      "next_episode_title": { "name": "Næste anime der sendes" },
+      "next_episode_time": { "name": "Tidspunkt for næste episode" },
+      "watching_count": { "name": "Ser i øjeblikket" },
+      "manga_reading_count": { "name": "Læser i øjeblikket" },
+      "total_anime_watched": { "name": "Samlet anime set" },
+      "total_episodes_watched": { "name": "Samlet episoder set" },
+      "total_hours_watched": { "name": "Samlet timer set" },
+      "anime_mean_score": { "name": "Gennemsnitlig animebedømmelse" },
+      "manga_mean_score": { "name": "Gennemsnitlig mangabedømmelse" },
+      "chapters_read": { "name": "Kapitler læst" },
+      "top_genre": { "name": "Favoritgenre" }
+    },
+    "calendar": {
+      "airing_calendar": { "name": "Sendetidsplan" },
+      "season_calendar": { "name": "Sæsonanime" },
+      "watchlist_calendar": { "name": "Følgeliste" },
+      "manga_calendar": { "name": "Manga-læseliste" }
+    }
+  }
+}

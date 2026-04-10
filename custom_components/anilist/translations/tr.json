@@ -1,0 +1,119 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "AniList Kurulumu",
+        "menu_options": {
+          "oauth": "AniList hesabıyla giriş yap (OAuth2)",
+          "public_only": "Yalnızca herkese açık veriler (hesap gerekmez)"
+        }
+      },
+      "reauth_confirm": {
+        "title": "AniList Yeniden Kimlik Doğrulama",
+        "description": "AniList oturumunuz sona erdi. Tekrar giriş yapmak için Gönder'e tıklayın."
+      }
+    },
+    "error": {
+      "invalid_auth": "Geçersiz erişim belirteci. Kontrol edip tekrar deneyin.",
+      "cannot_connect": "AniList'e bağlanılamıyor. Lütfen tekrar deneyin.",
+      "unknown": "Beklenmeyen hata. Lütfen günlükleri kontrol edin."
+    },
+    "abort": {
+      "already_configured": "Bu AniList hesabı zaten yapılandırılmış.",
+      "invalid_auth": "Kimlik doğrulama başarısız — belirteç doğrulanamadı.",
+      "cannot_connect": "Kurulum sırasında AniList'e bağlanılamıyor.",
+      "account_mismatch": "Yeniden doğrulanan hesap, orijinal AniList hesabıyla eşleşmiyor."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "AniList Seçenekleri",
+        "data": {
+          "update_interval": "Güncelleme aralığı (dakika)",
+          "title_language": "Anime başlık dili",
+          "include_adult": "Yetişkin içeriği dahil et",
+          "watchlist_statuses": "Takvimde gösterilecek anime izleme listesi durumları",
+          "show_season_calendar": "Mevcut ve sonraki sezon takvimini etkinleştir",
+          "show_airing_calendar": "Yayın programı takvimini etkinleştir",
+          "airing_window_days": "Yayın programı ileriye bakış (gün)",
+          "media_formats": "Yalnızca bu anime formatlarını göster (boş = tümü)",
+          "score_format": "Puan formatı",
+          "manga_statuses": "Takvimde gösterilecek manga listesi durumları",
+          "excluded_genres": "Hariç tutulan türler",
+          "calendar_reminder_offset": "Takvim hatırlatma öncesi (0 = hatırlatma yok)"
+        },
+        "data_description": {
+          "update_interval": "AniList'ten ne sıklıkla yeni veri alınacağı (5–60 dakika)",
+          "watchlist_statuses": "Yalnızca bu durumlardaki animeler izleme listesi takviminde görünür",
+          "airing_window_days": "Yayın takviminin kaç gün ileriye baktığı (1–14)",
+          "media_formats": "Tüm formatları dahil etmek için boş bırakın (TV, Film, OVA vb.)",
+          "manga_statuses": "Yalnızca bu durumlardaki mangalar manga takviminde görünür",
+          "excluded_genres": "Bu türlerden herhangi birine sahip animeler sezon verilerinden gizlenecektir (ör. Hentai, Ecchi)",
+          "calendar_reminder_offset": "Bir bölüm yayınlanmadan önce takvim hatırlatması tetiklemek için dakika"
+        }
+      }
+    }
+  },
+  "selector": {
+    "title_language": {
+      "options": {
+        "romaji": "Romaji",
+        "english": "İngilizce",
+        "native": "Yerel"
+      }
+    },
+    "watchlist_status": {
+      "options": {
+        "CURRENT": "Şu anda izliyor / okuyor",
+        "PLANNING": "Planlanmış",
+        "COMPLETED": "Tamamlanmış",
+        "DROPPED": "Bırakılmış",
+        "PAUSED": "Duraklatılmış",
+        "REPEATING": "Yeniden izliyor / okuyor"
+      }
+    },
+    "media_format": {
+      "options": {
+        "TV": "TV",
+        "TV_SHORT": "TV Kısa",
+        "MOVIE": "Film",
+        "SPECIAL": "Özel",
+        "OVA": "OVA",
+        "ONA": "ONA",
+        "MUSIC": "Müzik"
+      }
+    },
+    "score_format": {
+      "options": {
+        "POINT_10": "1–10 (ör. 7.5)",
+        "POINT_100": "1–100 (ör. 75)",
+        "POINT_5": "1–5 Yıldız",
+        "SMILEY": "Gülen yüz (😊 😐 😞)"
+      }
+    }
+  },
+  "entity": {
+    "sensor": {
+      "airing_today": { "name": "Bugün yayında" },
+      "episodes_this_week": { "name": "Bu haftaki bölümler" },
+      "next_episode_title": { "name": "Sonraki yayınlanacak anime" },
+      "next_episode_time": { "name": "Sonraki bölüm zamanı" },
+      "watching_count": { "name": "Şu anda izleniyor" },
+      "manga_reading_count": { "name": "Şu anda okunuyor" },
+      "total_anime_watched": { "name": "Toplam izlenen anime" },
+      "total_episodes_watched": { "name": "Toplam izlenen bölüm" },
+      "total_hours_watched": { "name": "Toplam izlenen saat" },
+      "anime_mean_score": { "name": "Anime ortalama puanı" },
+      "manga_mean_score": { "name": "Manga ortalama puanı" },
+      "chapters_read": { "name": "Okunan bölümler" },
+      "top_genre": { "name": "En sevilen tür" }
+    },
+    "calendar": {
+      "airing_calendar": { "name": "Yayın programı" },
+      "season_calendar": { "name": "Sezon animesi" },
+      "watchlist_calendar": { "name": "İzleme listesi" },
+      "manga_calendar": { "name": "Manga okuma listesi" }
+    }
+  }
+}

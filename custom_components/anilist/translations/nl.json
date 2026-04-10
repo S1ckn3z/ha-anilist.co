@@ -1,0 +1,119 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "AniList instellen",
+        "menu_options": {
+          "oauth": "Inloggen met AniList-account (OAuth2)",
+          "public_only": "Alleen openbare gegevens (geen account vereist)"
+        }
+      },
+      "reauth_confirm": {
+        "title": "AniList opnieuw verifiëren",
+        "description": "Je AniList-sessie is verlopen. Klik op Verzenden om opnieuw in te loggen."
+      }
+    },
+    "error": {
+      "invalid_auth": "Ongeldig toegangstoken. Controleer en probeer het opnieuw.",
+      "cannot_connect": "Kan geen verbinding maken met AniList. Probeer het opnieuw.",
+      "unknown": "Onverwachte fout. Controleer de logboeken."
+    },
+    "abort": {
+      "already_configured": "Dit AniList-account is al geconfigureerd.",
+      "invalid_auth": "Verificatie mislukt — het token kon niet worden gevalideerd.",
+      "cannot_connect": "Kan geen verbinding maken met AniList tijdens de configuratie.",
+      "account_mismatch": "Het opnieuw geverifieerde account komt niet overeen met het oorspronkelijke AniList-account."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "AniList-opties",
+        "data": {
+          "update_interval": "Update-interval (minuten)",
+          "title_language": "Taal van de animetitel",
+          "include_adult": "Volwassen inhoud opnemen",
+          "watchlist_statuses": "Anime-volglijststatussen in de agenda",
+          "show_season_calendar": "Agenda voor huidig en volgend seizoen inschakelen",
+          "show_airing_calendar": "Uitzendschema-agenda inschakelen",
+          "airing_window_days": "Uitzendschema vooruitblik (dagen)",
+          "media_formats": "Alleen deze anime-formaten tonen (leeg = alle)",
+          "score_format": "Scoreformaat",
+          "manga_statuses": "Manga-lijststatussen in de agenda",
+          "excluded_genres": "Uitgesloten genres",
+          "calendar_reminder_offset": "Agendaherinnering offset (0 = geen herinnering)"
+        },
+        "data_description": {
+          "update_interval": "Hoe vaak nieuwe gegevens van AniList worden opgehaald (5–60 minuten)",
+          "watchlist_statuses": "Alleen anime met deze statussen verschijnen in de volglijstagenda",
+          "airing_window_days": "Hoeveel dagen vooruit de uitzendagenda kijkt (1–14)",
+          "media_formats": "Laat leeg om alle formaten op te nemen (TV, Film, OVA, enz.)",
+          "manga_statuses": "Alleen manga met deze statussen verschijnen in de manga-agenda",
+          "excluded_genres": "Anime met een van deze genres worden verborgen in seizoensgegevens (bijv. Hentai, Ecchi)",
+          "calendar_reminder_offset": "Minuten voor uitzending van een aflevering om een agendaherinnering te activeren"
+        }
+      }
+    }
+  },
+  "selector": {
+    "title_language": {
+      "options": {
+        "romaji": "Romaji",
+        "english": "Engels",
+        "native": "Oorspronkelijk"
+      }
+    },
+    "watchlist_status": {
+      "options": {
+        "CURRENT": "Momenteel aan het kijken / lezen",
+        "PLANNING": "Gepland",
+        "COMPLETED": "Voltooid",
+        "DROPPED": "Gestopt",
+        "PAUSED": "Gepauzeerd",
+        "REPEATING": "Opnieuw kijken / lezen"
+      }
+    },
+    "media_format": {
+      "options": {
+        "TV": "TV",
+        "TV_SHORT": "TV Kort",
+        "MOVIE": "Film",
+        "SPECIAL": "Speciaal",
+        "OVA": "OVA",
+        "ONA": "ONA",
+        "MUSIC": "Muziek"
+      }
+    },
+    "score_format": {
+      "options": {
+        "POINT_10": "1–10 (bijv. 7.5)",
+        "POINT_100": "1–100 (bijv. 75)",
+        "POINT_5": "1–5 Sterren",
+        "SMILEY": "Smiley (😊 😐 😞)"
+      }
+    }
+  },
+  "entity": {
+    "sensor": {
+      "airing_today": { "name": "Vandaag uitgezonden" },
+      "episodes_this_week": { "name": "Afleveringen deze week" },
+      "next_episode_title": { "name": "Volgende anime-uitzending" },
+      "next_episode_time": { "name": "Tijd volgende aflevering" },
+      "watching_count": { "name": "Momenteel aan het kijken" },
+      "manga_reading_count": { "name": "Momenteel aan het lezen" },
+      "total_anime_watched": { "name": "Totaal anime bekeken" },
+      "total_episodes_watched": { "name": "Totaal afleveringen bekeken" },
+      "total_hours_watched": { "name": "Totaal uren bekeken" },
+      "anime_mean_score": { "name": "Gemiddelde animescore" },
+      "manga_mean_score": { "name": "Gemiddelde mangascore" },
+      "chapters_read": { "name": "Hoofdstukken gelezen" },
+      "top_genre": { "name": "Favoriete genre" }
+    },
+    "calendar": {
+      "airing_calendar": { "name": "Uitzendschema" },
+      "season_calendar": { "name": "Seizoensanime" },
+      "watchlist_calendar": { "name": "Volglijst" },
+      "manga_calendar": { "name": "Manga-leeslijst" }
+    }
+  }
+}

@@ -1,0 +1,119 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "AniList-konfiguration",
+        "menu_options": {
+          "oauth": "Logga in med AniList-konto (OAuth2)",
+          "public_only": "Endast offentlig data (inget konto krävs)"
+        }
+      },
+      "reauth_confirm": {
+        "title": "Omautentisera AniList",
+        "description": "Din AniList-session har gått ut. Klicka på Skicka för att logga in igen."
+      }
+    },
+    "error": {
+      "invalid_auth": "Ogiltig åtkomsttoken. Kontrollera och försök igen.",
+      "cannot_connect": "Kan inte ansluta till AniList. Försök igen.",
+      "unknown": "Oväntat fel. Kontrollera loggarna."
+    },
+    "abort": {
+      "already_configured": "Detta AniList-konto är redan konfigurerat.",
+      "invalid_auth": "Autentiseringen misslyckades — token kunde inte valideras.",
+      "cannot_connect": "Kan inte ansluta till AniList under konfigurationen.",
+      "account_mismatch": "Det omautentiserade kontot matchar inte det ursprungliga AniList-kontot."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "AniList-alternativ",
+        "data": {
+          "update_interval": "Uppdateringsintervall (minuter)",
+          "title_language": "Språk för animetitel",
+          "include_adult": "Inkludera vuxeninnehåll",
+          "watchlist_statuses": "Statusar för anime-bevakningslista i kalendern",
+          "show_season_calendar": "Aktivera kalender för nuvarande och nästa säsong",
+          "show_airing_calendar": "Aktivera sändningsschemakalender",
+          "airing_window_days": "Sändningsschema framförhållning (dagar)",
+          "media_formats": "Visa bara dessa animeformat (tomt = alla)",
+          "score_format": "Betygsformat",
+          "manga_statuses": "Statusar för mangalista i kalendern",
+          "excluded_genres": "Exkluderade genrer",
+          "calendar_reminder_offset": "Kalenderpåminnelse förskjutning (0 = ingen påminnelse)"
+        },
+        "data_description": {
+          "update_interval": "Hur ofta ny data hämtas från AniList (5–60 minuter)",
+          "watchlist_statuses": "Bara anime med dessa statusar visas i bevakningslistekalendern",
+          "airing_window_days": "Hur många dagar framåt sändningskalendern visar (1–14)",
+          "media_formats": "Lämna tomt för att inkludera alla format (TV, Film, OVA, etc.)",
+          "manga_statuses": "Bara manga med dessa statusar visas i mangakalendern",
+          "excluded_genres": "Anime med någon av dessa genrer döljs från säsongsdata (t.ex. Hentai, Ecchi)",
+          "calendar_reminder_offset": "Minuter före ett avsnitt sänds för att utlösa en kalenderpåminnelse"
+        }
+      }
+    }
+  },
+  "selector": {
+    "title_language": {
+      "options": {
+        "romaji": "Romaji",
+        "english": "Engelska",
+        "native": "Ursprunglig"
+      }
+    },
+    "watchlist_status": {
+      "options": {
+        "CURRENT": "Tittar / Läser just nu",
+        "PLANNING": "Planerad",
+        "COMPLETED": "Avslutad",
+        "DROPPED": "Avbruten",
+        "PAUSED": "Pausad",
+        "REPEATING": "Tittar om / Läser om"
+      }
+    },
+    "media_format": {
+      "options": {
+        "TV": "TV",
+        "TV_SHORT": "TV Kort",
+        "MOVIE": "Film",
+        "SPECIAL": "Special",
+        "OVA": "OVA",
+        "ONA": "ONA",
+        "MUSIC": "Musik"
+      }
+    },
+    "score_format": {
+      "options": {
+        "POINT_10": "1–10 (t.ex. 7.5)",
+        "POINT_100": "1–100 (t.ex. 75)",
+        "POINT_5": "1–5 Stjärnor",
+        "SMILEY": "Smiley (😊 😐 😞)"
+      }
+    }
+  },
+  "entity": {
+    "sensor": {
+      "airing_today": { "name": "Sänds idag" },
+      "episodes_this_week": { "name": "Avsnitt denna vecka" },
+      "next_episode_title": { "name": "Nästa anime som sänds" },
+      "next_episode_time": { "name": "Tid för nästa avsnitt" },
+      "watching_count": { "name": "Tittar just nu" },
+      "manga_reading_count": { "name": "Läser just nu" },
+      "total_anime_watched": { "name": "Totalt anime sett" },
+      "total_episodes_watched": { "name": "Totalt avsnitt sedda" },
+      "total_hours_watched": { "name": "Totalt timmar tittade" },
+      "anime_mean_score": { "name": "Genomsnittligt animebetyg" },
+      "manga_mean_score": { "name": "Genomsnittligt mangabetyg" },
+      "chapters_read": { "name": "Kapitel lästa" },
+      "top_genre": { "name": "Favoritgenre" }
+    },
+    "calendar": {
+      "airing_calendar": { "name": "Sändningsschema" },
+      "season_calendar": { "name": "Säsongsanime" },
+      "watchlist_calendar": { "name": "Bevakningslista" },
+      "manga_calendar": { "name": "Mangaläslista" }
+    }
+  }
+}

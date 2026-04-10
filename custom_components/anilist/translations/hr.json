@@ -1,0 +1,119 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Postavljanje AniList",
+        "menu_options": {
+          "oauth": "Prijava s AniList računom (OAuth2)",
+          "public_only": "Samo javni podaci (račun nije potreban)"
+        }
+      },
+      "reauth_confirm": {
+        "title": "Ponovna autentifikacija AniList",
+        "description": "Vaša AniList sesija je istekla. Kliknite Pošalji za ponovnu prijavu."
+      }
+    },
+    "error": {
+      "invalid_auth": "Nevažeći pristupni token. Provjerite i pokušajte ponovo.",
+      "cannot_connect": "Nije moguće povezati se s AniList. Pokušajte ponovo.",
+      "unknown": "Neočekivana pogreška. Provjerite zapisnike."
+    },
+    "abort": {
+      "already_configured": "Ovaj AniList račun je već konfiguriran.",
+      "invalid_auth": "Autentifikacija nije uspjela — token nije mogao biti potvrđen.",
+      "cannot_connect": "Nije moguće povezati se s AniList tijekom postavljanja.",
+      "account_mismatch": "Ponovno autentificirani račun ne odgovara izvornom AniList računu."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "AniList opcije",
+        "data": {
+          "update_interval": "Interval ažuriranja (minute)",
+          "title_language": "Jezik naslova animea",
+          "include_adult": "Uključi sadržaj za odrasle",
+          "watchlist_statuses": "Statusi popisa za gledanje animea u kalendaru",
+          "show_season_calendar": "Omogući kalendar trenutne i sljedeće sezone",
+          "show_airing_calendar": "Omogući kalendar rasporeda emitiranja",
+          "airing_window_days": "Predviđanje rasporeda emitiranja (dani)",
+          "media_formats": "Prikaži samo ove formate animea (prazno = svi)",
+          "score_format": "Format ocjene",
+          "manga_statuses": "Statusi popisa mange u kalendaru",
+          "excluded_genres": "Isključeni žanrovi",
+          "calendar_reminder_offset": "Pomak podsjetnika kalendara (0 = bez podsjetnika)"
+        },
+        "data_description": {
+          "update_interval": "Koliko često dohvaćati nove podatke s AniList (5–60 minuta)",
+          "watchlist_statuses": "Samo animei s ovim statusima pojavljuju se u kalendaru popisa za gledanje",
+          "airing_window_days": "Koliko dana unaprijed gleda kalendar emitiranja (1–14)",
+          "media_formats": "Ostavite prazno za uključivanje svih formata (TV, Film, OVA itd.)",
+          "manga_statuses": "Samo manga s ovim statusima pojavljuje se u kalendaru mange",
+          "excluded_genres": "Animei s bilo kojim od ovih žanrova bit će skriveni iz sezonskih podataka (npr. Hentai, Ecchi)",
+          "calendar_reminder_offset": "Minuta prije emitiranja epizode za aktiviranje podsjetnika kalendara"
+        }
+      }
+    }
+  },
+  "selector": {
+    "title_language": {
+      "options": {
+        "romaji": "Romaji",
+        "english": "Engleski",
+        "native": "Izvorni"
+      }
+    },
+    "watchlist_status": {
+      "options": {
+        "CURRENT": "Trenutno gledam / čitam",
+        "PLANNING": "Planirano",
+        "COMPLETED": "Završeno",
+        "DROPPED": "Odbačeno",
+        "PAUSED": "Pauzirano",
+        "REPEATING": "Ponovno gledam / čitam"
+      }
+    },
+    "media_format": {
+      "options": {
+        "TV": "TV",
+        "TV_SHORT": "TV kratki",
+        "MOVIE": "Film",
+        "SPECIAL": "Specijal",
+        "OVA": "OVA",
+        "ONA": "ONA",
+        "MUSIC": "Glazba"
+      }
+    },
+    "score_format": {
+      "options": {
+        "POINT_10": "1–10 (npr. 7.5)",
+        "POINT_100": "1–100 (npr. 75)",
+        "POINT_5": "1–5 Zvjezdica",
+        "SMILEY": "Smajlić (😊 😐 😞)"
+      }
+    }
+  },
+  "entity": {
+    "sensor": {
+      "airing_today": { "name": "Emitira se danas" },
+      "episodes_this_week": { "name": "Epizode ovaj tjedan" },
+      "next_episode_title": { "name": "Sljedeći anime na rasporedu" },
+      "next_episode_time": { "name": "Vrijeme sljedeće epizode" },
+      "watching_count": { "name": "Trenutno gledam" },
+      "manga_reading_count": { "name": "Trenutno čitam" },
+      "total_anime_watched": { "name": "Ukupno pogledanih animea" },
+      "total_episodes_watched": { "name": "Ukupno pogledanih epizoda" },
+      "total_hours_watched": { "name": "Ukupno sati gledanja" },
+      "anime_mean_score": { "name": "Prosječna ocjena animea" },
+      "manga_mean_score": { "name": "Prosječna ocjena mange" },
+      "chapters_read": { "name": "Pročitana poglavlja" },
+      "top_genre": { "name": "Omiljeni žanr" }
+    },
+    "calendar": {
+      "airing_calendar": { "name": "Raspored emitiranja" },
+      "season_calendar": { "name": "Sezonski anime" },
+      "watchlist_calendar": { "name": "Popis za gledanje" },
+      "manga_calendar": { "name": "Popis za čitanje mange" }
+    }
+  }
+}

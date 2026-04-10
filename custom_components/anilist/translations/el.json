@@ -1,0 +1,119 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Ρύθμιση AniList",
+        "menu_options": {
+          "oauth": "Σύνδεση με λογαριασμό AniList (OAuth2)",
+          "public_only": "Μόνο δημόσια δεδομένα (δεν απαιτείται λογαριασμός)"
+        }
+      },
+      "reauth_confirm": {
+        "title": "Επαναπιστοποίηση AniList",
+        "description": "Η συνεδρία σας στο AniList έχει λήξει. Κάντε κλικ στο Υποβολή για να συνδεθείτε ξανά."
+      }
+    },
+    "error": {
+      "invalid_auth": "Μη έγκυρο διακριτικό πρόσβασης. Ελέγξτε και δοκιμάστε ξανά.",
+      "cannot_connect": "Αδυναμία σύνδεσης στο AniList. Δοκιμάστε ξανά.",
+      "unknown": "Μη αναμενόμενο σφάλμα. Ελέγξτε τα αρχεία καταγραφής."
+    },
+    "abort": {
+      "already_configured": "Αυτός ο λογαριασμός AniList είναι ήδη ρυθμισμένος.",
+      "invalid_auth": "Η πιστοποίηση απέτυχε — το διακριτικό δεν μπόρεσε να επικυρωθεί.",
+      "cannot_connect": "Αδυναμία σύνδεσης στο AniList κατά τη ρύθμιση.",
+      "account_mismatch": "Ο επαναπιστοποιημένος λογαριασμός δεν αντιστοιχεί στον αρχικό λογαριασμό AniList."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Επιλογές AniList",
+        "data": {
+          "update_interval": "Διάστημα ενημέρωσης (λεπτά)",
+          "title_language": "Γλώσσα τίτλου anime",
+          "include_adult": "Συμπερίληψη περιεχομένου ενηλίκων",
+          "watchlist_statuses": "Καταστάσεις λίστας παρακολούθησης anime στο ημερολόγιο",
+          "show_season_calendar": "Ενεργοποίηση ημερολογίου τρέχουσας και επόμενης σεζόν",
+          "show_airing_calendar": "Ενεργοποίηση ημερολογίου προγράμματος μετάδοσης",
+          "airing_window_days": "Προεπισκόπηση προγράμματος μετάδοσης (ημέρες)",
+          "media_formats": "Εμφάνιση μόνο αυτών των μορφών anime (κενό = όλα)",
+          "score_format": "Μορφή βαθμολογίας",
+          "manga_statuses": "Καταστάσεις λίστας manga στο ημερολόγιο",
+          "excluded_genres": "Εξαιρούμενα είδη",
+          "calendar_reminder_offset": "Μετατόπιση υπενθύμισης ημερολογίου (0 = χωρίς υπενθύμιση)"
+        },
+        "data_description": {
+          "update_interval": "Πόσο συχνά γίνεται ανάκτηση νέων δεδομένων από το AniList (5–60 λεπτά)",
+          "watchlist_statuses": "Μόνο anime με αυτές τις καταστάσεις εμφανίζονται στο ημερολόγιο λίστας παρακολούθησης",
+          "airing_window_days": "Πόσες ημέρες μπροστά κοιτάζει το ημερολόγιο μετάδοσης (1–14)",
+          "media_formats": "Αφήστε κενό για να συμπεριληφθούν όλες οι μορφές (TV, Ταινία, OVA κ.λπ.)",
+          "manga_statuses": "Μόνο manga με αυτές τις καταστάσεις εμφανίζονται στο ημερολόγιο manga",
+          "excluded_genres": "Anime με οποιοδήποτε από αυτά τα είδη θα κρυφτούν από τα δεδομένα σεζόν (π.χ. Hentai, Ecchi)",
+          "calendar_reminder_offset": "Λεπτά πριν τη μετάδοση ενός επεισοδίου για ενεργοποίηση υπενθύμισης ημερολογίου"
+        }
+      }
+    }
+  },
+  "selector": {
+    "title_language": {
+      "options": {
+        "romaji": "Romaji",
+        "english": "Αγγλικά",
+        "native": "Εγγενής"
+      }
+    },
+    "watchlist_status": {
+      "options": {
+        "CURRENT": "Παρακολουθώ / Διαβάζω τώρα",
+        "PLANNING": "Προγραμματισμένο",
+        "COMPLETED": "Ολοκληρωμένο",
+        "DROPPED": "Εγκαταλειμμένο",
+        "PAUSED": "Σε παύση",
+        "REPEATING": "Ξαναβλέπω / Ξαναδιαβάζω"
+      }
+    },
+    "media_format": {
+      "options": {
+        "TV": "TV",
+        "TV_SHORT": "TV Σύντομο",
+        "MOVIE": "Ταινία",
+        "SPECIAL": "Ειδικό",
+        "OVA": "OVA",
+        "ONA": "ONA",
+        "MUSIC": "Μουσική"
+      }
+    },
+    "score_format": {
+      "options": {
+        "POINT_10": "1–10 (π.χ. 7.5)",
+        "POINT_100": "1–100 (π.χ. 75)",
+        "POINT_5": "1–5 Αστέρια",
+        "SMILEY": "Φατσούλα (😊 😐 😞)"
+      }
+    }
+  },
+  "entity": {
+    "sensor": {
+      "airing_today": { "name": "Μεταδίδεται σήμερα" },
+      "episodes_this_week": { "name": "Επεισόδια αυτή την εβδομάδα" },
+      "next_episode_title": { "name": "Επόμενο anime που μεταδίδεται" },
+      "next_episode_time": { "name": "Ώρα επόμενου επεισοδίου" },
+      "watching_count": { "name": "Παρακολουθώ τώρα" },
+      "manga_reading_count": { "name": "Διαβάζω τώρα" },
+      "total_anime_watched": { "name": "Σύνολο anime που είδα" },
+      "total_episodes_watched": { "name": "Σύνολο επεισοδίων που είδα" },
+      "total_hours_watched": { "name": "Σύνολο ωρών παρακολούθησης" },
+      "anime_mean_score": { "name": "Μέση βαθμολογία anime" },
+      "manga_mean_score": { "name": "Μέση βαθμολογία manga" },
+      "chapters_read": { "name": "Κεφάλαια που διαβάστηκαν" },
+      "top_genre": { "name": "Κορυφαίο είδος" }
+    },
+    "calendar": {
+      "airing_calendar": { "name": "Πρόγραμμα μετάδοσης" },
+      "season_calendar": { "name": "Anime σεζόν" },
+      "watchlist_calendar": { "name": "Λίστα παρακολούθησης" },
+      "manga_calendar": { "name": "Λίστα ανάγνωσης manga" }
+    }
+  }
+}

@@ -1,0 +1,119 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Nastavení AniList",
+        "menu_options": {
+          "oauth": "Přihlásit se účtem AniList (OAuth2)",
+          "public_only": "Pouze veřejná data (účet není vyžadován)"
+        }
+      },
+      "reauth_confirm": {
+        "title": "Opětovná autentizace AniList",
+        "description": "Vaše relace AniList vypršela. Klikněte na Odeslat pro opětovné přihlášení."
+      }
+    },
+    "error": {
+      "invalid_auth": "Neplatný přístupový token. Zkontrolujte a zkuste to znovu.",
+      "cannot_connect": "Nelze se připojit k AniList. Zkuste to znovu.",
+      "unknown": "Neočekávaná chyba. Zkontrolujte protokoly."
+    },
+    "abort": {
+      "already_configured": "Tento účet AniList je již nakonfigurován.",
+      "invalid_auth": "Autentizace selhala — token nemohl být ověřen.",
+      "cannot_connect": "Nelze se připojit k AniList během nastavení.",
+      "account_mismatch": "Opětovně autentizovaný účet neodpovídá původnímu účtu AniList."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Možnosti AniList",
+        "data": {
+          "update_interval": "Interval aktualizace (minuty)",
+          "title_language": "Jazyk názvu anime",
+          "include_adult": "Zahrnout obsah pro dospělé",
+          "watchlist_statuses": "Stavy seznamu sledování anime v kalendáři",
+          "show_season_calendar": "Povolit kalendář aktuální a příští sezóny",
+          "show_airing_calendar": "Povolit kalendář vysílání",
+          "airing_window_days": "Výhled vysílání (dny)",
+          "media_formats": "Zobrazit pouze tyto formáty anime (prázdné = všechny)",
+          "score_format": "Formát hodnocení",
+          "manga_statuses": "Stavy seznamu mangy v kalendáři",
+          "excluded_genres": "Vyloučené žánry",
+          "calendar_reminder_offset": "Předstih připomínky kalendáře (0 = bez připomínky)"
+        },
+        "data_description": {
+          "update_interval": "Jak často načítat nová data z AniList (5–60 minut)",
+          "watchlist_statuses": "V kalendáři seznamu sledování se zobrazí pouze anime s těmito stavy",
+          "airing_window_days": "Kolik dní dopředu zobrazuje kalendář vysílání (1–14)",
+          "media_formats": "Ponechte prázdné pro zahrnutí všech formátů (TV, Film, OVA atd.)",
+          "manga_statuses": "V kalendáři mangy se zobrazí pouze manga s těmito stavy",
+          "excluded_genres": "Anime s jakýmkoli z těchto žánrů budou skryta ze sezónních dat (např. Hentai, Ecchi)",
+          "calendar_reminder_offset": "Minuty před vysíláním epizody pro spuštění připomínky kalendáře"
+        }
+      }
+    }
+  },
+  "selector": {
+    "title_language": {
+      "options": {
+        "romaji": "Romaji",
+        "english": "Angličtina",
+        "native": "Původní"
+      }
+    },
+    "watchlist_status": {
+      "options": {
+        "CURRENT": "Aktuálně sleduji / čtu",
+        "PLANNING": "Plánované",
+        "COMPLETED": "Dokončené",
+        "DROPPED": "Zanechané",
+        "PAUSED": "Pozastavené",
+        "REPEATING": "Znovu sleduji / čtu"
+      }
+    },
+    "media_format": {
+      "options": {
+        "TV": "TV",
+        "TV_SHORT": "TV krátké",
+        "MOVIE": "Film",
+        "SPECIAL": "Speciál",
+        "OVA": "OVA",
+        "ONA": "ONA",
+        "MUSIC": "Hudba"
+      }
+    },
+    "score_format": {
+      "options": {
+        "POINT_10": "1–10 (např. 7.5)",
+        "POINT_100": "1–100 (např. 75)",
+        "POINT_5": "1–5 Hvězd",
+        "SMILEY": "Smajlík (😊 😐 😞)"
+      }
+    }
+  },
+  "entity": {
+    "sensor": {
+      "airing_today": { "name": "Vysílá se dnes" },
+      "episodes_this_week": { "name": "Epizody tento týden" },
+      "next_episode_title": { "name": "Další vysílané anime" },
+      "next_episode_time": { "name": "Čas další epizody" },
+      "watching_count": { "name": "Aktuálně sleduji" },
+      "manga_reading_count": { "name": "Aktuálně čtu" },
+      "total_anime_watched": { "name": "Celkem shlédnutých anime" },
+      "total_episodes_watched": { "name": "Celkem shlédnutých epizod" },
+      "total_hours_watched": { "name": "Celkem hodin sledování" },
+      "anime_mean_score": { "name": "Průměrné hodnocení anime" },
+      "manga_mean_score": { "name": "Průměrné hodnocení mangy" },
+      "chapters_read": { "name": "Přečtené kapitoly" },
+      "top_genre": { "name": "Oblíbený žánr" }
+    },
+    "calendar": {
+      "airing_calendar": { "name": "Vysílací plán" },
+      "season_calendar": { "name": "Sezónní anime" },
+      "watchlist_calendar": { "name": "Seznam sledování" },
+      "manga_calendar": { "name": "Seznam četby mangy" }
+    }
+  }
+}

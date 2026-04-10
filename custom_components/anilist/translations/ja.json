@@ -1,0 +1,119 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "AniList セットアップ",
+        "menu_options": {
+          "oauth": "AniListアカウントでサインイン (OAuth2)",
+          "public_only": "公開データのみ（アカウント不要）"
+        }
+      },
+      "reauth_confirm": {
+        "title": "AniList 再認証",
+        "description": "AniListのセッションが期限切れになりました。送信をクリックして再度サインインしてください。"
+      }
+    },
+    "error": {
+      "invalid_auth": "無効なアクセストークンです。確認してもう一度お試しください。",
+      "cannot_connect": "AniListに接続できません。もう一度お試しください。",
+      "unknown": "予期しないエラーです。ログを確認してください。"
+    },
+    "abort": {
+      "already_configured": "このAniListアカウントは既に設定されています。",
+      "invalid_auth": "認証に失敗しました — トークンを検証できませんでした。",
+      "cannot_connect": "セットアップ中にAniListに接続できません。",
+      "account_mismatch": "再認証されたアカウントが元のAniListアカウントと一致しません。"
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "AniList オプション",
+        "data": {
+          "update_interval": "更新間隔（分）",
+          "title_language": "アニメタイトルの言語",
+          "include_adult": "成人向けコンテンツを含める",
+          "watchlist_statuses": "カレンダーに表示するアニメ視聴リストのステータス",
+          "show_season_calendar": "今期・来期のカレンダーを有効にする",
+          "show_airing_calendar": "放送スケジュールカレンダーを有効にする",
+          "airing_window_days": "放送スケジュールの先読み日数",
+          "media_formats": "表示するアニメ形式のみ（空欄 = すべて）",
+          "score_format": "スコア表示形式",
+          "manga_statuses": "カレンダーに表示するマンガリストのステータス",
+          "excluded_genres": "除外するジャンル",
+          "calendar_reminder_offset": "カレンダーリマインダーのオフセット（0 = リマインダーなし）"
+        },
+        "data_description": {
+          "update_interval": "AniListから新しいデータを取得する頻度（5〜60分）",
+          "watchlist_statuses": "これらのステータスのアニメのみが視聴リストカレンダーに表示されます",
+          "airing_window_days": "放送カレンダーが先読みする日数（1〜14）",
+          "media_formats": "すべての形式を含めるには空のままにしてください（TV、映画、OVAなど）",
+          "manga_statuses": "これらのステータスのマンガのみがマンガカレンダーに表示されます",
+          "excluded_genres": "これらのジャンルのいずれかを含むアニメはシーズンデータから非表示になります（例：Hentai、Ecchi）",
+          "calendar_reminder_offset": "エピソード放送前にカレンダーリマインダーを発動する分数"
+        }
+      }
+    }
+  },
+  "selector": {
+    "title_language": {
+      "options": {
+        "romaji": "ローマ字",
+        "english": "英語",
+        "native": "原語"
+      }
+    },
+    "watchlist_status": {
+      "options": {
+        "CURRENT": "視聴中 / 読書中",
+        "PLANNING": "視聴予定",
+        "COMPLETED": "完了",
+        "DROPPED": "中断",
+        "PAUSED": "一時停止",
+        "REPEATING": "再視聴 / 再読"
+      }
+    },
+    "media_format": {
+      "options": {
+        "TV": "TV",
+        "TV_SHORT": "TVショート",
+        "MOVIE": "映画",
+        "SPECIAL": "特別編",
+        "OVA": "OVA",
+        "ONA": "ONA",
+        "MUSIC": "音楽"
+      }
+    },
+    "score_format": {
+      "options": {
+        "POINT_10": "1〜10（例：7.5）",
+        "POINT_100": "1〜100（例：75）",
+        "POINT_5": "1〜5 星",
+        "SMILEY": "スマイリー (😊 😐 😞)"
+      }
+    }
+  },
+  "entity": {
+    "sensor": {
+      "airing_today": { "name": "本日放送" },
+      "episodes_this_week": { "name": "今週のエピソード" },
+      "next_episode_title": { "name": "次の放送アニメ" },
+      "next_episode_time": { "name": "次のエピソード時間" },
+      "watching_count": { "name": "現在視聴中" },
+      "manga_reading_count": { "name": "現在読書中" },
+      "total_anime_watched": { "name": "視聴済みアニメ合計" },
+      "total_episodes_watched": { "name": "視聴済みエピソード合計" },
+      "total_hours_watched": { "name": "視聴時間合計" },
+      "anime_mean_score": { "name": "アニメ平均スコア" },
+      "manga_mean_score": { "name": "マンガ平均スコア" },
+      "chapters_read": { "name": "読了チャプター数" },
+      "top_genre": { "name": "トップジャンル" }
+    },
+    "calendar": {
+      "airing_calendar": { "name": "放送スケジュール" },
+      "season_calendar": { "name": "シーズンアニメ" },
+      "watchlist_calendar": { "name": "視聴リスト" },
+      "manga_calendar": { "name": "マンガ読書リスト" }
+    }
+  }
+}
