@@ -5,6 +5,30 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.1] - 2026-04-11
+
+### Added
+
+- **GitHub issue templates** — structured bug report and feature request forms
+  with pre-flight checklists, version fields, and area selectors
+- **CHANGELOG in release notes** — GitHub Releases now include the relevant
+  CHANGELOG section directly instead of just linking to the file
+- **Single unified CI workflow** — `release.yml` now runs validation, tests,
+  frontend build, and release in one pipeline (removed duplicate `validate.yml`)
+
+### Fixed
+
+- **Hassfest compliance** — removed invalid `homeassistant` key from
+  `manifest.json` (belongs in `hacs.json`) and sorted manifest keys
+- **Translation validation** — lowercased all `selector.*.options` keys in
+  `strings.json` and all 23 language files to match HA's `[a-z0-9-_]+` regex
+- **CI dependencies** — added `aiohttp` and `voluptuous` to the test install step
+
+### Changed
+
+- **Node.js 24 for CI actions** — set `FORCE_JAVASCRIPT_ACTIONS_TO_NODE24=true`
+  to eliminate Node.js 20 deprecation warnings
+
 ## [0.4.0] - 2026-04-10
 
 First public beta release. This version addresses a comprehensive audit of the
@@ -95,6 +119,7 @@ codebase and adds full internationalization across 23 languages.
 - Initial AniList integration with OAuth2 flow
 - Phases 4–8: Manga, Stats, Events, Season, Lovelace Card
 
+[0.4.1]: https://github.com/S1ckn3z/ha-anilist.co/releases/tag/v0.4.1
 [0.4.0]: https://github.com/S1ckn3z/ha-anilist.co/releases/tag/v0.4.0
 [0.3.0]: https://github.com/S1ckn3z/ha-anilist.co/releases/tag/v0.3.0
 [0.2.0]: https://github.com/S1ckn3z/ha-anilist.co/releases/tag/v0.2.0

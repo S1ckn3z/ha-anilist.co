@@ -1,0 +1,91 @@
+name: ✨ Feature Request
+description: Suggest an idea, enhancement, or new feature for the integration or card.
+title: "[Feature]: "
+labels: ["enhancement", "triage"]
+assignees: ["S1ckn3z"]
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to suggest a feature! 💡
+
+        Before you submit:
+        - 🔍 Search existing [issues](https://github.com/S1ckn3z/ha-anilist.co/issues) and [discussions](https://github.com/S1ckn3z/ha-anilist.co/discussions)
+        - 💬 Consider starting a [discussion](https://github.com/S1ckn3z/ha-anilist.co/discussions) first for open-ended ideas
+
+  - type: checkboxes
+    id: preflight
+    attributes:
+      label: Pre-flight checklist
+      options:
+        - label: I have searched existing issues and discussions
+          required: true
+        - label: This feature is not already available in the latest release
+          required: true
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Which area is this feature for?
+      multiple: true
+      options:
+        - Backend integration (sensors / calendars / coordinator)
+        - Lovelace card — Airing view
+        - Lovelace card — Watchlist view
+        - Lovelace card — Manga view
+        - Lovelace card — Season view
+        - Lovelace card — Profile view
+        - Visual card editor
+        - Config flow / Setup
+        - Options flow
+        - WebSocket API
+        - Automations / Events
+        - Translations / i18n
+        - Documentation
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem / Use case
+      description: |
+        What problem does this feature solve? What are you trying to achieve?
+      placeholder: |
+        I'm trying to ... but I can't because ...
+        It would be helpful if ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed solution
+      description: How would you like this to work?
+      placeholder: |
+        The card should have an option to ...
+        Or a new sensor that exposes ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Have you considered any alternative solutions or workarounds?
+
+  - type: textarea
+    id: mockup
+    attributes:
+      label: Mockups / References
+      description: |
+        Screenshots, sketches, links to similar integrations, or example YAML configs
+        that help illustrate what you want.
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional context
+      description: Anything else we should know?

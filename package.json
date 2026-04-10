@@ -1,6 +1,6 @@
 {
   "name": "anilist-card",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "AniList Lovelace Card for Home Assistant",
   "scripts": {
     "build": "rollup -c rollup.config.mjs",

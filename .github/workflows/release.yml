@@ -12,6 +12,11 @@ on:
 permissions:
   contents: write
 
+env:
+  # Force all JavaScript-based actions to run on Node.js 24 instead of the
+  # deprecated Node.js 20. GitHub will make this the default on 2026-06-02.
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+
 jobs:
   validate:
     name: Validate
@@ -155,12 +160,37 @@ jobs:
           zip -r ../../anilist.zip . -x "__pycache__/*" "*.pyc"
           cd ../..
 
+      - name: Extract changelog section
+        id: changelog
+        run: |
+          VERSION="${{ needs.check-release.outputs.version }}"
+          # Extract the section for the current version from CHANGELOG.md
+          # Matches from "## [VERSION]" to the next "## [" or end of file
+          CHANGELOG=$(awk -v ver="$VERSION" '
+            $0 ~ "^## \\[" ver "\\]" { found=1; next }
+            found && $0 ~ /^## \[/ { exit }
+            found { print }
+          ' CHANGELOG.md)
+          # Strip leading/trailing blank lines
+          CHANGELOG=$(echo "$CHANGELOG" | sed -e '/./,$!d' -e :a -e '/^\n*$/{$d;N;ba' -e '}')
+
+          if [ -z "$CHANGELOG" ]; then
+            CHANGELOG="_See the [CHANGELOG](https://github.com/S1ckn3z/ha-anilist.co/blob/main/CHANGELOG.md) for details._"
+          fi
+
+          # Write to file to avoid shell escaping issues
+          {
+            echo 'body<<CHANGELOG_EOF'
+            echo "$CHANGELOG"
+            echo 'CHANGELOG_EOF'
+          } >> "$GITHUB_OUTPUT"
+
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ needs.check-release.outputs.tag }}
           name: ${{ needs.check-release.outputs.tag }}
-          generate_release_notes: true
+          generate_release_notes: false
           files: anilist.zip
           body: |
             ## 📦 Installation
@@ -181,4 +211,12 @@ jobs:
 
             The Lovelace card is bundled and registers automatically — no manual resource setup needed.
 
-            See the [CHANGELOG](https://github.com/S1ckn3z/ha-anilist.co/blob/main/CHANGELOG.md) for full details of this release.
+            ---
+
+            ## 📝 What's Changed
+
+            ${{ steps.changelog.outputs.body }}
+
+            ---
+
+            📖 See the [full CHANGELOG](https://github.com/S1ckn3z/ha-anilist.co/blob/main/CHANGELOG.md) for version history.

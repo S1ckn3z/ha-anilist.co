@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 💬 Discussions
+    url: https://github.com/S1ckn3z/ha-anilist.co/discussions
+    about: Ask a question, share a dashboard, or discuss ideas with the community.
+  - name: 📖 Documentation
+    url: https://github.com/S1ckn3z/ha-anilist.co#readme
+    about: Read the README, CHANGELOG, and docs folder first — most questions are answered there.
+  - name: 🏠 Home Assistant Community
+    url: https://community.home-assistant.io/
+    about: For general Home Assistant help that is not specific to this integration.

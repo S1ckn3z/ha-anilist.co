@@ -1,0 +1,167 @@
+name: 🐛 Bug Report
+description: Something isn't working as expected — report a bug in the integration or card.
+title: "[Bug]: "
+labels: ["bug", "triage"]
+assignees: ["S1ckn3z"]
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report a bug! 🙏
+
+        Before you submit:
+        - 🔍 Search existing [issues](https://github.com/S1ckn3z/ha-anilist.co/issues) to avoid duplicates
+        - 📖 Check the [README](https://github.com/S1ckn3z/ha-anilist.co#readme) and [CHANGELOG](https://github.com/S1ckn3z/ha-anilist.co/blob/main/CHANGELOG.md)
+        - 🔄 Make sure you're on the latest release
+
+  - type: checkboxes
+    id: preflight
+    attributes:
+      label: Pre-flight checklist
+      options:
+        - label: I have searched existing issues and this is not a duplicate
+          required: true
+        - label: I am using the latest release of the integration
+          required: true
+        - label: I have restarted Home Assistant after installing/updating
+          required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: Integration version
+      description: Which version of the AniList integration are you using?
+      placeholder: "0.4.0"
+    validations:
+      required: true
+
+  - type: input
+    id: ha-version
+    attributes:
+      label: Home Assistant version
+      description: Found under Settings → About
+      placeholder: "2026.4.0"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: install-method
+    attributes:
+      label: Installation method
+      options:
+        - HACS
+        - Manual (zip download)
+        - Git clone
+    validations:
+      required: true
+
+  - type: dropdown
+    id: auth-mode
+    attributes:
+      label: Authentication mode
+      options:
+        - OAuth2 (signed in with AniList account)
+        - Public-only (no account)
+    validations:
+      required: true
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Where is the bug?
+      multiple: true
+      options:
+        - Backend integration (sensors / calendars / coordinator)
+        - Lovelace card — Airing view
+        - Lovelace card — Watchlist view
+        - Lovelace card — Manga view
+        - Lovelace card — Season view
+        - Lovelace card — Profile view
+        - Visual card editor
+        - Config flow / Setup / OAuth
+        - Options flow
+        - WebSocket API
+        - Automation / Events
+        - Translations / i18n
+        - Documentation
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Bug description
+      description: A clear and concise description of what the bug is.
+      placeholder: When I do X, Y happens instead of Z...
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Steps to reproduce
+      description: How can we reproduce this issue?
+      placeholder: |
+        1. Go to '...'
+        2. Click on '...'
+        3. See error
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+      description: What did you expect to happen?
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+      description: What actually happened?
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Home Assistant logs
+      description: |
+        Paste any relevant logs from **Settings → System → Logs** (filter by `custom_components.anilist`).
+        Please enable debug logging first by adding this to `configuration.yaml`:
+        ```yaml
+        logger:
+          default: info
+          logs:
+            custom_components.anilist: debug
+        ```
+      render: shell
+      placeholder: |
+        2026-04-11 10:15:32 ERROR (MainThread) [custom_components.anilist.coordinator] ...
+
+  - type: textarea
+    id: card-config
+    attributes:
+      label: Card configuration (if card-related)
+      description: Paste your `custom:anilist-card` YAML config.
+      render: yaml
+      placeholder: |
+        type: custom:anilist-card
+        view: airing
+        max_items: 10
+
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: Screenshots
+      description: If applicable, drag & drop screenshots here to help explain the problem.
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional context
+      description: Anything else we should know? Browser, theme, multiple instances, etc.
