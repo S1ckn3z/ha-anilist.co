@@ -1,258 +1,118 @@
-# AniList for Home Assistant
+# 🎌 AniList for Home Assistant
 
 [![HACS][hacs-badge]][hacs-url]
 [![GitHub Release][release-badge]][release-url]
-[![License][license-badge]][license-url]
+[![License: MIT][license-badge]][license-url]
+[![HA Version][ha-badge]][ha-url]
+[![Languages](https://img.shields.io/badge/languages-23-blueviolet)](#-supported-languages)
 
-A full-featured Home Assistant integration for [AniList.co](https://anilist.co) that brings your anime and manga tracking data into your smart home dashboard. Includes a custom Lovelace card with 5 views, grid & list layouts, HD covers, a visual editor, and full theme support.
-
-## Features
-
-- **Airing Schedule** — See upcoming episodes with countdown timers
-- **Watchlist** — Track your currently watching anime with progress bars and next-episode countdowns
-- **Manga Reading List** — Track your manga with chapter/volume progress
-- **Season Overview** — Browse current and next season anime
-- **Profile Stats** — Display your AniList stats, genres, and favourites
-- **Grid & List Layouts** — Switch between cover grid and list rows per view
-- **HD Cover Images** — Configurable cover quality (small / medium / large)
-- **Smart Score System** — User score, average score, or auto-detect — placed on covers or inline
-- **WebSocket API** — Bypasses the 16 KB sensor attribute limit for unlimited data
-- **4 Calendar Entities** — Airing, season, watchlist, and manga calendars
-- **13 Sensor Entities** — Counts, scores, watch time, top genres, and more
-- **Custom Lovelace Card** — Built with Lit 3.x, responsive, themeable
-- **Visual Card Editor** — Configure everything through the UI
-- **OAuth2 Authentication** — Secure login, or use public-only mode
-- **🌍 23 Languages** — Full i18n support across backend and frontend (see [Supported Languages](#supported-languages))
-- **HA Theme Integration** — Automatically adapts to your HA theme colors
-- **Scroll Control** — Pixel-perfect visible item count, scroll-snap, and fade indicators
+> **Bring your anime & manga tracking into your smart home dashboard.**
+>
+> A full-featured [Home Assistant](https://www.home-assistant.io/) custom integration for [AniList.co](https://anilist.co) — with a custom Lovelace card, 5 views, HD covers, visual editor, and 23 languages.
 
 ---
 
-## Table of Contents
+## ⚡ Quick Install
 
-- [Installation](#installation)
-- [Setup](#setup)
-- [Integration Options](#integration-options)
-- [Lovelace Card](#lovelace-card)
-  - [Card Views](#card-views)
-  - [Card Configuration Reference](#card-configuration-reference)
-  - [Visual Editor](#visual-editor)
-  - [YAML Examples](#yaml-examples)
-- [Sensors](#sensors)
-- [Calendars](#calendars)
-- [Automations](#automations)
-- [FAQ](#faq)
-- [Supported Languages](#supported-languages)
-- [Contributing](#contributing)
+### Via HACS (Recommended)
 
----
+1. Open **HACS** in your Home Assistant
+2. Click **⋮** → **Custom repositories**
+3. Add `https://github.com/S1ckn3z/ha-anilist.co` → Category: **Integration**
+4. Search for **AniList** → Click **Install**
+5. 🔄 **Restart Home Assistant**
 
-## Installation
+> 💡 The Lovelace card is bundled and registers automatically — no manual resource setup needed!
 
-### HACS (Recommended)
-
-1. Open HACS in your Home Assistant instance
-2. Click the three dots in the top-right corner and select **Custom repositories**
-3. Add `https://github.com/S1ckn3z/ha-anilist.co` with category **Integration**
-4. Search for **AniList** and click **Install**
-5. Restart Home Assistant
-
-The Lovelace card is bundled with the integration and registers automatically — no manual resource setup needed.
-
-### Manual
+### Manual Installation
 
 1. Download `anilist.zip` from the [latest release](https://github.com/S1ckn3z/ha-anilist.co/releases)
-2. Extract to your HA `config/custom_components/anilist/` directory
-3. Restart Home Assistant
+2. Extract to `config/custom_components/anilist/`
+3. 🔄 **Restart Home Assistant**
 
-The card frontend is included in the integration and will be registered as a Lovelace resource on first load. If you use YAML mode for Lovelace, add this resource manually:
+<details>
+<summary>📄 YAML mode Lovelace? Click here</summary>
 
 ```yaml
 resources:
   - url: /anilist-card/anilist-card.js
     type: module
 ```
+</details>
 
 ---
 
-## Setup
+## 🔧 Setup
 
-### With AniList Account (Full Features)
+### 🔐 With AniList Account (Full Features)
 
-1. Go to **Settings > Devices & Services > Add Integration**
+1. Go to **Settings → Devices & Services → Add Integration**
 2. Search for **AniList**
 3. Select **Sign in with AniList account (OAuth2)**
 4. Authorize with your AniList credentials
-5. All sensors and calendars will be created automatically
+5. ✅ All sensors and calendars are created automatically
 
-### Public Data Only (No Account)
+### 🌐 Public Data Only (No Account)
 
-1. Go to **Settings > Devices & Services > Add Integration**
+1. Go to **Settings → Devices & Services → Add Integration**
 2. Search for **AniList**
 3. Select **Public data only (no account required)**
-4. Airing schedule and season data will be available (no watchlist/profile)
+4. ✅ Airing schedule and season data will be available
 
 ---
 
-## Integration Options
+## ✨ Features
 
-After setup, click the gear icon on the AniList integration card to configure:
-
-| Option | Default | Description |
-|--------|---------|-------------|
-| `update_interval` | `15` | Data refresh interval in minutes (5-60) |
-| `title_language` | `romaji` | Anime title language: `romaji`, `english`, `native` |
-| `include_adult` | `false` | Include adult-rated content |
-| `airing_window_days` | `7` | How many days ahead to show in airing schedule (1-14) |
-| `media_formats` | all | Filter airing schedule and season data by format: `TV`, `TV_SHORT`, `MOVIE`, `SPECIAL`, `OVA`, `ONA`, `MUSIC` |
-| `excluded_genres` | none | Genres to exclude from season data |
-| `score_format` | `POINT_10` | Score display: `POINT_10`, `POINT_100`, `POINT_5`, `SMILEY` |
-| `watchlist_statuses` | `CURRENT, REPEATING` | Which anime statuses to include in calendar |
-| `manga_statuses` | `CURRENT, REPEATING` | Which manga statuses to include in calendar |
-| `show_airing_calendar` | `true` | Enable the airing schedule calendar entity |
-| `show_season_calendar` | `true` | Enable the season calendar entity |
-| `calendar_reminder_offset` | `0` | Calendar reminder offset in minutes (0 = no reminder) |
+| | Feature | Description |
+|---|---------|-------------|
+| 📺 | **Airing Schedule** | Upcoming episodes with countdown timers |
+| 📋 | **Watchlist** | Track currently watching anime with progress bars |
+| 📖 | **Manga Reading List** | Chapter & volume progress tracking |
+| 🗓️ | **Season Overview** | Browse current and next season anime |
+| 👤 | **Profile Stats** | Your AniList stats, genres, and favourites |
+| 🎨 | **Grid & List Layouts** | Switch between cover grids and list rows per view |
+| 🖼️ | **HD Cover Images** | Configurable quality — small / medium / large |
+| ⭐ | **Smart Score System** | User, average, or auto-detect — on covers or inline |
+| ⚡ | **WebSocket API** | Bypasses the 16 KB attribute limit for unlimited data |
+| 📅 | **4 Calendar Entities** | Airing, season, watchlist, and manga calendars |
+| 📊 | **13 Sensor Entities** | Counts, scores, watch time, top genres, and more |
+| 🃏 | **Custom Lovelace Card** | Built with Lit 3.x — responsive & themeable |
+| 🖊️ | **Visual Card Editor** | Configure everything through the UI — no YAML needed |
+| 🔒 | **OAuth2 Auth** | Secure login, or use public-only mode |
+| 🌍 | **23 Languages** | Full i18n across integration, card, and editor |
+| 🎭 | **HA Theme Support** | Automatically adapts to your HA theme colors |
+| 📜 | **Scroll Control** | Pixel-perfect visible items, scroll-snap, fade indicators |
 
 ---
 
-## Lovelace Card
+## 🃏 Lovelace Card
 
-The AniList card appears as **"AniList"** in the card picker when adding a new card to your dashboard.
+The AniList card appears as **"AniList"** in the card picker when adding a new card.
 
-### Card Views
+### 🖥️ Card Views
 
 | View | Description | Auth Required |
 |------|-------------|:------------:|
-| `airing` | Upcoming episode list with countdown timers | No |
-| `watchlist` | Your anime watchlist with cover art grid and progress | Yes |
-| `manga` | Your manga reading list with chapter/volume tracking | Yes |
-| `season` | Current season anime browser with scores and formats | No |
-| `profile` | Your AniList profile with stats, genres, and favourites | Yes |
+| 📺 `airing` | Upcoming episodes with countdown timers | ❌ |
+| 📋 `watchlist` | Your anime watchlist with covers and progress | ✅ |
+| 📖 `manga` | Manga reading list with chapter/volume tracking | ✅ |
+| 🗓️ `season` | Season anime browser with scores and formats | ❌ |
+| 👤 `profile` | Profile with stats, genre charts, and favourites | ✅ |
 
-### Card Configuration Reference
+### 📝 YAML Examples
 
-#### General
-
-| Option | Type | Default | Description |
-|--------|------|---------|-------------|
-| `type` | string | *required* | Must be `custom:anilist-card` |
-| `view` | string | `airing` | Card view: `airing`, `watchlist`, `season`, `profile`, `manga` |
-| `title` | string | auto | Custom card title (auto-generated from view name if omitted) |
-| `max_items` | number | `5` | Global max items to display |
-| `max_airing` | number | — | Override max items for airing view |
-| `max_watchlist` | number | — | Override max items for watchlist view |
-| `max_season` | number | — | Override max items for season view |
-| `max_manga` | number | — | Override max items for manga view |
-| `entry_id` | string | — | Config entry ID (only needed with multiple AniList accounts) |
-
-#### Display
-
-| Option | Type | Default | Description |
-|--------|------|---------|-------------|
-| `show_cover` | boolean | `true` | Show cover images |
-| `cover_size` | string | `medium` | Cover image size: `small` (40x56), `medium` (48x68), `large` (64x90) |
-| `show_countdown` | boolean | `true` | Show countdown timer (airing view) |
-| `countdown_format` | string | `relative` | Countdown style: `relative` (5h 30m), `absolute` (Apr 10, 14:00), `both` |
-| `show_progress` | boolean | `true` | Show episode/chapter progress |
-| `show_progress_bar` | boolean | `true` | Show visual progress bar |
-| ~~`score_display`~~ | string | `number` | **Deprecated.** Use `score_position` and `score_source` instead. |
-| `show_badges` | boolean | `true` | Show status badges on covers |
-| `show_search` | boolean | `false` | Show search/filter input |
-| `show_tooltips` | boolean | `false` | Show details on hover |
-| `link_target` | string | `anilist` | Click behavior: `anilist` (open in new tab), `none` |
-| `sort_by` | string | `time` | Airing sort order: `time`, `title`, `score` |
-| `card_padding` | string | `normal` | Inner spacing: `compact`, `normal`, `relaxed` |
-
-#### Layout & Covers
-
-| Option | Type | Default | Description |
-|--------|------|---------|-------------|
-| `layout_mode` | string | per-view | Layout style: `grid` (cover grid) or `list` (horizontal rows). Defaults: airing=list, watchlist/manga=grid, season=list |
-| `cover_quality` | string | `large` | Cover image resolution: `small` (fast), `medium`, `large` (HD) |
-| `score_position` | string | `top-right` | Score badge on covers: `top-left`, `top-right`, `bottom-left`, `bottom-right`, `inline`, `none` |
-| `score_source` | string | `auto` | Which score to show: `user` (your rating), `average` (community), `auto` (smart per view) |
-| `show_next_airing` | boolean | `true` | Show next episode countdown on watchlist/manga covers |
-
-#### Scroll Behavior
-
-| Option | Type | Default | Description |
-|--------|------|---------|-------------|
-| `visible_items` | number | — | Number of visible items before scrolling (auto-calculates height) |
-| `scroll_snap` | boolean | `false` | Snap scroll to item boundaries (no half-cut items) |
-| `scroll_fade` | boolean | `false` | Gradient fade at bottom to indicate more content |
-
-#### Airing Extras
-
-| Option | Type | Default | Description |
-|--------|------|---------|-------------|
-| `show_duration` | boolean | `false` | Show episode duration (e.g. 24min) |
-| `show_genres` | boolean | `false` | Show genre tags |
-| `show_average_score` | boolean | `false` | Show community score |
-| `show_format_badge` | boolean | `false` | Show format badge (TV, Movie, OVA) |
-
-#### Watchlist / Manga
-
-| Option | Type | Default | Description |
-|--------|------|---------|-------------|
-| `watchlist_statuses` | string[] | all | Statuses to show: `CURRENT`, `PLANNING`, `COMPLETED`, `PAUSED`, `DROPPED` |
-| `show_status_tabs` | boolean | `true` | Show tab buttons to switch between statuses |
-| `overflow_mode` | string | `scroll` | `scroll` = scrollbar at fixed height, `limit` = cut at max_items |
-| `scroll_height` | number | `400` | Max height in px when `overflow_mode` is `scroll` |
-| `visible_items` | number | — | Visible items before scrolling (auto-calculates pixel-perfect height) |
-
-#### Season
-
-| Option | Type | Default | Description |
-|--------|------|---------|-------------|
-| `genre_filter` | string[] | `[]` | Only show anime matching these genres |
-| `format_filter` | string[] | `[]` | Only show anime matching these formats (TV, MOVIE, etc.) |
-| ~~`show_next_season`~~ | boolean | `false` | **Deprecated.** Not currently implemented. |
-
-#### Profile
-
-| Option | Type | Default | Description |
-|--------|------|---------|-------------|
-| `show_avatar` | boolean | `true` | Show user avatar image |
-| `show_username` | boolean | `true` | Show username |
-| `show_anime_stats` | boolean | `true` | Show anime statistics (count, episodes, hours, score) |
-| `show_manga_stats` | boolean | `true` | Show manga statistics (count, chapters, score) |
-| `show_genre_chart` | boolean | `true` | Show top genres visualization |
-| `chart_type` | string | `bar` | Genre chart style: `bar`, `donut`, `tags` |
-| `show_favourites` | boolean | `true` | Show favourite anime list |
-
-#### Styling
-
-| Option | Type | Default | Description |
-|--------|------|---------|-------------|
-| `accent_color` | string | — | Primary accent color (hex). Falls back to HA `--primary-color` |
-| `secondary_color` | string | — | Secondary accent color (hex). Falls back to HA `--accent-color` |
-| `card_background` | string | — | Card background color (hex/rgba) |
-| `card_opacity` | number | `100` | Background opacity (0-100). Only affects the card background, text and images stay fully visible |
-| `border_color` | string | — | Card border color |
-| `border_width` | number | — | Card border width in px |
-| `border_radius` | number | — | Card border radius in px |
-
-### Visual Editor
-
-The card includes a full visual editor with three tabs:
-
-- **General** — View selection, title, padding, click behavior, covers, cover quality, score position, score source, scroll settings (visible items, snap, fade), entry ID
-- **[View Name]** — Dynamic tab that changes based on the selected view, showing layout mode, view-specific toggles (next airing, status tabs, genre/format filters), and limits
-- **Colors** — Accent color, secondary color, background, background opacity, borders
-
-The middle tab label updates to show the current view name (e.g. "Watchlist", "Profile") and displays only the settings that apply to that specific view.
-
-### YAML Examples
-
-**Basic airing card:**
+<details>
+<summary>📺 Basic airing card</summary>
 
 ```yaml
 type: custom:anilist-card
 view: airing
 max_items: 10
 ```
+</details>
 
-**Watchlist with all statuses and scrollbar:**
+<details>
+<summary>📋 Watchlist with all statuses and scrollbar</summary>
 
 ```yaml
 type: custom:anilist-card
@@ -269,8 +129,10 @@ scroll_height: 500
 score_position: top-right
 score_source: user
 ```
+</details>
 
-**Manga reading list:**
+<details>
+<summary>📖 Manga reading list</summary>
 
 ```yaml
 type: custom:anilist-card
@@ -280,8 +142,10 @@ overflow_mode: scroll
 scroll_height: 400
 show_progress_bar: true
 ```
+</details>
 
-**Season with filters:**
+<details>
+<summary>🗓️ Season with genre/format filters</summary>
 
 ```yaml
 type: custom:anilist-card
@@ -293,8 +157,10 @@ genre_filter:
 format_filter:
   - TV
 ```
+</details>
 
-**Minimal profile:**
+<details>
+<summary>👤 Profile with donut chart</summary>
 
 ```yaml
 type: custom:anilist-card
@@ -307,8 +173,10 @@ show_genre_chart: true
 chart_type: donut
 show_favourites: false
 ```
+</details>
 
-**HD covers with score badges and scroll snap:**
+<details>
+<summary>🖼️ HD covers with scroll snap</summary>
 
 ```yaml
 type: custom:anilist-card
@@ -322,19 +190,10 @@ visible_items: 5
 scroll_snap: true
 scroll_fade: true
 ```
+</details>
 
-**List layout with inline scores:**
-
-```yaml
-type: custom:anilist-card
-view: season
-layout_mode: list
-score_position: inline
-score_source: average
-max_season: 20
-```
-
-**Custom styled card:**
+<details>
+<summary>🎨 Custom styled card</summary>
 
 ```yaml
 type: custom:anilist-card
@@ -348,8 +207,10 @@ border_width: 2
 border_color: "#FF6B6B"
 card_padding: compact
 ```
+</details>
 
-**Full dashboard with all views (sections layout):**
+<details>
+<summary>🏠 Full dashboard (sections layout)</summary>
 
 ```yaml
 views:
@@ -375,123 +236,215 @@ views:
             view: profile
             chart_type: bar
 ```
+</details>
+
+### 🖊️ Visual Editor
+
+The card includes a full visual editor with three tabs:
+
+- **⚙️ General** — View, title, padding, covers, score position, scroll settings
+- **🎯 [View Name]** — Dynamic tab with view-specific options (layout, filters, tabs)
+- **🎨 Colors** — Accent, background, opacity, borders
 
 ---
 
-## Sensors
+## ⚙️ Integration Options
 
-All sensors are created under the `sensor.anilist_*` namespace.
+After setup, click the ⚙️ gear icon on the AniList integration card:
 
-### Public Sensors (No Authentication Required)
-
-| Entity ID | Description | Unit | Attributes |
-|-----------|-------------|------|------------|
-| `sensor.anilist_airing_today` | Anime airing today | anime | `season_anime` list |
-| `sensor.anilist_episodes_this_week` | Episodes in airing window | episodes | `airing_schedule` list, `next_airing` |
-| `sensor.anilist_next_episode_title` | Title of next airing anime | — | — |
-| `sensor.anilist_next_episode_time` | Timestamp of next episode | timestamp | — |
-
-### Authenticated Sensors
-
-| Entity ID | Description | Unit | Attributes |
-|-----------|-------------|------|------------|
-| `sensor.anilist_watching_count` | Currently watching count | anime | `watchlist` list |
-| `sensor.anilist_manga_reading_count` | Currently reading count | manga | `manga_list` list |
-| `sensor.anilist_total_anime_watched` | Total anime count | anime | — |
-| `sensor.anilist_total_episodes_watched` | Total episodes watched | episodes | — |
-| `sensor.anilist_total_hours_watched` | Total watch time | hours | — |
-| `sensor.anilist_anime_mean_score` | Average anime score | — | — |
-| `sensor.anilist_manga_mean_score` | Average manga score | — | — |
-| `sensor.anilist_chapters_read` | Total chapters read | chapters | — |
-| `sensor.anilist_top_genre` | Top genre by watch count | — | `top_genres`, `favourite_anime`, `viewer_name`, `viewer_avatar` |
-
-### WebSocket API
-
-The card uses a dedicated WebSocket API (`anilist/*` commands) to fetch full data directly from the coordinator, bypassing the 16 KB recorder attribute limit. This provides:
-
-- **Unlimited items** — no truncation, full watchlist/manga/schedule
-- **HD cover images** — all sizes (small, medium, large/extraLarge) with accent color
-- **Multi-language titles** — romaji, english, native in every response
-- **Server-side filtering** — status, genre, format filtering without sending all data
-- **Pagination** — limit/offset on all list endpoints
-
-The card automatically falls back to sensor entity attributes when the WebSocket API is unavailable.
-
-**Available endpoints:** `anilist/airing_schedule`, `anilist/watchlist`, `anilist/season`, `anilist/manga`, `anilist/profile`
-
-### Sensor Attributes
-
-Sensor attributes are capped at 25 items per list (with a `total_count` field showing the full count). For unlimited data, the card uses the WebSocket API above. Key attribute structures:
-
-**`airing_schedule`** (on `episodes_this_week` sensor):
-```json
-[
-  {
-    "media_id": 12345,
-    "title": "Anime Title",
-    "episode": 5,
-    "airing_at": "2026-04-10T14:00:00+00:00",
-    "cover_image": "https://...",
-    "site_url": "https://anilist.co/anime/12345",
-    "duration": 24
-  }
-]
-```
-
-**`watchlist`** (on `watching_count` sensor):
-```json
-[
-  {
-    "media_id": 12345,
-    "title": "Anime Title",
-    "status": "CURRENT",
-    "progress": 5,
-    "episodes": 12,
-    "score": 85,
-    "cover_image": "https://...",
-    "site_url": "https://anilist.co/anime/12345"
-  }
-]
-```
-
-**`manga_list`** (on `manga_reading_count` sensor):
-```json
-[
-  {
-    "media_id": 67890,
-    "title": "Manga Title",
-    "status": "CURRENT",
-    "progress": 42,
-    "progress_volumes": 5,
-    "chapters": 200,
-    "volumes": 20,
-    "score": 90,
-    "cover_image": "https://...",
-    "site_url": "https://anilist.co/manga/67890"
-  }
-]
-```
+| Option | Default | Description |
+|--------|---------|-------------|
+| `update_interval` | `15` | 🔄 Data refresh interval in minutes (5–60) |
+| `title_language` | `romaji` | 🔤 Anime title language: `romaji`, `english`, `native` |
+| `include_adult` | `false` | 🔞 Include adult-rated content |
+| `airing_window_days` | `7` | 📅 How many days ahead for airing schedule (1–14) |
+| `media_formats` | all | 🎬 Filter airing + season by format: `TV`, `TV_SHORT`, `MOVIE`, `SPECIAL`, `OVA`, `ONA`, `MUSIC` |
+| `excluded_genres` | none | 🚫 Genres to exclude from season data |
+| `score_format` | `POINT_10` | ⭐ Score display: `POINT_10`, `POINT_100`, `POINT_5`, `SMILEY` |
+| `watchlist_statuses` | `CURRENT, REPEATING` | 📋 Anime statuses for calendar |
+| `manga_statuses` | `CURRENT, REPEATING` | 📖 Manga statuses for calendar |
+| `show_airing_calendar` | `true` | 📅 Enable airing schedule calendar |
+| `show_season_calendar` | `true` | 🗓️ Enable season calendar |
+| `calendar_reminder_offset` | `0` | ⏰ Calendar reminder offset in minutes |
 
 ---
 
-## Calendars
+## 📊 Card Configuration Reference
 
-| Entity ID | Description | Auth Required |
-|-----------|-------------|:------------:|
-| `calendar.anilist_airing_calendar` | All episodes in the airing window | No |
-| `calendar.anilist_season_calendar` | Current and next season anime | No |
-| `calendar.anilist_watchlist_calendar` | Filtered to your watchlist statuses | Yes |
-| `calendar.anilist_manga_calendar` | Your manga reading list | Yes |
+<details>
+<summary>📐 General Options</summary>
 
-Calendar entities work with any HA calendar card and can be used in automations.
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `type` | string | *required* | Must be `custom:anilist-card` |
+| `view` | string | `airing` | Card view: `airing`, `watchlist`, `season`, `profile`, `manga` |
+| `title` | string | auto | Custom card title |
+| `max_items` | number | `5` | Global max items |
+| `max_airing` / `max_watchlist` / `max_season` / `max_manga` | number | — | Per-view max override |
+| `entry_id` | string | — | Config entry ID (multi-account only) |
+</details>
+
+<details>
+<summary>🖼️ Display & Layout</summary>
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `show_cover` | boolean | `true` | Show cover images |
+| `cover_size` | string | `medium` | Size: `small` (40x56), `medium` (48x68), `large` (64x90) |
+| `layout_mode` | string | per-view | `grid` (covers) or `list` (rows) |
+| `cover_quality` | string | `large` | Resolution: `small`, `medium`, `large` (HD) |
+| `show_countdown` | boolean | `true` | Show countdown (airing view) |
+| `countdown_format` | string | `relative` | `relative`, `absolute`, or `both` |
+| `show_progress` | boolean | `true` | Show episode/chapter progress |
+| `show_progress_bar` | boolean | `true` | Visual progress bar |
+| `show_badges` | boolean | `true` | Status badges |
+| `show_search` | boolean | `false` | Search/filter input |
+| `show_tooltips` | boolean | `false` | Details on hover |
+| `link_target` | string | `anilist` | `anilist` (open in new tab) or `none` |
+| `sort_by` | string | `time` | Airing sort: `time`, `title`, `score` |
+| `card_padding` | string | `normal` | `compact`, `normal`, `relaxed` |
+</details>
+
+<details>
+<summary>⭐ Score System</summary>
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `score_position` | string | `top-right` | Badge on covers: `top-left`, `top-right`, `bottom-left`, `bottom-right`, `inline`, `none` |
+| `score_source` | string | `auto` | `user` (your rating), `average` (community), `auto` (smart per view) |
+| `show_next_airing` | boolean | `true` | Next episode countdown on covers |
+</details>
+
+<details>
+<summary>📜 Scroll Behavior</summary>
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `visible_items` | number | — | Items visible before scrolling (auto-calculates height) |
+| `scroll_snap` | boolean | `false` | Snap to item boundaries |
+| `scroll_fade` | boolean | `false` | Gradient fade indicator |
+| `overflow_mode` | string | `scroll` | `scroll` (scrollbar) or `limit` (cut at max) |
+| `scroll_height` | number | `400` | Max height in px (scroll mode) |
+</details>
+
+<details>
+<summary>📺 Airing Extras</summary>
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `show_duration` | boolean | `false` | Show episode duration |
+| `show_genres` | boolean | `false` | Show genre tags |
+| `show_average_score` | boolean | `false` | Show community score |
+| `show_format_badge` | boolean | `false` | Format badge (TV, Movie, OVA) |
+</details>
+
+<details>
+<summary>📋 Watchlist / 📖 Manga</summary>
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `watchlist_statuses` | string[] | all | `CURRENT`, `PLANNING`, `COMPLETED`, `PAUSED`, `DROPPED`, `REPEATING` |
+| `show_status_tabs` | boolean | `true` | Tab buttons for status switching |
+</details>
+
+<details>
+<summary>🗓️ Season</summary>
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `genre_filter` | string[] | `[]` | Only show matching genres |
+| `format_filter` | string[] | `[]` | Only show matching formats |
+</details>
+
+<details>
+<summary>👤 Profile</summary>
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `show_avatar` | boolean | `true` | User avatar |
+| `show_username` | boolean | `true` | Username display |
+| `show_anime_stats` | boolean | `true` | Anime statistics |
+| `show_manga_stats` | boolean | `true` | Manga statistics |
+| `show_genre_chart` | boolean | `true` | Genre visualization |
+| `chart_type` | string | `bar` | `bar`, `donut`, or `tags` |
+| `show_favourites` | boolean | `true` | Favourite anime list |
+</details>
+
+<details>
+<summary>🎨 Styling</summary>
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `accent_color` | string | — | Primary accent color (hex) |
+| `secondary_color` | string | — | Secondary accent (hex) |
+| `card_background` | string | — | Background color (hex/rgba) |
+| `card_opacity` | number | `100` | Background opacity (0–100) |
+| `border_color` | string | — | Border color |
+| `border_width` | number | — | Border width (px) |
+| `border_radius` | number | — | Border radius (px) |
+</details>
 
 ---
 
-## Automations
+## 📊 Sensors
 
-### Notify When an Episode Airs
+All sensors are created under `sensor.anilist_*`.
 
-The integration fires an `anilist_episode_airing` event when an episode in your airing window has aired.
+### 🌐 Public Sensors
+
+| Entity ID | Description | Unit |
+|-----------|-------------|------|
+| `sensor.anilist_airing_today` | 📺 Anime airing today | anime |
+| `sensor.anilist_episodes_this_week` | 📅 Episodes in airing window | episodes |
+| `sensor.anilist_next_episode_title` | 🎬 Next airing anime title | — |
+| `sensor.anilist_next_episode_time` | ⏰ Next episode timestamp | timestamp |
+
+### 🔐 Authenticated Sensors
+
+| Entity ID | Description | Unit |
+|-----------|-------------|------|
+| `sensor.anilist_watching_count` | 👁️ Currently watching | anime |
+| `sensor.anilist_manga_reading_count` | 📖 Currently reading | manga |
+| `sensor.anilist_total_anime_watched` | 📺 Total anime count | anime |
+| `sensor.anilist_total_episodes_watched` | ▶️ Total episodes watched | episodes |
+| `sensor.anilist_total_hours_watched` | ⏱️ Total watch time | hours |
+| `sensor.anilist_anime_mean_score` | ⭐ Average anime score | — |
+| `sensor.anilist_manga_mean_score` | ⭐ Average manga score | — |
+| `sensor.anilist_chapters_read` | 📖 Total chapters read | chapters |
+| `sensor.anilist_top_genre` | 🏷️ Top genre by count | — |
+
+---
+
+## 📅 Calendars
+
+| Entity ID | Description | Auth |
+|-----------|-------------|:----:|
+| `calendar.anilist_airing_calendar` | 📺 All episodes in airing window | ❌ |
+| `calendar.anilist_season_calendar` | 🗓️ Current & next season anime | ❌ |
+| `calendar.anilist_watchlist_calendar` | 📋 Filtered to your watchlist | ✅ |
+| `calendar.anilist_manga_calendar` | 📖 Your manga reading list | ✅ |
+
+---
+
+## ⚡ WebSocket API
+
+The card uses a dedicated WebSocket API (`anilist/*`) for full data access, bypassing the 16 KB sensor attribute limit:
+
+- 📦 **Unlimited items** — full watchlist, manga, schedule (no truncation)
+- 🖼️ **HD cover images** — all sizes with accent color
+- 🔤 **Multi-language titles** — romaji, english, native
+- 🔍 **Server-side filtering** — status, genre, format
+- 📄 **Pagination** — limit/offset on all endpoints
+
+**Endpoints:** `anilist/airing_schedule` · `anilist/watchlist` · `anilist/season` · `anilist/manga` · `anilist/profile`
+
+> 💡 The card automatically falls back to sensor attributes when the WebSocket API is unavailable.
+
+---
+
+## 🤖 Automations
+
+### 🔔 Notify When an Episode Airs
 
 ```yaml
 automation:
@@ -509,7 +462,7 @@ automation:
             clickAction: "{{ trigger.event.data.site_url }}"
 ```
 
-### Daily Airing Summary
+### 📬 Daily Airing Summary
 
 ```yaml
 automation:
@@ -530,56 +483,9 @@ automation:
 
 ---
 
-## FAQ
+## 🌍 Supported Languages
 
-### The card shows "No episodes in the coming days"
-
-- Make sure the AniList integration is set up and running (check **Settings > Devices & Services**)
-- Check if sensor entities exist under **Developer Tools > States** (search for `sensor.anilist_`)
-- The airing window defaults to 7 days — increase it in the integration options if needed
-
-### The card shows "No profile stats available"
-
-- Profile data requires OAuth2 authentication — set up the integration with your AniList account
-- Public-only mode does not provide watchlist, manga, or profile data
-
-### Cover images are not loading
-
-- AniList serves images from `s4.anilist.co` — make sure your network allows access
-- Check your browser console for CORS or CSP errors
-
-### The visual editor doesn't show all options
-
-- The editor shows settings dynamically based on the selected view
-- Switch the view in the **General** tab to see view-specific settings in the middle tab
-
-### How do I use multiple cards on one page?
-
-- Add multiple `custom:anilist-card` instances, each with a different `view`
-- Use the HA **Sections** view type with `max_columns: 4` for a dashboard layout
-
-### Sensor attributes exceed 16KB warning
-
-- Since v0.2.0, sensor attributes are capped at 25 items to stay well under the limit
-- The card uses a WebSocket API for full data access, not sensor attributes
-- If you still see this warning, it only affects long-term history storage — the card works fine
-
-### How do I clear the card cache?
-
-- Press **Ctrl+Shift+R** (or Cmd+Shift+R on Mac) in your browser
-- Alternatively, append `?v=2` to the resource URL temporarily
-
----
-
-## Requirements
-
-- Home Assistant **2025.2.0** or newer (tested up to 2026.4.x)
-- HACS **2.0.5** or newer (for HACS installation)
-- An AniList account (optional — public data works without one)
-
-## Supported Languages
-
-The integration, Lovelace card, and visual card editor are fully translated into 23 languages:
+The integration, Lovelace card, and visual card editor are fully translated into **23 languages**:
 
 | | Language | Code | | Language | Code | | Language | Code |
 |---|----------|------|-|----------|------|-|----------|------|
@@ -592,21 +498,72 @@ The integration, Lovelace card, and visual card editor are fully translated into
 | 🇳🇱 | Dutch | `nl` | 🇳🇴 | Norwegian | `nb` | 🇷🇺 | Russian | `ru` |
 | 🇯🇵 | Japanese | `ja` | 🇭🇷 | Croatian | `hr` | | | |
 
-The language is automatically detected from your Home Assistant language setting. The card and editor adapt instantly — no configuration needed.
+> 🔄 Language is automatically detected from your Home Assistant setting — no configuration needed!
 
-## Contributing
+---
 
-Contributions are welcome! Please open an issue first to discuss what you would like to change.
+## ❓ FAQ
 
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/my-feature`)
-3. Install dependencies: `npm install`
-4. Make your changes
-5. Build the card: `npm run build`
-6. Test in a local HA instance
-7. Submit a pull request
+<details>
+<summary>❌ Card shows "No episodes in the coming days"</summary>
 
-### Development
+- Make sure the AniList integration is running (check **Settings → Devices & Services**)
+- Check if sensors exist under **Developer Tools → States** (search `sensor.anilist_`)
+- The airing window defaults to 7 days — increase it in options if needed
+</details>
+
+<details>
+<summary>❌ Card shows "No profile stats available"</summary>
+
+- Profile data requires OAuth2 authentication
+- Public-only mode only provides airing and season data
+</details>
+
+<details>
+<summary>🖼️ Cover images not loading</summary>
+
+- AniList serves images from `s4.anilist.co` — check network access
+- Check browser console for CORS or CSP errors
+</details>
+
+<details>
+<summary>🖊️ Visual editor doesn't show all options</summary>
+
+- Options are shown dynamically based on the selected view
+- Switch the view in the **General** tab to see view-specific settings
+</details>
+
+<details>
+<summary>🃏 How to use multiple cards on one page?</summary>
+
+- Add multiple `custom:anilist-card` instances with different `view` values
+- Use the HA **Sections** view type with `max_columns: 4` for a dashboard layout
+</details>
+
+---
+
+## 📋 Requirements
+
+- 🏠 Home Assistant **2025.2.0** or newer
+- 📦 HACS **2.0.5** or newer (for HACS installation)
+- 🎌 AniList account (optional — public data works without one)
+
+---
+
+## 🤝 Contributing
+
+Contributions are welcome! Please open an issue first to discuss changes.
+
+1. 🍴 Fork the repository
+2. 🌿 Create a feature branch (`git checkout -b feature/my-feature`)
+3. 📦 Install dependencies: `npm install`
+4. ✏️ Make your changes
+5. 🔨 Build the card: `npm run build`
+6. 🧪 Test in a local HA instance
+7. 🚀 Submit a pull request
+
+<details>
+<summary>🛠️ Development Setup</summary>
 
 ```bash
 # Install dependencies
@@ -620,16 +577,26 @@ npm run watch
 ```
 
 The card source is in `src/card/` and builds to `www/anilist-card/anilist-card.js`.
-
-## License
-
-This project is licensed under the MIT License — see the [LICENSE](LICENSE) file for details.
+</details>
 
 ---
 
-[hacs-badge]: https://img.shields.io/badge/HACS-Custom-41BDF5.svg
+## 📄 License
+
+This project is licensed under the **MIT License** — see the [LICENSE](LICENSE) file for details.
+
+---
+
+<p align="center">
+  Made with ❤️ for the anime community<br>
+  <a href="https://anilist.co">AniList.co</a> · <a href="https://www.home-assistant.io/">Home Assistant</a>
+</p>
+
+[hacs-badge]: https://img.shields.io/badge/HACS-Custom-41BDF5.svg?style=flat-square
 [hacs-url]: https://github.com/hacs/integration
-[release-badge]: https://img.shields.io/github/v/release/S1ckn3z/ha-anilist.co
+[release-badge]: https://img.shields.io/github/v/release/S1ckn3z/ha-anilist.co?style=flat-square
 [release-url]: https://github.com/S1ckn3z/ha-anilist.co/releases
-[license-badge]: https://img.shields.io/github/license/S1ckn3z/ha-anilist.co
+[license-badge]: https://img.shields.io/badge/license-MIT-green.svg?style=flat-square
 [license-url]: https://github.com/S1ckn3z/ha-anilist.co/blob/main/LICENSE
+[ha-badge]: https://img.shields.io/badge/HA-2025.2.0+-blue.svg?style=flat-square
+[ha-url]: https://www.home-assistant.io/
