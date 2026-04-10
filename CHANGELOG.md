@@ -5,6 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.3] - 2026-04-11
+
+### Added
+
+- **🎨 In-repo brand icons** — `icon.png` and `icon@2x.png` are now shipped in
+  `custom_components/anilist/brand/` and served via HA's new
+  [brands proxy API](https://developers.home-assistant.io/blog/2026/02/24/brands-proxy-api)
+- **Requires Home Assistant 2026.3.0 or later** to display the integration logo
+  on the integration card. Older HA versions still work, they just show the
+  default placeholder icon.
+
+### Removed
+
+- Abandoned the `home-assistant/brands` PR approach — as of HA 2026.3, the
+  `brands/` folder inside the custom integration is the canonical location
+  for brand images.
+
 ## [0.4.2] - 2026-04-11
 
 ### Added
@@ -135,6 +152,7 @@ codebase and adds full internationalization across 23 languages.
 - Initial AniList integration with OAuth2 flow
 - Phases 4–8: Manga, Stats, Events, Season, Lovelace Card
 
+[0.4.3]: https://github.com/S1ckn3z/ha-anilist.co/releases/tag/v0.4.3
 [0.4.2]: https://github.com/S1ckn3z/ha-anilist.co/releases/tag/v0.4.2
 [0.4.1]: https://github.com/S1ckn3z/ha-anilist.co/releases/tag/v0.4.1
 [0.4.0]: https://github.com/S1ckn3z/ha-anilist.co/releases/tag/v0.4.0
