@@ -394,6 +394,7 @@ class UserStats:
     minutes_watched: int
     anime_mean_score: float
     top_genres: list[str]
+    genre_stats: list[dict[str, Any]]
     manga_count: int
     chapters_read: int
     volumes_read: int
@@ -407,7 +408,8 @@ class UserStats:
 | `episodes_watched` | `int` | Total episodes watched. |
 | `minutes_watched` | `int` | Total minutes of anime watched. |
 | `anime_mean_score` | `float` | Mean score across all scored anime (0--100 scale). |
-| `top_genres` | `list[str]` | Top 5 genre names by watch count. |
+| `top_genres` | `list[str]` | Top 5 genre names by watch count (legacy compatibility). |
+| `genre_stats` | `list[dict[str, Any]]` | Full genre data from the API. Each dict contains `genre` (str) and `count` (int). |
 | `manga_count` | `int` | Total number of manga on the user's list. |
 | `chapters_read` | `int` | Total chapters read. |
 | `volumes_read` | `int` | Total volumes read. |
@@ -628,6 +630,23 @@ def __init__(
 - `_score_format() -> str` -- returns the configured score format from options.
 
 ### Constants
+
+#### `_MAX_ATTR_ITEMS`
+
+```python
+_MAX_ATTR_ITEMS = 25
+```
+
+Maximum number of items included in sensor `extra_state_attributes` list data. This limit exists because the Home Assistant recorder enforces a 16 KB attribute size limit. Lists exceeding this count are truncated; consumers needing the full dataset should use the WebSocket API instead. Each list attribute that is truncated also includes a `total_count` key with the untruncated item count.
+
+**Sensors with `total_count` attribute:**
+
+| Sensor key | Attribute key | `total_count` meaning |
+|------------|--------------|----------------------|
+| `episodes_this_week` | `airing_schedule` | Total airing entries in the schedule window |
+| `watching_count` | `watchlist` | Total anime on the watchlist (filtered by status) |
+| `airing_today` | `season_anime` | Total current season anime |
+| `manga_reading_count` | `manga_list` | Total manga on the reading list (filtered by status) |
 
 #### `SENSOR_DESCRIPTIONS`
 
@@ -1164,7 +1183,8 @@ Set up AniList from a config entry. Performs the following steps:
 2. Creates an `AniListCoordinator` and runs `async_config_entry_first_refresh()` (which calls `_async_setup` then the first poll).
 3. Stores the coordinator as `entry.runtime_data`.
 4. Forwards setup to the `CALENDAR` and `SENSOR` platforms.
-5. Registers the custom Lovelace card frontend resource (once per HA instance).
+5. Registers the WebSocket API commands via `async_register_websocket_commands(hass)` (once per HA instance, guarded by `hass.data[DOMAIN]["ws_registered"]`).
+6. Registers the custom Lovelace card frontend resource via `async_register_static_paths` (modern HA 2025+ API) and auto-adds it as a Lovelace module resource (once per HA instance, guarded by `hass.data[DOMAIN]["card_registered"]`).
 
 Returns `True` on success.
 
@@ -1192,4 +1212,317 @@ Returns `None` if no token is found.
 async def _register_card(hass: HomeAssistant) -> None
 ```
 
-Register the custom Lovelace card frontend resource. Serves the built JS from the `www/` directory within the integration and auto-registers it as a Lovelace module resource via the storage collection. Falls back to a debug log message if Lovelace resources are not available (YAML mode).
+Register the custom Lovelace card frontend resource. Serves the built JS from the `www/` directory within the integration via `async_register_static_paths` and auto-registers it as a Lovelace module resource via the storage collection. Falls back to a debug log message if Lovelace resources are not available (YAML mode).
+
+---
+
+## websocket_api.py
+
+WebSocket API for the AniList integration. Provides 5 endpoints that serve full coordinator data to the Lovelace card, bypassing the 16 KB recorder attribute limit on sensor entities. All endpoints read from in-memory coordinator data without making additional API calls.
+
+### Functions
+
+#### Registration
+
+```python
+def async_register_websocket_commands(hass: HomeAssistant) -> None
+```
+
+Register all 5 AniList WebSocket commands with the Home Assistant WebSocket API. Called once per HA instance during `async_setup_entry`.
+
+#### Helper Functions
+
+```python
+def _resolve_coordinator(
+    hass: HomeAssistant,
+    connection: websocket_api.ActiveConnection,
+    msg: dict[str, Any],
+) -> AniListCoordinator | None
+```
+
+Find the AniList coordinator for a WebSocket request. If `entry_id` is provided in `msg`, looks up that specific config entry. Otherwise auto-discovers the single AniList config entry. Sends an error response and returns `None` on failure (not found, ambiguous, or data not yet available).
+
+| Error code | Condition |
+|------------|-----------|
+| `not_found` | No config entry found with the given `entry_id`, or no AniList integration configured. |
+| `ambiguous` | Multiple AniList config entries exist and `entry_id` was not specified. |
+| `not_ready` | The coordinator exists but has not completed its first data fetch. |
+
+```python
+def _paginate(items: list, msg: dict[str, Any]) -> tuple[list, int, int]
+```
+
+Apply optional `limit`/`offset` pagination to a list of items. Returns `(page, total, offset)` where `page` is the sliced list, `total` is the original list length, and `offset` is the applied offset.
+
+```python
+def _title_dict(media: dict[str, Any]) -> dict[str, str | None]
+```
+
+Extract the title object with all language variants (`romaji`, `english`, `native`) from a media dict. Returns a dict with those three keys (values may be `None`).
+
+```python
+def _cover_images(media: dict[str, Any]) -> dict[str, str | None]
+```
+
+Extract all cover image URLs from a media object. Maps AniList image sizes to logical names:
+
+| Key | AniList field |
+|-----|---------------|
+| `small` | `coverImage.medium` |
+| `medium` | `coverImage.large` |
+| `large` | `coverImage.extraLarge` |
+| `color` | `coverImage.color` |
+
+```python
+def _score_format(coordinator: AniListCoordinator) -> str
+```
+
+Get the configured score format (`POINT_10`, `POINT_100`, `POINT_5`, `SMILEY`) from the integration's options. Defaults to `DEFAULT_SCORE_FORMAT` (`"POINT_10"`).
+
+#### Serializer Functions
+
+```python
+def _serialize_airing(entry: AiringEntry) -> dict[str, Any]
+```
+
+Serialize an `AiringEntry` for WebSocket response. Returns:
+
+| Key | Type | Description |
+|-----|------|-------------|
+| `media_id` | `int` | AniList media ID |
+| `episode` | `int` | Episode number |
+| `airing_at` | `int` | Unix timestamp (seconds) |
+| `time_until_airing` | `int` | Seconds until air time |
+| `title` | `dict` | `{romaji, english, native}` |
+| `cover_image` | `str \| None` | Medium cover image URL |
+| `cover_images` | `dict` | `{small, medium, large, color}` |
+| `site_url` | `str \| None` | AniList page URL |
+| `duration` | `int \| None` | Episode duration in minutes |
+| `genres` | `list[str]` | Genre list |
+| `average_score` | `int \| None` | Community average score |
+| `format` | `str \| None` | Media format (TV, ONA, etc.) |
+| `is_adult` | `bool` | Whether the media is adult-rated |
+
+```python
+def _serialize_watchlist(entry: WatchlistEntry) -> dict[str, Any]
+```
+
+Serialize a `WatchlistEntry` for WebSocket response. Returns:
+
+| Key | Type | Description |
+|-----|------|-------------|
+| `media_id` | `int` | AniList media ID |
+| `status` | `str` | List status (CURRENT, PLANNING, etc.) |
+| `score` | `float` | User's score |
+| `average_score` | `int \| None` | Community average score |
+| `progress` | `int` | Episodes watched |
+| `episodes` | `int \| None` | Total episode count |
+| `title` | `dict` | `{romaji, english, native}` |
+| `cover_image` | `str \| None` | Medium cover image URL |
+| `cover_images` | `dict` | `{small, medium, large, color}` |
+| `site_url` | `str \| None` | AniList page URL |
+| `next_airing_episode` | `dict \| None` | `{airing_at, episode}` or `None` |
+| `updated_at` | `int` | Last update timestamp |
+
+```python
+def _serialize_manga(entry: MangaEntry) -> dict[str, Any]
+```
+
+Serialize a `MangaEntry` for WebSocket response. Returns:
+
+| Key | Type | Description |
+|-----|------|-------------|
+| `media_id` | `int` | AniList media ID |
+| `status` | `str` | List status |
+| `score` | `float` | User's score |
+| `average_score` | `int \| None` | Community average score |
+| `progress` | `int` | Chapters read |
+| `progress_volumes` | `int` | Volumes read |
+| `chapters` | `int \| None` | Total chapters |
+| `volumes` | `int \| None` | Total volumes |
+| `title` | `dict` | `{romaji, english, native}` |
+| `cover_image` | `str \| None` | Medium cover image URL |
+| `cover_images` | `dict` | `{small, medium, large, color}` |
+| `site_url` | `str \| None` | AniList page URL |
+| `updated_at` | `int` | Last update timestamp |
+
+```python
+def _serialize_season_anime(media: dict[str, Any]) -> dict[str, Any]
+```
+
+Serialize a season anime media dict for WebSocket response. Returns:
+
+| Key | Type | Description |
+|-----|------|-------------|
+| `id` | `int` | AniList media ID |
+| `title` | `dict` | `{romaji, english, native}` |
+| `average_score` | `int \| None` | Community average score |
+| `popularity` | `int \| None` | Popularity ranking |
+| `episodes` | `int \| None` | Total episode count |
+| `duration` | `int \| None` | Episode duration in minutes |
+| `format` | `str \| None` | Media format |
+| `status` | `str \| None` | Airing status |
+| `genres` | `list[str]` | Genre list |
+| `cover_image` | `str \| None` | Medium cover image URL |
+| `cover_images` | `dict` | `{small, medium, large, color}` |
+| `banner_image` | `str \| None` | Banner image URL |
+| `site_url` | `str \| None` | AniList page URL |
+| `studios` | `list[dict]` | `[{id, name}, ...]` |
+| `next_airing_episode` | `dict \| None` | `{airing_at, episode}` or `None` |
+| `start_date` | `dict \| None` | `{year, month, day}` |
+| `is_adult` | `bool` | Whether the media is adult-rated |
+
+### WebSocket Endpoints
+
+All endpoints use the `@websocket_api.websocket_command` decorator with `voluptuous` schema validation and `@websocket_api.async_response` for async handling.
+
+#### `anilist/airing_schedule`
+
+Return the full airing schedule.
+
+**Request schema:**
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `type` | `str` | Yes | `"anilist/airing_schedule"` |
+| `entry_id` | `str` | No | Config entry ID. Auto-detected when only one entry exists. |
+| `limit` | `int` | No | Max items to return (1--500). |
+| `offset` | `int` | No | Number of items to skip (min 0). |
+
+**Response:**
+
+```json
+{
+  "items": [<_serialize_airing output>, ...],
+  "total": 42,
+  "offset": 0
+}
+```
+
+#### `anilist/watchlist`
+
+Return the user's anime watchlist with optional status filtering. Requires authentication.
+
+**Request schema:**
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `type` | `str` | Yes | `"anilist/watchlist"` |
+| `entry_id` | `str` | No | Config entry ID. |
+| `status` | `str` | No | Filter by status: `CURRENT`, `PLANNING`, `COMPLETED`, `DROPPED`, `PAUSED`, `REPEATING`. |
+| `limit` | `int` | No | Max items to return (1--500). |
+| `offset` | `int` | No | Number of items to skip (min 0). |
+
+**Response:**
+
+```json
+{
+  "items": [<_serialize_watchlist output>, ...],
+  "total": 15,
+  "offset": 0,
+  "score_format": "POINT_10"
+}
+```
+
+**Error:** `not_authenticated` if the config entry has no AniList account linked.
+
+#### `anilist/season`
+
+Return season anime with optional genre/format filtering.
+
+**Request schema:**
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `type` | `str` | Yes | `"anilist/season"` |
+| `entry_id` | `str` | No | Config entry ID. |
+| `season` | `str` | No | `"CURRENT"` (default) or `"NEXT"`. |
+| `genre` | `str` | No | Filter by genre name (exact match against the media's genre list). |
+| `format` | `str` | No | Filter by format: `TV`, `TV_SHORT`, `MOVIE`, `SPECIAL`, `OVA`, `ONA`, `MUSIC`. |
+| `limit` | `int` | No | Max items to return (1--500). |
+| `offset` | `int` | No | Number of items to skip (min 0). |
+
+**Response:**
+
+```json
+{
+  "items": [<_serialize_season_anime output>, ...],
+  "total": 50,
+  "offset": 0,
+  "season": "CURRENT"
+}
+```
+
+#### `anilist/manga`
+
+Return the user's manga list with optional status filtering. Requires authentication.
+
+**Request schema:**
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `type` | `str` | Yes | `"anilist/manga"` |
+| `entry_id` | `str` | No | Config entry ID. |
+| `status` | `str` | No | Filter by status: `CURRENT`, `PLANNING`, `COMPLETED`, `DROPPED`, `PAUSED`, `REPEATING`. |
+| `limit` | `int` | No | Max items to return (1--500). |
+| `offset` | `int` | No | Number of items to skip (min 0). |
+
+**Response:**
+
+```json
+{
+  "items": [<_serialize_manga output>, ...],
+  "total": 8,
+  "offset": 0,
+  "score_format": "POINT_10"
+}
+```
+
+**Error:** `not_authenticated` if the config entry has no AniList account linked.
+
+#### `anilist/profile`
+
+Return the user's profile, statistics, genre data, and favourites.
+
+**Request schema:**
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `type` | `str` | Yes | `"anilist/profile"` |
+| `entry_id` | `str` | No | Config entry ID. |
+
+**Response:**
+
+```json
+{
+  "viewer": {
+    "name": "Username",
+    "avatar": "https://...",
+    "site_url": "https://anilist.co/user/..."
+  },
+  "stats": {
+    "anime_count": 150,
+    "episodes_watched": 2400,
+    "minutes_watched": 57600,
+    "anime_mean_score": 75.3,
+    "manga_count": 30,
+    "chapters_read": 1200,
+    "volumes_read": 80,
+    "manga_mean_score": 72.1
+  },
+  "top_genres": [{"genre": "Action", "count": 45}, ...],
+  "favourite_anime": [
+    {
+      "id": 1234,
+      "title": {"romaji": "...", "english": "...", "native": "..."},
+      "cover_image": "https://...",
+      "cover_images": {"small": "...", "medium": "...", "large": "...", "color": "#..."},
+      "site_url": "https://..."
+    }
+  ],
+  "score_format": "POINT_10",
+  "is_authenticated": true
+}
+```
+
+When unauthenticated, `stats` is `{}`, `top_genres` is `[]`, `favourite_anime` is `[]`, and `is_authenticated` is `false`.

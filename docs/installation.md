@@ -2,7 +2,7 @@
 
 ## Requirements
 
-- Home Assistant **2024.1.0** or newer
+- Home Assistant **2025.2.0** or newer
 - HACS **2.0.5** or newer (for HACS installation)
 - An AniList.co account (optional — public data works without one)
 

@@ -37,24 +37,32 @@ These sensors require a valid AniList OAuth token. They are created only when th
 
 ## Attribute Structures
 
+> **Note:** Sensor attributes are limited to 25 items per list to stay under the HA recorder's 16KB limit. Use the WebSocket API (see [API Reference](api-reference.md)) for unlimited data access.
+
 Sensors with extra state attributes expose structured data. Below are JSON examples for each attribute type.
 
 ### airing_schedule (array)
 
 Exposed by `sensor.anilist_episodes_this_week`.
 
+The list is capped at 25 items (`_MAX_ATTR_ITEMS`) due to the HA recorder 16KB attribute size limit. A `total_count` attribute shows the actual total number of entries (e.g., 109 airing entries, but only 25 in attributes). For full data, use the [WebSocket API endpoints](api-reference.md).
+
 ```json
-[
-  {
-    "media_id": 163146,
-    "title": "Frieren: Beyond Journey's End",
-    "episode": 24,
-    "airing_at": "2026-04-10T17:00:00+00:00",
-    "cover_image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx163146.jpg",
-    "site_url": "https://anilist.co/anime/163146",
-    "duration": 24
-  }
-]
+{
+  "airing_schedule": [
+    {
+      "media_id": 163146,
+      "title": "Frieren: Beyond Journey's End",
+      "episode": 24,
+      "airing_at": "2026-04-10T17:00:00+00:00",
+      "cover_image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx163146.jpg",
+      "site_url": "https://anilist.co/anime/163146",
+      "duration": 24
+    }
+  ],
+  "total_count": 109,
+  "next_airing": { ... }
+}
 ```
 
 ### next_airing (object)
@@ -75,63 +83,78 @@ Exposed by `sensor.anilist_episodes_this_week`. Contains the single nearest upco
 
 Exposed by `sensor.anilist_watching_count`.
 
+The list is capped at 25 items (`_MAX_ATTR_ITEMS`) due to the HA recorder 16KB attribute size limit. A `total_count` attribute shows the actual total number of entries. For full data, use the [WebSocket API endpoints](api-reference.md).
+
 ```json
-[
-  {
-    "media_id": 163146,
-    "title": "Frieren: Beyond Journey's End",
-    "status": "CURRENT",
-    "progress": 20,
-    "episodes": 28,
-    "score": 9,
-    "cover_image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx163146.jpg",
-    "site_url": "https://anilist.co/anime/163146"
-  }
-]
+{
+  "watchlist": [
+    {
+      "media_id": 163146,
+      "title": "Frieren: Beyond Journey's End",
+      "status": "CURRENT",
+      "progress": 20,
+      "episodes": 28,
+      "score": 9,
+      "cover_image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx163146.jpg",
+      "site_url": "https://anilist.co/anime/163146"
+    }
+  ],
+  "total_count": 42
+}
 ```
 
 ### manga_list (array)
 
 Exposed by `sensor.anilist_manga_reading_count`.
 
+The list is capped at 25 items (`_MAX_ATTR_ITEMS`) due to the HA recorder 16KB attribute size limit. A `total_count` attribute shows the actual total number of entries. For full data, use the [WebSocket API endpoints](api-reference.md).
+
 ```json
-[
-  {
-    "media_id": 105778,
-    "title": "Chainsaw Man",
-    "status": "CURRENT",
-    "progress": 140,
-    "progress_volumes": 14,
-    "chapters": null,
-    "volumes": null,
-    "score": 8,
-    "cover_image": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/medium/bx105778.jpg",
-    "site_url": "https://anilist.co/manga/105778"
-  }
-]
+{
+  "manga_list": [
+    {
+      "media_id": 105778,
+      "title": "Chainsaw Man",
+      "status": "CURRENT",
+      "progress": 140,
+      "progress_volumes": 14,
+      "chapters": null,
+      "volumes": null,
+      "score": 8,
+      "cover_image": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/medium/bx105778.jpg",
+      "site_url": "https://anilist.co/manga/105778"
+    }
+  ],
+  "total_count": 27
+}
 ```
 
 ### season_anime (array)
 
 Exposed by `sensor.anilist_airing_today`.
 
+The list is capped at 25 items (`_MAX_ATTR_ITEMS`) due to the HA recorder 16KB attribute size limit. A `total_count` attribute shows the actual total number of entries. For full data, use the [WebSocket API endpoints](api-reference.md).
+
 ```json
-[
-  {
-    "id": 163146,
-    "title": "Frieren: Beyond Journey's End",
-    "average_score": 91,
-    "episodes": 28,
-    "format": "TV",
-    "genres": ["Adventure", "Drama", "Fantasy"],
-    "cover_image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx163146.jpg",
-    "site_url": "https://anilist.co/anime/163146",
-    "next_airing_episode": {
-      "airingAt": 1744304400,
-      "episode": 24
+{
+  "season_anime": [
+    {
+      "id": 163146,
+      "title": "Frieren: Beyond Journey's End",
+      "average_score": 91,
+      "episodes": 28,
+      "format": "TV",
+      "genres": ["Adventure", "Drama", "Fantasy"],
+      "cover_image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx163146.jpg",
+      "site_url": "https://anilist.co/anime/163146",
+      "next_airing_episode": {
+        "airingAt": 1744304400,
+        "episode": 24
+      }
     }
-  }
-]
+  ],
+  "total_count": 85
+}
 ```
 
 ### top_genres (string array)

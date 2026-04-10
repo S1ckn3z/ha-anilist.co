@@ -4,6 +4,7 @@ export interface AniListCardConfig {
   // --- General ---
   view?: "airing" | "watchlist" | "season" | "profile" | "manga";
   title?: string;
+  entry_id?: string; // optional override for multi-entry setups
   max_items?: number;
   max_airing?: number;
   max_watchlist?: number;
@@ -36,6 +37,16 @@ export interface AniListCardConfig {
   show_status_tabs?: boolean;
   overflow_mode?: "scroll" | "limit";  // scroll = fixed height scrollbar, limit = max_items cut
   scroll_height?: number;              // px height when overflow_mode=scroll (default 400)
+  visible_items?: number;              // number of items visible before scrolling (auto-calculates height)
+  scroll_snap?: boolean;               // snap scroll to item boundaries (no half-cut items)
+  scroll_fade?: boolean;               // gradient fade at bottom to indicate more content
+
+  // --- Layout & Display ---
+  layout_mode?: "grid" | "list";       // grid=cover grid, list=horizontal rows
+  cover_quality?: "small" | "medium" | "large";  // cover image resolution (default "large")
+  score_position?: "top-left" | "top-right" | "bottom-left" | "bottom-right" | "inline" | "none";
+  score_source?: "user" | "average" | "auto";  // which score to display (auto = smart per view/status)
+  show_next_airing?: boolean;          // show next episode countdown on covers
 
   // --- Profile ---
   show_avatar?: boolean;
@@ -66,6 +77,13 @@ export interface AniListCardConfig {
   link_to_anilist?: boolean;
 }
 
+export interface CoverImages {
+  small?: string;
+  medium?: string;
+  large?: string;
+  color?: string;
+}
+
 export interface HassEntity {
   entity_id: string;
   state: string;
@@ -74,19 +92,96 @@ export interface HassEntity {
   last_updated: string;
 }
 
+// Minimal HA type — extended at runtime by the real hass object
 export interface HomeAssistant {
   states: Record<string, HassEntity>;
   language: string;
   locale: { language: string };
+  connection?: HassConnection;
+  callWS?<T>(msg: Record<string, unknown>): Promise<T>;
 }
 
-// AniList data shapes (from sensor extra_state_attributes)
+export interface HassConnection {
+  sendMessagePromise(msg: Record<string, unknown>): Promise<unknown>;
+}
+
+// ---------------------------------------------------------------------------
+// Title — supports both flat string (entity attr fallback) and multi-lang WS
+// ---------------------------------------------------------------------------
+
+export interface MediaTitle {
+  romaji?: string;
+  english?: string;
+  native?: string;
+}
+
+/** Resolve a title that may be a plain string (entity fallback) or MediaTitle object. */
+export function resolveTitle(
+  title: string | MediaTitle | undefined,
+  lang: string = "romaji",
+): string {
+  if (!title) return "Unknown";
+  if (typeof title === "string") return title;
+  return title[lang as keyof MediaTitle]
+    || title.romaji
+    || title.english
+    || title.native
+    || "Unknown";
+}
+
+// ---------------------------------------------------------------------------
+// WS response wrappers
+// ---------------------------------------------------------------------------
+
+export interface WSListResponse<T> {
+  items: T[];
+  total: number;
+  offset: number;
+  score_format?: string;
+  season?: string;
+}
+
+export interface WSProfileResponse {
+  viewer: {
+    name?: string;
+    avatar?: string;
+    site_url?: string;
+  };
+  stats: {
+    anime_count?: number;
+    episodes_watched?: number;
+    minutes_watched?: number;
+    anime_mean_score?: number;
+    manga_count?: number;
+    chapters_read?: number;
+    volumes_read?: number;
+    manga_mean_score?: number;
+  };
+  top_genres: { genre: string; count: number }[];
+  favourite_anime: WSFavouriteAnime[];
+  score_format: string;
+  is_authenticated: boolean;
+}
+
+export interface WSFavouriteAnime {
+  id?: number;
+  title: string | MediaTitle;
+  cover_image?: string;
+  cover_images?: CoverImages;
+  site_url?: string;
+}
+
+// ---------------------------------------------------------------------------
+// AniList data shapes — compatible with both entity attrs and WS responses
+// ---------------------------------------------------------------------------
+
 export interface AiringAnime {
   media_id: number;
-  title: string;
+  title: string | MediaTitle;
   episode: number;
-  airing_at: string;
+  airing_at: string | number; // ISO string (entity) or unix ts (WS)
   cover_image?: string;
+  cover_images?: CoverImages;
   site_url?: string;
   duration?: number;
   genres?: string[];
@@ -96,38 +191,50 @@ export interface AiringAnime {
 
 export interface WatchlistAnime {
   media_id: number;
-  title: string;
+  title: string | MediaTitle;
   status: string;
   progress: number;
   episodes?: number;
   score?: number;
+  average_score?: number;
   cover_image?: string;
+  cover_images?: CoverImages;
   site_url?: string;
+  next_airing_episode?: { airing_at: number; episode: number };
+  updated_at?: number;
 }
 
 export interface MangaItem {
   media_id: number;
-  title: string;
+  title: string | MediaTitle;
   status: string;
   progress: number;
   progress_volumes: number;
   chapters?: number;
   volumes?: number;
   score?: number;
+  average_score?: number;
   cover_image?: string;
+  cover_images?: CoverImages;
   site_url?: string;
+  updated_at?: number;
 }
 
 export interface SeasonAnime {
   id: number;
-  title: string;
+  title: string | MediaTitle;
   average_score?: number;
   episodes?: number;
   format?: string;
   genres?: string[];
   cover_image?: string;
+  cover_images?: CoverImages;
   site_url?: string;
-  next_airing_episode?: { airing_at: string; episode: number };
+  next_airing_episode?: { airing_at: number; episode: number };
+  studios?: { id: number; name: string }[];
+  popularity?: number;
+  banner_image?: string;
+  start_date?: { year?: number; month?: number; day?: number };
 }
 
 export interface ViewerInfo {

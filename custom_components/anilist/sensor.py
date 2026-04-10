@@ -140,7 +140,11 @@ def _top_genre(data: AniListData, _lang: str) -> str | None:
 
 # ---------------------------------------------------------------------------
 # Attribute functions (for extra_state_attributes)
+# HA recorder has a 16 KB limit for serialised attributes.
+# Cap list attributes to keep well under that threshold.
 # ---------------------------------------------------------------------------
+
+_MAX_ATTR_ITEMS = 25
 
 
 def _attrs_airing_schedule(data: AniListData, lang: str) -> dict[str, Any] | None:
@@ -158,7 +162,8 @@ def _attrs_airing_schedule(data: AniListData, lang: str) -> dict[str, Any] | Non
     ]
     next_entry = _next_airing_entry(data)
     return {
-        "airing_schedule": entries,
+        "airing_schedule": entries[:_MAX_ATTR_ITEMS],
+        "total_count": len(entries),
         "next_airing": {
             "title": _get_title(next_entry.media, lang),
             "episode": next_entry.episode,
@@ -172,21 +177,20 @@ def _attrs_airing_schedule(data: AniListData, lang: str) -> dict[str, Any] | Non
 def _attrs_watchlist(data: AniListData, lang: str) -> dict[str, Any] | None:
     if data.watchlist is None:
         return None
-    return {
-        "watchlist": [
-            {
-                "media_id": e.media_id,
-                "title": _get_title(e.media, lang),
-                "status": e.status,
-                "progress": e.progress,
-                "episodes": e.media.get("episodes"),
-                "score": e.score,
-                "cover_image": (e.media.get("coverImage") or {}).get("medium"),
-                "site_url": e.media.get("siteUrl"),
-            }
-            for e in data.watchlist
-        ],
-    }
+    items = [
+        {
+            "media_id": e.media_id,
+            "title": _get_title(e.media, lang),
+            "status": e.status,
+            "progress": e.progress,
+            "episodes": e.media.get("episodes"),
+            "score": e.score,
+            "cover_image": (e.media.get("coverImage") or {}).get("medium"),
+            "site_url": e.media.get("siteUrl"),
+        }
+        for e in data.watchlist
+    ]
+    return {"watchlist": items[:_MAX_ATTR_ITEMS], "total_count": len(items)}
 
 
 def _attrs_season_anime(data: AniListData, lang: str) -> dict[str, Any] | None:
@@ -204,29 +208,28 @@ def _attrs_season_anime(data: AniListData, lang: str) -> dict[str, Any] | None:
         }
         for m in (data.season_anime or [])
     ]
-    return {"season_anime": entries}
+    return {"season_anime": entries[:_MAX_ATTR_ITEMS], "total_count": len(entries)}
 
 
 def _attrs_manga_list(data: AniListData, lang: str) -> dict[str, Any] | None:
     if data.manga_list is None:
         return None
-    return {
-        "manga_list": [
-            {
-                "media_id": e.media_id,
-                "title": _get_title(e.media, lang),
-                "status": e.status,
-                "progress": e.progress,
-                "progress_volumes": e.progress_volumes,
-                "chapters": e.media.get("chapters"),
-                "volumes": e.media.get("volumes"),
-                "score": e.score,
-                "cover_image": (e.media.get("coverImage") or {}).get("medium"),
-                "site_url": e.media.get("siteUrl"),
-            }
-            for e in data.manga_list
-        ],
-    }
+    items = [
+        {
+            "media_id": e.media_id,
+            "title": _get_title(e.media, lang),
+            "status": e.status,
+            "progress": e.progress,
+            "progress_volumes": e.progress_volumes,
+            "chapters": e.media.get("chapters"),
+            "volumes": e.media.get("volumes"),
+            "score": e.score,
+            "cover_image": (e.media.get("coverImage") or {}).get("medium"),
+            "site_url": e.media.get("siteUrl"),
+        }
+        for e in data.manga_list
+    ]
+    return {"manga_list": items[:_MAX_ATTR_ITEMS], "total_count": len(items)}
 
 
 def _attrs_top_genre(data: AniListData, _lang: str) -> dict[str, Any] | None:

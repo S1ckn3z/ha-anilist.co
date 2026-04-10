@@ -20,7 +20,9 @@ HACS. It consists of two major parts:
 
 Data flows in a single direction: the AniList API is the sole external data
 source, the coordinator polls it on a configurable interval, sensors and
-calendars reflect the coordinator's data, and the card reads from HA state.
+calendars reflect the coordinator's data, and the card reads from the
+coordinator via a dedicated WebSocket API (bypassing the 16 KB recorder
+attribute limit on entity state).
 
 ---
 
@@ -44,22 +46,24 @@ calendars reflect the coordinator's data, and the card reads from HA state.
   - Fires anilist_episode_airing events
   - Applies format/genre filters
           |
-  +-------+--------+
-  |                |
-  v                v
-Sensors          Calendars
-(sensor.py)      (calendar.py)
-13 entities      4 entities
-  |                |
-  v                v
-  HA State Machine
-  (entity states + attributes)
-          |
-          v
+  +-------+--------+-----------+
+  |                |           |
+  v                v           v
+Sensors          Calendars   WebSocket API
+(sensor.py)      (calendar.py)  (websocket_api.py)
+13 entities      4 entities   5 endpoints
+  |                |           |
+  v                v           |
+  HA State Machine             |
+  (entity states + attributes) |
+          |                    |
+          v                    v
   AniList Card (anilist-card.ts)
   - Lit 3.x web component
   - 5 views: airing, watchlist, season, profile, manga
   - 60-second refresh timer for countdown updates
+  - Primary data via WebSocket API (full dataset)
+  - Fallback to entity attributes (truncated to 25 items)
 ```
 
 ---
@@ -68,7 +72,7 @@ Sensors          Calendars
 
 | Module | File | Purpose |
 |--------|------|---------|
-| Entry point | `__init__.py` | `async_setup_entry` / `async_unload_entry`, extracts access token from OAuth2 or legacy entry data, registers the custom Lovelace card as a frontend resource |
+| Entry point | `__init__.py` | `async_setup_entry` / `async_unload_entry`, extracts access token from OAuth2 or legacy entry data, registers the custom Lovelace card via `async_register_static_paths` (modern HA 2025+ API), registers WebSocket commands |
 | API client | `api.py` | `AniListClient` class with GraphQL query execution, rate limit monitoring (`X-RateLimit-Remaining`), auto-sleep when budget is low, custom exception hierarchy (`AniListError`, `AniListAuthError`, `AniListRateLimitError`), all GraphQL query strings |
 | Coordinator | `coordinator.py` | `AniListCoordinator` (extends `DataUpdateCoordinator[AniListData]`), typed dataclasses (`AniListData`, `AiringEntry`, `WatchlistEntry`, `MangaEntry`, `UserStats`), schedule pagination, airing event firing, format/genre filtering |
 | Config flow | `config_flow.py` | `AniListConfigFlow` (extends `AbstractOAuth2FlowHandler`) with menu step (OAuth2 or public-only), OAuth2 callback with Viewer validation, re-auth flow; `AniListOptionsFlow` (extends `OptionsFlowWithReload`) with 11 configurable options |
@@ -77,6 +81,7 @@ Sensors          Calendars
 | Constants | `const.py` | Domain name, API URLs, OAuth2 endpoints, option keys and defaults, season mapping, rate limit buffer, media format list, event name |
 | OAuth2 impl | `application_credentials.py` | `AniListOAuth2Implementation` overriding token exchange to use JSON body (AniList requirement), no-op `_async_refresh_token` (tokens are permanent), `async_get_authorization_server` / `async_get_auth_implementation` hooks |
 | Card | `src/card/anilist-card.ts` | Lit 3.x `LitElement` custom element (`anilist-card`), 5 views, i18n (en/de), 60-second countdown refresh, auto-discovers entities by `sensor.anilist_` prefix |
+| WebSocket API | `websocket_api.py` | WebSocket API -- 5 endpoints serving full coordinator data to Lovelace card, bypassing 16KB recorder attribute limit |
 | Card editor | `src/card/anilist-card-editor.ts` | Visual configuration editor for the card in the Lovelace UI |
 | Types | `src/card/types.ts` | TypeScript interfaces: `AniListCardConfig`, `HomeAssistant`, `HassEntity`, `AiringAnime`, `WatchlistAnime`, `MangaItem`, `SeasonAnime`, `ViewerInfo`, `UserProfile` |
 
@@ -191,6 +196,7 @@ UserStats
 +-- minutes_watched: int       # Total minutes watched
 +-- anime_mean_score: float    # Average anime score (0-100)
 +-- top_genres: list[str]      # Top 5 genres by watch count
++-- genre_stats: list[dict]    # Full genre data with counts (e.g. [{genre, count}, ...])
 +-- manga_count: int           # Total manga on list
 +-- chapters_read: int         # Total chapters read
 +-- volumes_read: int          # Total volumes read
@@ -362,3 +368,32 @@ automation:
       title: "{{ trigger.event.data.title }}"
       message: "Episode {{ trigger.event.data.episode }} just aired!"
 ```
+
+---
+
+## 9. WebSocket API
+
+The integration registers five WebSocket endpoints that serve the full
+coordinator dataset directly to the Lovelace card. This bypasses the 16 KB
+Home Assistant recorder attribute size limit that forces sensor
+`extra_state_attributes` to truncate list data to 25 items.
+
+The card connects via the standard HA WebSocket connection and sends typed
+commands. Each endpoint reads from the in-memory coordinator data (no
+additional API calls) and supports optional pagination via `limit`/`offset`.
+
+| Endpoint | Command type | Description |
+|----------|-------------|-------------|
+| Airing schedule | `anilist/airing_schedule` | Full airing schedule with episode countdown data |
+| Watchlist | `anilist/watchlist` | User's anime watchlist with optional status filter |
+| Season anime | `anilist/season` | Current or next season anime with genre/format filters |
+| Manga | `anilist/manga` | User's manga list with optional status filter |
+| Profile | `anilist/profile` | User profile, statistics, genre stats, and favourites |
+
+All endpoints accept an optional `entry_id` parameter. When omitted and only
+one AniList config entry exists, it is auto-discovered. When multiple entries
+exist, `entry_id` is required.
+
+Registration is performed once per HA instance in `async_setup_entry` via
+`async_register_websocket_commands(hass)`, guarded by a
+`hass.data[DOMAIN]["ws_registered"]` flag to prevent duplicate registration.

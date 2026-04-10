@@ -8,7 +8,12 @@ import type {
   WatchlistAnime,
   MangaItem,
   SeasonAnime,
+  WSListResponse,
+  WSProfileResponse,
+  MediaTitle,
+  CoverImages,
 } from "./types.js";
+import { resolveTitle } from "./types.js";
 import "./anilist-card-editor.js";
 
 // ─── i18n ────────────────────────────────────────────────────────────────────
@@ -148,15 +153,21 @@ function getEntityState(hass: HomeAssistant, entityId: string): string {
   return hass.states[entityId]?.state ?? "";
 }
 
-function renderScore(score: number | undefined, display: string) {
-  if (!score || display === "none") return nothing;
-  if (display === "stars") {
-    return html`<span class="score-badge">★${score}</span>`;
-  }
-  if (display === "bar") {
-    return html`<div class="score-bar"><div class="score-bar-fill" style="width:${score}%"></div></div>`;
-  }
-  return html`<span class="score-badge">${score}</span>`;
+/** Format a raw 0-100 score to single-digit 0-10 scale. */
+function fmtScore(raw: number | undefined): string {
+  if (!raw) return "";
+  return (raw / 10).toFixed(1).replace(/\.0$/, "");
+}
+
+function renderScoreOverlay(score: number | undefined, position: string) {
+  if (!score || position === "none") return nothing;
+  if (position === "inline") return nothing;
+  return html`<span class="score-overlay ${position}">★${fmtScore(score)}</span>`;
+}
+
+function renderScoreInline(score: number | undefined, position: string) {
+  if (!score || position !== "inline") return nothing;
+  return html`<span class="score-inline">★${fmtScore(score)}</span>`;
 }
 
 // ─── Card Element ─────────────────────────────────────────────────────────────
@@ -166,7 +177,20 @@ class AniListCard extends LitElement {
   @state() private _config!: AniListCardConfig;
   @state() private _activeTab = "CURRENT";
   @state() private _searchQuery = "";
+
+  // WebSocket data cache (null = not yet loaded, use entity fallback)
+  @state() private _wsAiring: AiringAnime[] | null = null;
+  @state() private _wsWatchlist: WatchlistAnime[] | null = null;
+  @state() private _wsSeason: SeasonAnime[] | null = null;
+  @state() private _wsManga: MangaItem[] | null = null;
+  @state() private _wsProfile: WSProfileResponse | null = null;
+  @state() private _wsLoading = false;
+
   private _tick: ReturnType<typeof setInterval> | undefined;
+  private _lastSensorHash = "";
+  private _wsLoadedViews = new Set<string>();
+  private _wsLoadPromise: Promise<void> | null = null;
+  private _wsInitDone = false;
 
   static getConfigElement() {
     return document.createElement("anilist-card-editor");
@@ -230,6 +254,141 @@ class AniListCard extends LitElement {
   disconnectedCallback() {
     super.disconnectedCallback();
     clearInterval(this._tick);
+    this._wsInitDone = false;
+  }
+
+  updated(changed: Map<string, unknown>) {
+    super.updated(changed);
+    if (!changed.has("hass") || !this.hass?.callWS) return;
+
+    // First hass assignment → initial WS load
+    if (!this._wsInitDone) {
+      this._wsInitDone = true;
+      this._lastSensorHash = this._sensorHash();
+      this._triggerWSLoad();
+      return;
+    }
+
+    // Subsequent updates: only reload when sensor states actually changed
+    // (indicates coordinator refreshed new data from AniList API)
+    const hash = this._sensorHash();
+    if (hash !== this._lastSensorHash) {
+      this._lastSensorHash = hash;
+      this._wsLoadedViews.clear();
+      this._triggerWSLoad();
+    }
+
+  }
+
+  /** Simple hash of anilist sensor states to detect coordinator refreshes. */
+  private _sensorHash(): string {
+    let h = "";
+    for (const [id, s] of Object.entries(this.hass?.states ?? {})) {
+      if (id.startsWith("sensor.anilist_")) h += `${id}:${s.state};`;
+    }
+    return h;
+  }
+
+  private _triggerWSLoad() {
+    // Prevent overlapping loads
+    if (this._wsLoadPromise) return;
+    const view = this._config?.view ?? "airing";
+    this._wsLoadPromise = this._loadViewData(view).then(() => {
+      this._wsLoadedViews.add(view);
+      this._wsLoadPromise = null;
+    }).catch(() => {
+      this._wsLoadPromise = null;
+    });
+  }
+
+  private async _loadViewData(view: string): Promise<void> {
+    if (!this.hass?.callWS) return;
+    this._wsLoading = true;
+    try {
+      const entryId = this._config.entry_id; // undefined = auto-detect on server
+      if (view === "airing") {
+        const r = await this.hass.callWS<WSListResponse<AiringAnime>>({
+          type: "anilist/airing_schedule",
+          ...(entryId ? { entry_id: entryId } : {}),
+        });
+        this._wsAiring = r.items;
+      } else if (view === "watchlist") {
+        const r = await this.hass.callWS<WSListResponse<WatchlistAnime>>({
+          type: "anilist/watchlist",
+          ...(entryId ? { entry_id: entryId } : {}),
+        });
+        this._wsWatchlist = r.items;
+      } else if (view === "season") {
+        const r = await this.hass.callWS<WSListResponse<SeasonAnime>>({
+          type: "anilist/season",
+          ...(entryId ? { entry_id: entryId } : {}),
+        });
+        this._wsSeason = r.items;
+      } else if (view === "manga") {
+        const r = await this.hass.callWS<WSListResponse<MangaItem>>({
+          type: "anilist/manga",
+          ...(entryId ? { entry_id: entryId } : {}),
+        });
+        this._wsManga = r.items;
+      } else if (view === "profile") {
+        this._wsProfile = await this.hass.callWS<WSProfileResponse>({
+          type: "anilist/profile",
+          ...(entryId ? { entry_id: entryId } : {}),
+        });
+      }
+    } catch {
+      // WS failed — fall back to entity attributes (already rendered)
+    } finally {
+      this._wsLoading = false;
+    }
+  }
+
+  /** Resolve a title value (string or MediaTitle) to display string. */
+  private _title(t: string | MediaTitle | undefined): string {
+    return resolveTitle(t, this._lang());
+  }
+
+  /** Resolve cover URL with quality preference and fallback. */
+  private _coverUrl(item: { cover_image?: string; cover_images?: CoverImages }): string | undefined {
+    const q = this._config.cover_quality ?? "large";
+    if (item.cover_images) {
+      return item.cover_images[q as keyof CoverImages] || item.cover_images.medium || item.cover_images.small;
+    }
+    return item.cover_image; // entity attribute fallback
+  }
+
+  /** Score position config with fallback. */
+  private _scorePos(): string {
+    return this._config.score_position ?? "top-right";
+  }
+
+  /**
+   * Pick the right score for an item based on score_source config.
+   * - "user": always user score
+   * - "average": always average/community score
+   * - "auto": user score if > 0 (rated), otherwise average score
+   */
+  private _pickScore(
+    item: { score?: number; average_score?: number },
+    view: "airing" | "season" | "watchlist" | "manga",
+  ): number | undefined {
+    const src = this._config.score_source ?? "auto";
+    if (src === "user") return item.score || undefined;
+    if (src === "average") return item.average_score || undefined;
+    // Auto logic:
+    if (view === "airing" || view === "season") return item.average_score || undefined;
+    // Watchlist/Manga: user score if rated, otherwise average
+    return (item.score && item.score > 0) ? item.score : (item.average_score || undefined);
+  }
+
+  /** Default layout mode per view type. */
+  private _layoutMode(): "grid" | "list" {
+    const cfg = this._config;
+    if (cfg.layout_mode) return cfg.layout_mode;
+    const view = cfg.view ?? "airing";
+    if (view === "airing") return "list";
+    if (view === "season") return "list";
+    return "grid"; // watchlist, manga
   }
 
   private _t(key: string): string {
@@ -253,6 +412,35 @@ class AniListCard extends LitElement {
     if (s === "small") return { w: 40, h: 56 };
     if (s === "large") return { w: 64, h: 90 };
     return { w: 48, h: 68 };
+  }
+
+  /** CSS classes for scroll container. Actual height set by _applyScrollHeight after render. */
+  private _scrollClasses(): string {
+    const cfg = this._config;
+    if (!cfg.visible_items) return "";
+    const classes = ["scroll-container", "grid-scroll"];
+    if (cfg.scroll_snap !== false) classes.push("snap-scroll");
+    if (cfg.scroll_fade !== false) classes.push("scroll-fade-wrap");
+    return classes.join(" ");
+  }
+
+  /** Measure actual item height after render and set pixel-perfect max-height. */
+  private _applyScrollHeights() {
+    const vis = this._config?.visible_items;
+    if (!vis || !this.shadowRoot) return;
+
+    requestAnimationFrame(() => {
+      const containers = this.shadowRoot!.querySelectorAll<HTMLElement>(".scroll-container");
+      containers.forEach((c) => {
+        const firstChild = c.querySelector(".list-item, .grid-item, .season-item") as HTMLElement | null;
+        if (!firstChild) return;
+        const itemH = firstChild.getBoundingClientRect().height;
+        const gap = parseFloat(getComputedStyle(c).gap) || 8;
+        const maxH = vis * (itemH + gap) - gap;
+        c.style.maxHeight = `${maxH}px`;
+        c.style.overflowY = "auto";
+      });
+    });
   }
 
   private _maxFor(view: string): number {
@@ -281,7 +469,7 @@ class AniListCard extends LitElement {
     if (c.accent_color) vars.push(`--al-accent: ${c.accent_color}`);
     if (c.secondary_color) vars.push(`--al-secondary: ${c.secondary_color}`);
     if (c.card_background) vars.push(`--al-card-bg: ${c.card_background}`);
-    if (c.card_opacity !== undefined) vars.push(`--al-card-opacity: ${c.card_opacity / 100}`);
+    if (c.card_opacity !== undefined) vars.push(`--al-bg-opacity: ${c.card_opacity / 100}`);
     if (c.border_color) vars.push(`--al-border-color: ${c.border_color}`);
     if (c.border_width !== undefined) vars.push(`--al-border-width: ${c.border_width}px`);
     if (c.border_radius !== undefined) vars.push(`--al-border-radius: ${c.border_radius}px`);
@@ -293,6 +481,14 @@ class AniListCard extends LitElement {
   render() {
     if (!this._config || !this.hass) return nothing;
     const view = this._config.view ?? "airing";
+    // Lazy-load data for current view via WebSocket (on view switch)
+    if (!this._wsLoadedViews.has(view) && !this._wsLoadPromise && this.hass?.callWS) {
+      this._triggerWSLoad();
+    }
+    // Schedule scroll height measurement after this render cycle
+    if (this._config.visible_items) {
+      this.updateComplete.then(() => this._applyScrollHeights());
+    }
     const title = this._config.title ?? this._defaultTitle(view);
     const pad = this._padding();
 
@@ -301,10 +497,10 @@ class AniListCard extends LitElement {
         <div class="card-header" style="padding:${pad} ${pad}">
           <span class="brand-dot"></span>
           <span class="header-title">${title}</span>
-          <a class="header-link" href="https://anilist.co" target="_blank" rel="noopener">AniList ↗</a>
         </div>
         <div class="card-content" style="padding:${pad}">
           ${this._config.show_search ? this._renderSearch() : nothing}
+          ${this._wsLoading ? html`<div class="loading-bar"></div>` : nothing}
           ${view === "airing" ? this._renderAiring() : nothing}
           ${view === "watchlist" ? this._renderWatchlist() : nothing}
           ${view === "season" ? this._renderSeason() : nothing}
@@ -376,7 +572,7 @@ class AniListCard extends LitElement {
 
   private _renderAiring() {
     let items = this._getAiringItems();
-    items = items.filter((i) => this._matchesSearch(i.title));
+    items = items.filter((i) => this._matchesSearch(this._title(i.title)));
 
     if (!items.length) return this._renderEmpty("no_episodes");
 
@@ -384,24 +580,28 @@ class AniListCard extends LitElement {
     const cfg = this._config;
     const lang = this._lang();
 
+    const scrollC = this._scrollClasses();
+    const sPos = this._scorePos();
     return html`
-      <div class="list">
-        ${items.map((item) => html`
+      <div class="list ${scrollC}">
+        ${items.map((item) => { const t = this._title(item.title); const cUrl = this._coverUrl(item); const sc = this._pickScore(item, "airing"); return html`
           <div
             class="list-item"
             @click=${() => this._handleClick(item.site_url)}
             style=${this._shouldLink() && item.site_url ? "cursor:pointer" : ""}
-            title=${cfg.show_tooltips ? `${item.title} - ${this._t("episode")} ${item.episode}` : ""}
+            title=${cfg.show_tooltips ? `${t} - ${this._t("episode")} ${item.episode}` : ""}
           >
-            ${cfg.show_cover && item.cover_image
-              ? html`<img class="cover" src=${item.cover_image} alt=${item.title} loading="lazy"
-                  style="width:${w}px;height:${h}px" />`
-              : cfg.show_cover
-                ? html`<div class="cover cover-placeholder" style="width:${w}px;height:${h}px"><span>?</span></div>`
-                : nothing
-            }
+            ${cfg.show_cover ? html`
+              <div class="cover-wrap" style="width:${w}px;height:${h}px">
+                ${cUrl
+                  ? html`<img class="cover" src=${cUrl} alt=${t} loading="lazy" style="width:${w}px;height:${h}px" />`
+                  : html`<div class="cover cover-placeholder" style="width:${w}px;height:${h}px"><span>?</span></div>`
+                }
+                ${renderScoreOverlay(sc, sPos)}
+              </div>
+            ` : nothing}
             <div class="item-info">
-              <div class="item-title">${item.title}</div>
+              <div class="item-title">${renderScoreInline(sc, sPos)}${t}</div>
               <div class="item-sub">
                 ${this._t("episode")} ${item.episode}
                 ${cfg.show_duration && item.duration ? html` · ${item.duration}min` : nothing}
@@ -423,55 +623,61 @@ class AniListCard extends LitElement {
               </div>
             </div>
           </div>
-        `)}
+        `; })}
       </div>
     `;
   }
 
   private _getAiringItems(): AiringAnime[] {
     const max = this._maxFor("airing");
-    const items: AiringAnime[] = [];
+    let items: AiringAnime[];
 
-    Object.entries(this.hass.states)
-      .filter(([id]) => id.startsWith("sensor.anilist_"))
-      .forEach(([_id, entity]: [string, HassEntity]) => {
-        const attrs = entity.attributes as Record<string, unknown>;
-        if (Array.isArray(attrs["airing_schedule"])) {
-          (attrs["airing_schedule"] as Array<Record<string, unknown>>).forEach((ep) => {
-            items.push({
-              media_id: Number(ep["media_id"] ?? 0),
-              title: String(ep["title"] ?? ""),
-              episode: Number(ep["episode"] ?? 0),
-              airing_at: String(ep["airing_at"] ?? ""),
-              cover_image: ep["cover_image"] as string | undefined,
-              site_url: ep["site_url"] as string | undefined,
-              duration: ep["duration"] as number | undefined,
-              genres: ep["genres"] as string[] | undefined,
-              average_score: ep["average_score"] as number | undefined,
-              format: ep["format"] as string | undefined,
+    // Prefer WebSocket data
+    if (this._wsAiring) {
+      items = [...this._wsAiring];
+    } else {
+      // Fallback: read from entity attributes
+      items = [];
+      Object.entries(this.hass.states)
+        .filter(([id]) => id.startsWith("sensor.anilist_"))
+        .forEach(([_id, entity]: [string, HassEntity]) => {
+          const attrs = entity.attributes as Record<string, unknown>;
+          if (Array.isArray(attrs["airing_schedule"])) {
+            (attrs["airing_schedule"] as Array<Record<string, unknown>>).forEach((ep) => {
+              items.push({
+                media_id: Number(ep["media_id"] ?? 0),
+                title: String(ep["title"] ?? ""),
+                episode: Number(ep["episode"] ?? 0),
+                airing_at: String(ep["airing_at"] ?? ""),
+                cover_image: ep["cover_image"] as string | undefined,
+                site_url: ep["site_url"] as string | undefined,
+                duration: ep["duration"] as number | undefined,
+                genres: ep["genres"] as string[] | undefined,
+                average_score: ep["average_score"] as number | undefined,
+                format: ep["format"] as string | undefined,
+              });
             });
-          });
-        }
-      });
+          }
+        });
 
-    // Fallback to simple sensors
-    if (!items.length) {
-      const title =
-        getEntityState(this.hass, "sensor.anilist_nachster_anime") ||
-        getEntityState(this.hass, "sensor.anilist_next_airing_anime");
-      const time =
-        getEntityState(this.hass, "sensor.anilist_nachste_episode_um") ||
-        getEntityState(this.hass, "sensor.anilist_next_episode_time");
-      if (title && title !== "unknown") {
-        items.push({ media_id: 0, title, episode: 1, airing_at: time });
+      // Fallback to simple sensors
+      if (!items.length) {
+        const title =
+          getEntityState(this.hass, "sensor.anilist_nachster_anime") ||
+          getEntityState(this.hass, "sensor.anilist_next_airing_anime");
+        const time =
+          getEntityState(this.hass, "sensor.anilist_nachste_episode_um") ||
+          getEntityState(this.hass, "sensor.anilist_next_episode_time");
+        if (title && title !== "unknown") {
+          items.push({ media_id: 0, title, episode: 1, airing_at: time });
+        }
       }
     }
 
     // Sort
     const sort = this._config.sort_by;
-    if (sort === "title") items.sort((a, b) => a.title.localeCompare(b.title));
+    if (sort === "title") items.sort((a, b) => this._title(a.title).localeCompare(this._title(b.title)));
     else if (sort === "score") items.sort((a, b) => (b.average_score ?? 0) - (a.average_score ?? 0));
-    // Default: time (already sorted by API)
 
     return items.slice(0, max);
   }
@@ -489,7 +695,7 @@ class AniListCard extends LitElement {
     } else {
       items = items.filter((i) => statuses.includes(i.status));
     }
-    items = items.filter((i) => this._matchesSearch(i.title));
+    items = items.filter((i) => this._matchesSearch(this._title(i.title)));
 
     // Apply overflow mode
     const useScroll = this._config.overflow_mode === "scroll";
@@ -500,33 +706,75 @@ class AniListCard extends LitElement {
     return html`
       ${showTabs ? this._renderStatusTabs(statuses) : nothing}
       ${items.length
-        ? this._renderWatchlistGrid(items)
+        ? (this._layoutMode() === "list"
+            ? this._renderWatchlistList(items)
+            : this._renderWatchlistGrid(items))
         : this._renderEmpty("no_watchlist")}
+    `;
+  }
+
+  private _renderWatchlistList(items: WatchlistAnime[]) {
+    const cfg = this._config;
+    const scrollC = this._scrollClasses();
+    const sPos = this._scorePos();
+    const lang = this._lang();
+    const { w, h } = this._coverDims();
+    return html`
+      <div class="list ${scrollC}">
+        ${items.map((item) => { const t = this._title(item.title); const cUrl = this._coverUrl(item); const sc = this._pickScore(item, "watchlist"); return html`
+          <div class="list-item"
+            @click=${() => this._handleClick(item.site_url)}
+            style=${this._shouldLink() && item.site_url ? "cursor:pointer" : ""}>
+            ${cfg.show_cover ? html`
+              <div class="cover-wrap" style="width:${w}px;height:${h}px">
+                ${cUrl ? html`<img class="cover" src=${cUrl} alt=${t} loading="lazy" style="width:${w}px;height:${h}px" />` : html`<div class="cover cover-placeholder" style="width:${w}px;height:${h}px"><span>${t[0]}</span></div>`}
+                ${renderScoreOverlay(sc, sPos)}
+              </div>` : nothing}
+            <div class="item-info">
+              <div class="item-title">${renderScoreInline(sc, sPos)}${t}</div>
+              <div class="item-sub">
+                ${this._t("ep")} ${item.progress}${item.episodes ? `/${item.episodes}` : ""}
+                ${cfg.show_next_airing !== false && item.next_airing_episode
+                  ? html` · <span class="countdown">${countdown(item.next_airing_episode.airing_at, "relative", lang)}</span>` : nothing}
+              </div>
+              ${cfg.show_progress_bar && item.episodes ? html`
+                <div class="progress-bar"><div class="progress-fill" style="width:${Math.min(100, (item.progress / item.episodes) * 100)}%"></div></div>
+              ` : nothing}
+            </div>
+          </div>
+        `; })}
+      </div>
     `;
   }
 
   private _renderWatchlistGrid(items: WatchlistAnime[]) {
     const cfg = this._config;
-    const useScroll = cfg.overflow_mode === "scroll";
-    const scrollH = cfg.scroll_height ?? 400;
+    const scrollC = this._scrollClasses();
+    const fallbackScroll = !cfg.visible_items && cfg.overflow_mode === "scroll"
+      ? `max-height:${cfg.scroll_height ?? 400}px;overflow-y:auto` : "";
+    const sPos = this._scorePos();
+    const lang = this._lang();
     return html`
-      <div class="grid ${useScroll ? "grid-scroll" : ""}"
-        style=${useScroll ? `max-height:${scrollH}px` : ""}>
-        ${items.map((item) => html`
+      <div class="grid ${scrollC || (fallbackScroll ? "grid-scroll" : "")}"
+        style=${fallbackScroll}>
+        ${items.map((item) => { const t = this._title(item.title); const cUrl = this._coverUrl(item); const sc = this._pickScore(item, "watchlist"); return html`
           <div
             class="grid-item"
             @click=${() => this._handleClick(item.site_url)}
             style=${this._shouldLink() && item.site_url ? "cursor:pointer" : ""}
-            title=${cfg.show_tooltips ? `${item.title} - ${item.progress}/${item.episodes ?? "?"}` : ""}
+            title=${cfg.show_tooltips ? `${t} - ${item.progress}/${item.episodes ?? "?"}` : ""}
           >
             <div class="grid-cover-wrap">
-              ${cfg.show_cover && item.cover_image
-                ? html`<img class="grid-cover" src=${item.cover_image} alt=${item.title} loading="lazy" />`
-                : html`<div class="grid-cover cover-placeholder"><span>${item.title[0] ?? "?"}</span></div>`
+              ${cfg.show_cover && cUrl
+                ? html`<img class="grid-cover" src=${cUrl} alt=${t} loading="lazy" />`
+                : html`<div class="grid-cover cover-placeholder"><span>${t[0] ?? "?"}</span></div>`
               }
-              ${renderScore(item.score, cfg.score_display ?? "number")}
+              ${renderScoreOverlay(sc, sPos)}
+              ${cfg.show_next_airing !== false && item.next_airing_episode
+                ? html`<div class="next-ep-badge">${countdown(item.next_airing_episode.airing_at, "relative", lang)}</div>`
+                : nothing}
             </div>
-            <div class="grid-title">${item.title}</div>
+            <div class="grid-title">${renderScoreInline(sc, sPos)}${t}</div>
             ${cfg.show_progress && cfg.show_progress_bar && item.episodes
               ? html`
                 <div class="progress-bar">
@@ -539,14 +787,16 @@ class AniListCard extends LitElement {
                 : nothing
             }
           </div>
-        `)}
+        `; })}
       </div>
     `;
   }
 
   private _getWatchlistItems(): WatchlistAnime[] {
-    const items: WatchlistAnime[] = [];
+    if (this._wsWatchlist) return [...this._wsWatchlist];
 
+    // Fallback: entity attributes
+    const items: WatchlistAnime[] = [];
     Object.entries(this.hass.states)
       .filter(([id]) => id.startsWith("sensor.anilist_"))
       .forEach(([_id, entity]: [string, HassEntity]) => {
@@ -566,7 +816,6 @@ class AniListCard extends LitElement {
           });
         }
       });
-
     return items;
   }
 
@@ -574,34 +823,38 @@ class AniListCard extends LitElement {
 
   private _renderSeason() {
     let items = this._getSeasonItems();
-    items = items.filter((i) => this._matchesSearch(i.title));
+    items = items.filter((i) => this._matchesSearch(this._title(i.title)));
 
     if (!items.length) return this._renderEmpty("no_season");
 
     const cfg = this._config;
     const { w, h } = this._coverDims();
 
+    const scrollC = this._scrollClasses();
+    const sPos = this._scorePos();
     return html`
-      <div class="season-scroll">
-        ${items.map((item) => html`
+      <div class="season-scroll ${scrollC}">
+        ${items.map((item) => { const t = this._title(item.title); const cUrl = this._coverUrl(item); const sc = this._pickScore(item, "season"); return html`
           <div
             class="season-item"
             @click=${() => this._handleClick(item.site_url)}
             style=${this._shouldLink() && item.site_url ? "cursor:pointer" : ""}
-            title=${cfg.show_tooltips ? `${item.title} - ${item.genres?.join(", ") ?? ""}` : ""}
+            title=${cfg.show_tooltips ? `${t} - ${item.genres?.join(", ") ?? ""}` : ""}
           >
-            ${cfg.show_cover && item.cover_image
-              ? html`<img class="season-cover" src=${item.cover_image} alt=${item.title} loading="lazy"
-                  style="width:${w - 8}px;height:${h - 12}px" />`
-              : cfg.show_cover
-                ? html`<div class="season-cover cover-placeholder" style="width:${w - 8}px;height:${h - 12}px"><span>${item.title[0]}</span></div>`
-                : nothing
-            }
+            ${cfg.show_cover ? html`
+              <div class="cover-wrap" style="width:${w - 8}px;height:${h - 12}px">
+                ${cUrl
+                  ? html`<img class="season-cover" src=${cUrl} alt=${t} loading="lazy" style="width:${w - 8}px;height:${h - 12}px" />`
+                  : html`<div class="season-cover cover-placeholder" style="width:${w - 8}px;height:${h - 12}px"><span>${t[0]}</span></div>`
+                }
+                ${renderScoreOverlay(sc, sPos)}
+              </div>
+            ` : nothing}
             <div class="season-info">
-              <div class="season-title">${item.title}</div>
+              <div class="season-title">${renderScoreInline(sc, sPos)}${t}</div>
               <div class="season-meta">
-                ${item.average_score
-                  ? html`<span class="score-chip">${item.average_score}%</span>`
+                ${sPos !== "inline" && sc
+                  ? html`<span class="score-chip">★${fmtScore(sc)}</span>`
                   : nothing}
                 ${item.format
                   ? html`<span class="format-chip">${item.format}</span>`
@@ -609,44 +862,49 @@ class AniListCard extends LitElement {
               </div>
             </div>
           </div>
-        `)}
+        `; })}
       </div>
     `;
   }
 
   private _getSeasonItems(): SeasonAnime[] {
     const max = this._maxFor("season");
-    const items: SeasonAnime[] = [];
     const cfg = this._config;
+    let items: SeasonAnime[];
 
-    Object.entries(this.hass.states)
-      .filter(([id]) => id.startsWith("sensor.anilist_"))
-      .forEach(([_id, entity]: [string, HassEntity]) => {
-        const attrs = entity.attributes as Record<string, unknown>;
-        if (Array.isArray(attrs["season_anime"])) {
-          (attrs["season_anime"] as Array<Record<string, unknown>>).forEach((a) => {
-            items.push({
-              id: Number(a["id"] ?? 0),
-              title: String(a["title"] ?? ""),
-              average_score: a["average_score"] as number | undefined,
-              episodes: a["episodes"] as number | undefined,
-              format: a["format"] as string | undefined,
-              genres: a["genres"] as string[] | undefined,
-              cover_image: a["cover_image"] as string | undefined,
-              site_url: a["site_url"] as string | undefined,
-              next_airing_episode: a["next_airing_episode"] as SeasonAnime["next_airing_episode"],
+    if (this._wsSeason) {
+      items = [...this._wsSeason];
+    } else {
+      // Fallback: entity attributes
+      items = [];
+      Object.entries(this.hass.states)
+        .filter(([id]) => id.startsWith("sensor.anilist_"))
+        .forEach(([_id, entity]: [string, HassEntity]) => {
+          const attrs = entity.attributes as Record<string, unknown>;
+          if (Array.isArray(attrs["season_anime"])) {
+            (attrs["season_anime"] as Array<Record<string, unknown>>).forEach((a) => {
+              items.push({
+                id: Number(a["id"] ?? 0),
+                title: String(a["title"] ?? ""),
+                average_score: a["average_score"] as number | undefined,
+                episodes: a["episodes"] as number | undefined,
+                format: a["format"] as string | undefined,
+                genres: a["genres"] as string[] | undefined,
+                cover_image: a["cover_image"] as string | undefined,
+                site_url: a["site_url"] as string | undefined,
+                next_airing_episode: a["next_airing_episode"] as SeasonAnime["next_airing_episode"],
+              });
             });
-          });
-        }
-      });
+          }
+        });
+    }
 
-    // Apply genre filter
+    // Apply genre filter (client-side for WS data too — allows real-time search)
     let filtered = items;
     if (cfg.genre_filter?.length) {
       const gf = new Set(cfg.genre_filter);
       filtered = filtered.filter((i) => i.genres?.some((g) => gf.has(g)));
     }
-    // Apply format filter
     if (cfg.format_filter?.length) {
       const ff = new Set(cfg.format_filter);
       filtered = filtered.filter((i) => i.format && ff.has(i.format));
@@ -667,7 +925,7 @@ class AniListCard extends LitElement {
     } else {
       items = items.filter((i) => statuses.includes(i.status));
     }
-    items = items.filter((i) => this._matchesSearch(i.title));
+    items = items.filter((i) => this._matchesSearch(this._title(i.title)));
 
     const useScroll = this._config.overflow_mode === "scroll";
     if (!useScroll) {
@@ -677,33 +935,66 @@ class AniListCard extends LitElement {
     return html`
       ${showTabs ? this._renderStatusTabs(statuses) : nothing}
       ${items.length
-        ? this._renderMangaGrid(items)
+        ? (this._layoutMode() === "list"
+            ? this._renderMangaList(items)
+            : this._renderMangaGrid(items))
         : this._renderEmpty("no_manga")}
+    `;
+  }
+
+  private _renderMangaList(items: MangaItem[]) {
+    const cfg = this._config;
+    const scrollC = this._scrollClasses();
+    const sPos = this._scorePos();
+    const { w, h } = this._coverDims();
+    return html`
+      <div class="list ${scrollC}">
+        ${items.map((item) => { const t = this._title(item.title); const cUrl = this._coverUrl(item); const sc = this._pickScore(item, "manga"); return html`
+          <div class="list-item"
+            @click=${() => this._handleClick(item.site_url)}
+            style=${this._shouldLink() && item.site_url ? "cursor:pointer" : ""}>
+            ${cfg.show_cover ? html`
+              <div class="cover-wrap" style="width:${w}px;height:${h}px">
+                ${cUrl ? html`<img class="cover" src=${cUrl} alt=${t} loading="lazy" style="width:${w}px;height:${h}px" />` : html`<div class="cover cover-placeholder" style="width:${w}px;height:${h}px"><span>${t[0]}</span></div>`}
+                ${renderScoreOverlay(sc, sPos)}
+              </div>` : nothing}
+            <div class="item-info">
+              <div class="item-title">${renderScoreInline(sc, sPos)}${t}</div>
+              <div class="item-sub">Ch. ${item.progress}${item.chapters ? `/${item.chapters}` : ""}${item.volumes ? ` · Vol. ${item.progress_volumes}` : ""}</div>
+              ${cfg.show_progress_bar && item.chapters ? html`
+                <div class="progress-bar"><div class="progress-fill" style="width:${Math.min(100, (item.progress / item.chapters) * 100)}%"></div></div>
+              ` : nothing}
+            </div>
+          </div>
+        `; })}
+      </div>
     `;
   }
 
   private _renderMangaGrid(items: MangaItem[]) {
     const cfg = this._config;
-    const useScroll = cfg.overflow_mode === "scroll";
-    const scrollH = cfg.scroll_height ?? 400;
+    const scrollC = this._scrollClasses();
+    const fallbackScroll = !cfg.visible_items && cfg.overflow_mode === "scroll"
+      ? `max-height:${cfg.scroll_height ?? 400}px;overflow-y:auto` : "";
+    const sPos = this._scorePos();
     return html`
-      <div class="grid ${useScroll ? "grid-scroll" : ""}"
-        style=${useScroll ? `max-height:${scrollH}px` : ""}>
-        ${items.map((item) => html`
+      <div class="grid ${scrollC || (fallbackScroll ? "grid-scroll" : "")}"
+        style=${fallbackScroll}>
+        ${items.map((item) => { const t = this._title(item.title); const cUrl = this._coverUrl(item); const sc = this._pickScore(item, "manga"); return html`
           <div
             class="grid-item"
             @click=${() => this._handleClick(item.site_url)}
             style=${this._shouldLink() && item.site_url ? "cursor:pointer" : ""}
-            title=${cfg.show_tooltips ? `${item.title} - Ch.${item.progress}/${item.chapters ?? "?"}` : ""}
+            title=${cfg.show_tooltips ? `${t} - Ch.${item.progress}/${item.chapters ?? "?"}` : ""}
           >
             <div class="grid-cover-wrap">
-              ${cfg.show_cover && item.cover_image
-                ? html`<img class="grid-cover" src=${item.cover_image} alt=${item.title} loading="lazy" />`
-                : html`<div class="grid-cover cover-placeholder"><span>${item.title[0] ?? "?"}</span></div>`
+              ${cfg.show_cover && cUrl
+                ? html`<img class="grid-cover" src=${cUrl} alt=${t} loading="lazy" />`
+                : html`<div class="grid-cover cover-placeholder"><span>${t[0] ?? "?"}</span></div>`
               }
-              ${renderScore(item.score, cfg.score_display ?? "number")}
+              ${renderScoreOverlay(sc, sPos)}
             </div>
-            <div class="grid-title">${item.title}</div>
+            <div class="grid-title">${renderScoreInline(sc, sPos)}${t}</div>
             ${cfg.show_progress && cfg.show_progress_bar && item.chapters
               ? html`
                 <div class="progress-bar">
@@ -716,14 +1007,16 @@ class AniListCard extends LitElement {
                 : nothing
             }
           </div>
-        `)}
+        `; })}
       </div>
     `;
   }
 
   private _getMangaItems(): MangaItem[] {
-    const items: MangaItem[] = [];
+    if (this._wsManga) return [...this._wsManga];
 
+    // Fallback: entity attributes
+    const items: MangaItem[] = [];
     Object.entries(this.hass.states)
       .filter(([id]) => id.startsWith("sensor.anilist_"))
       .forEach(([_id, entity]: [string, HassEntity]) => {
@@ -745,47 +1038,83 @@ class AniListCard extends LitElement {
           });
         }
       });
-
     return items;
   }
 
   // ─── View: Profile ──────────────────────────────────────────────────────
 
   private _renderProfile() {
-    const animeCount =
-      getEntityState(this.hass, "sensor.anilist_anime_gesamt_geschaut") ||
-      getEntityState(this.hass, "sensor.anilist_total_anime_watched");
-    const episodes =
-      getEntityState(this.hass, "sensor.anilist_episoden_gesamt") ||
-      getEntityState(this.hass, "sensor.anilist_total_episodes_watched");
-    const hours =
-      getEntityState(this.hass, "sensor.anilist_stunden_gesamt") ||
-      getEntityState(this.hass, "sensor.anilist_total_hours_watched");
-    const animeScore =
-      getEntityState(this.hass, "sensor.anilist_anime_durchschnittsscore") ||
-      getEntityState(this.hass, "sensor.anilist_anime_mean_score");
-    const mangaScore =
-      getEntityState(this.hass, "sensor.anilist_manga_durchschnittsscore") ||
-      getEntityState(this.hass, "sensor.anilist_manga_mean_score");
-    const watching =
-      getEntityState(this.hass, "sensor.anilist_schaue_ich_gerade") ||
-      getEntityState(this.hass, "sensor.anilist_watching_count");
-    const chaptersRead =
-      getEntityState(this.hass, "sensor.anilist_kapitel_gelesen") ||
-      getEntityState(this.hass, "sensor.anilist_chapters_read");
-    const mangaCount =
-      getEntityState(this.hass, "sensor.anilist_manga_lese_ich") ||
-      getEntityState(this.hass, "sensor.anilist_manga_reading_count");
+    // Prefer WebSocket profile data
+    const p = this._wsProfile;
 
-    const topGenreEntity = this.hass.states["sensor.anilist_top_genre"];
-    const topGenres = (topGenreEntity?.attributes?.["top_genres"] ?? []) as string[];
-    const favourites = (topGenreEntity?.attributes?.["favourite_anime"] ?? []) as Array<{
-      title: string; site_url?: string; cover?: string;
-    }>;
-    const viewerName = topGenreEntity?.attributes?.["viewer_name"] as string | undefined;
-    const viewerAvatar = topGenreEntity?.attributes?.["viewer_avatar"] as string | undefined;
+    let animeCount: string;
+    let episodes: string;
+    let hours: string;
+    let animeScore: string;
+    let mangaScore: string;
+    let watching: string;
+    let chaptersRead: string;
+    let mangaCount: string;
+    let topGenres: string[];
+    let favourites: Array<{ title: string; site_url?: string; cover?: string }>;
+    let viewerName: string | undefined;
+    let viewerAvatar: string | undefined;
 
-    const hasStats = animeCount && animeCount !== "unknown";
+    if (p && p.is_authenticated) {
+      const s = p.stats;
+      animeCount = String(s.anime_count ?? 0);
+      episodes = String(s.episodes_watched ?? 0);
+      hours = String(s.minutes_watched ? Math.round(s.minutes_watched / 60 * 10) / 10 : 0);
+      animeScore = String(s.anime_mean_score ? Math.round(s.anime_mean_score / 10 * 10) / 10 : 0);
+      mangaScore = String(s.manga_mean_score ? Math.round(s.manga_mean_score / 10 * 10) / 10 : 0);
+      watching = "";
+      chaptersRead = String(s.chapters_read ?? 0);
+      mangaCount = String(s.manga_count ?? 0);
+      topGenres = p.top_genres.map((g) => g.genre);
+      favourites = p.favourite_anime.map((f) => ({
+        title: this._title(f.title),
+        site_url: f.site_url,
+        cover: f.cover_image,
+      }));
+      viewerName = p.viewer.name;
+      viewerAvatar = p.viewer.avatar;
+    } else {
+      // Fallback: entity states
+      animeCount =
+        getEntityState(this.hass, "sensor.anilist_anime_gesamt_geschaut") ||
+        getEntityState(this.hass, "sensor.anilist_total_anime_watched");
+      episodes =
+        getEntityState(this.hass, "sensor.anilist_episoden_gesamt") ||
+        getEntityState(this.hass, "sensor.anilist_total_episodes_watched");
+      hours =
+        getEntityState(this.hass, "sensor.anilist_stunden_gesamt") ||
+        getEntityState(this.hass, "sensor.anilist_total_hours_watched");
+      animeScore =
+        getEntityState(this.hass, "sensor.anilist_anime_durchschnittsscore") ||
+        getEntityState(this.hass, "sensor.anilist_anime_mean_score");
+      mangaScore =
+        getEntityState(this.hass, "sensor.anilist_manga_durchschnittsscore") ||
+        getEntityState(this.hass, "sensor.anilist_manga_mean_score");
+      watching =
+        getEntityState(this.hass, "sensor.anilist_schaue_ich_gerade") ||
+        getEntityState(this.hass, "sensor.anilist_watching_count");
+      chaptersRead =
+        getEntityState(this.hass, "sensor.anilist_kapitel_gelesen") ||
+        getEntityState(this.hass, "sensor.anilist_chapters_read");
+      mangaCount =
+        getEntityState(this.hass, "sensor.anilist_manga_lese_ich") ||
+        getEntityState(this.hass, "sensor.anilist_manga_reading_count");
+
+      const topGenreEntity = this.hass.states["sensor.anilist_top_genre"];
+      topGenres = (topGenreEntity?.attributes?.["top_genres"] ?? []) as string[];
+      favourites = (topGenreEntity?.attributes?.["favourite_anime"] ?? []) as Array<{
+        title: string; site_url?: string; cover?: string;
+      }>;
+      viewerName = topGenreEntity?.attributes?.["viewer_name"] as string | undefined;
+      viewerAvatar = topGenreEntity?.attributes?.["viewer_avatar"] as string | undefined;
+    }
+
+    const hasStats = animeCount && animeCount !== "unknown" && animeCount !== "0" || p?.is_authenticated;
 
     if (!hasStats) {
       return html`
@@ -854,7 +1183,9 @@ class AniListCard extends LitElement {
         <!-- Genre chart -->
         ${cfg.show_genre_chart !== false && topGenres.length ? html`
           <div class="section-label">${this._t("top_genres")}</div>
-          ${this._renderGenreChart(topGenres)}
+          ${p?.top_genres?.length
+            ? this._renderGenreChartWithCounts(p.top_genres)
+            : this._renderGenreChart(topGenres)}
         ` : nothing}
 
         <!-- Favourites -->
@@ -935,6 +1266,62 @@ class AniListCard extends LitElement {
     `;
   }
 
+  private _renderGenreChartWithCounts(genres: { genre: string; count: number }[]) {
+    const chartType = this._config.chart_type ?? "bar";
+    const maxCount = 5;
+    const sliced = genres.slice(0, maxCount);
+
+    if (chartType === "tags") {
+      return html`
+        <div class="genre-chips">
+          ${sliced.map((g) => html`<span class="genre-chip">${g.genre} (${g.count})</span>`)}
+        </div>
+      `;
+    }
+
+    if (chartType === "donut") {
+      const total = sliced.reduce((s, g) => s + g.count, 0) || 1;
+      const colors = ["#3DB4F2", "#C063FF", "#FF6B6B", "#4ECDC4", "#FFE66D"];
+      let cumulative = 0;
+      const segments = sliced.map((g, i) => {
+        const pct = (g.count / total) * 100;
+        const start = cumulative;
+        cumulative += pct;
+        return { genre: g.genre, count: g.count, start, pct, color: colors[i % colors.length] };
+      });
+      const gradientParts = segments.map((s) => `${s.color} ${s.start}% ${s.start + s.pct}%`).join(", ");
+      return html`
+        <div class="donut-wrap">
+          <div class="donut" style="background: conic-gradient(${gradientParts})"></div>
+          <div class="donut-legend">
+            ${segments.map((s) => html`
+              <div class="legend-item">
+                <span class="legend-dot" style="background:${s.color}"></span>
+                <span>${s.genre} (${s.count})</span>
+              </div>
+            `)}
+          </div>
+        </div>
+      `;
+    }
+
+    // Default: bar chart with real proportional widths
+    const maxVal = sliced[0]?.count || 1;
+    return html`
+      <div class="bar-chart">
+        ${sliced.map((g) => html`
+          <div class="bar-row">
+            <span class="bar-label">${g.genre}</span>
+            <div class="bar-track">
+              <div class="bar-fill" style="width:${(g.count / maxVal) * 100}%"></div>
+            </div>
+            <span class="bar-count">${g.count}</span>
+          </div>
+        `)}
+      </div>
+    `;
+  }
+
   private _statTile(label: string, value: string) {
     return html`
       <div class="stat-tile">
@@ -969,17 +1356,30 @@ class AniListCard extends LitElement {
       --al-border-color: var(--divider-color, rgba(61,180,242,0.15));
       --al-border-width: 1px;
       --al-border-radius: 12px;
-      --al-card-opacity: 1;
+      --al-bg-opacity: 1;
     }
 
     .card {
-      background: var(--al-card-bg);
-      opacity: var(--al-card-opacity);
+      background: rgba(0, 0, 0, 0); /* transparent base — actual bg via ::before */
+      position: relative;
       border: var(--al-border-width) solid var(--al-border-color);
       border-radius: var(--al-border-radius);
       overflow: hidden;
       font-family: var(--primary-font-family, sans-serif);
       color: var(--al-text);
+    }
+    .card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: var(--al-card-bg);
+      opacity: var(--al-bg-opacity);
+      z-index: 0;
+      border-radius: inherit;
+    }
+    .card > * {
+      position: relative;
+      z-index: 1;
     }
 
     .card-header {
@@ -1013,6 +1413,75 @@ class AniListCard extends LitElement {
     .header-link:hover { opacity: 1; }
 
     .card-content { }
+
+    /* ─── Cover wrap & score overlay ──────────────────────────────── */
+    .cover-wrap, .grid-cover-wrap {
+      position: relative;
+      flex-shrink: 0;
+    }
+    .score-overlay {
+      position: absolute;
+      background: linear-gradient(135deg, var(--al-accent), var(--al-secondary));
+      color: #fff;
+      font-size: 0.65rem;
+      font-weight: 700;
+      padding: 2px 5px;
+      border-radius: 4px;
+      z-index: 1;
+    }
+    .score-overlay.top-left { top: 4px; left: 4px; }
+    .score-overlay.top-right { top: 4px; right: 4px; }
+    .score-overlay.bottom-left { bottom: 4px; left: 4px; }
+    .score-overlay.bottom-right { bottom: 4px; right: 4px; }
+    .score-inline {
+      font-weight: 700;
+      color: var(--al-accent);
+      margin-right: 4px;
+      font-size: 0.75rem;
+    }
+    .next-ep-badge {
+      position: absolute;
+      bottom: 4px;
+      left: 4px;
+      right: 4px;
+      background: rgba(0,0,0,0.75);
+      color: var(--al-accent);
+      font-size: 0.6rem;
+      font-weight: 600;
+      padding: 2px 6px;
+      border-radius: 4px;
+      text-align: center;
+      backdrop-filter: blur(4px);
+      z-index: 1;
+    }
+
+    /* ─── Scroll snap & fade ─────────────────────────────────────── */
+    .snap-scroll {
+      scroll-snap-type: y mandatory;
+    }
+    .snap-scroll > .list-item,
+    .snap-scroll > .season-item,
+    .snap-scroll > .grid-item {
+      scroll-snap-align: start;
+    }
+
+    .scroll-fade-wrap {
+      position: relative;
+      -webkit-mask-image: linear-gradient(to bottom, black calc(100% - 32px), transparent 100%);
+      mask-image: linear-gradient(to bottom, black calc(100% - 32px), transparent 100%);
+    }
+
+    /* ─── Loading ───────────────────────────────────────────────────── */
+    .loading-bar {
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--al-accent), transparent);
+      animation: loading-slide 1.2s ease-in-out infinite;
+      margin-bottom: 4px;
+    }
+    @keyframes loading-slide {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(100%); }
+    }
 
     /* ─── Search ────────────────────────────────────────────────────── */
     .search-bar { margin-bottom: 8px; }
@@ -1423,6 +1892,12 @@ class AniListCard extends LitElement {
       font-size: 0.75rem;
       color: var(--al-text);
       min-width: 70px;
+      text-align: right;
+    }
+    .bar-count {
+      font-size: 0.7rem;
+      color: var(--al-sub);
+      min-width: 24px;
       text-align: right;
     }
     .bar-track {

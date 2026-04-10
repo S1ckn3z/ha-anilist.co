@@ -4,15 +4,19 @@
 [![GitHub Release][release-badge]][release-url]
 [![License][license-badge]][license-url]
 
-A full-featured Home Assistant integration for [AniList.co](https://anilist.co) that brings your anime and manga tracking data into your smart home dashboard. Includes a custom Lovelace card with 5 views, a visual editor, and full theme support.
+A full-featured Home Assistant integration for [AniList.co](https://anilist.co) that brings your anime and manga tracking data into your smart home dashboard. Includes a custom Lovelace card with 5 views, grid & list layouts, HD covers, a visual editor, and full theme support.
 
 ## Features
 
 - **Airing Schedule** — See upcoming episodes with countdown timers
-- **Watchlist** — Track your currently watching anime with progress bars
+- **Watchlist** — Track your currently watching anime with progress bars and next-episode countdowns
 - **Manga Reading List** — Track your manga with chapter/volume progress
 - **Season Overview** — Browse current and next season anime
 - **Profile Stats** — Display your AniList stats, genres, and favourites
+- **Grid & List Layouts** — Switch between cover grid and list rows per view
+- **HD Cover Images** — Configurable cover quality (small / medium / large)
+- **Smart Score System** — User score, average score, or auto-detect — placed on covers or inline
+- **WebSocket API** — Bypasses the 16 KB sensor attribute limit for unlimited data
 - **4 Calendar Entities** — Airing, season, watchlist, and manga calendars
 - **13 Sensor Entities** — Counts, scores, watch time, top genres, and more
 - **Custom Lovelace Card** — Built with Lit 3.x, responsive, themeable
@@ -20,6 +24,7 @@ A full-featured Home Assistant integration for [AniList.co](https://anilist.co) 
 - **OAuth2 Authentication** — Secure login, or use public-only mode
 - **i18n** — Card UI available in English, German, and Japanese
 - **HA Theme Integration** — Automatically adapts to your HA theme colors
+- **Scroll Control** — Pixel-perfect visible item count, scroll-snap, and fade indicators
 
 ---
 
@@ -137,6 +142,7 @@ The AniList card appears as **"AniList"** in the card picker when adding a new c
 | `max_watchlist` | number | — | Override max items for watchlist view |
 | `max_season` | number | — | Override max items for season view |
 | `max_manga` | number | — | Override max items for manga view |
+| `entry_id` | string | — | Config entry ID (only needed with multiple AniList accounts) |
 
 #### Display
 
@@ -156,6 +162,24 @@ The AniList card appears as **"AniList"** in the card picker when adding a new c
 | `sort_by` | string | `time` | Airing sort order: `time`, `title`, `score` |
 | `card_padding` | string | `normal` | Inner spacing: `compact`, `normal`, `relaxed` |
 
+#### Layout & Covers
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `layout_mode` | string | per-view | Layout style: `grid` (cover grid) or `list` (horizontal rows). Defaults: airing=list, watchlist/manga=grid, season=list |
+| `cover_quality` | string | `large` | Cover image resolution: `small` (fast), `medium`, `large` (HD) |
+| `score_position` | string | `top-right` | Score badge on covers: `top-left`, `top-right`, `bottom-left`, `bottom-right`, `inline`, `none` |
+| `score_source` | string | `auto` | Which score to show: `user` (your rating), `average` (community), `auto` (smart per view) |
+| `show_next_airing` | boolean | `true` | Show next episode countdown on watchlist/manga covers |
+
+#### Scroll Behavior
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `visible_items` | number | — | Number of visible items before scrolling (auto-calculates height) |
+| `scroll_snap` | boolean | `false` | Snap scroll to item boundaries (no half-cut items) |
+| `scroll_fade` | boolean | `false` | Gradient fade at bottom to indicate more content |
+
 #### Airing Extras
 
 | Option | Type | Default | Description |
@@ -173,6 +197,7 @@ The AniList card appears as **"AniList"** in the card picker when adding a new c
 | `show_status_tabs` | boolean | `true` | Show tab buttons to switch between statuses |
 | `overflow_mode` | string | `scroll` | `scroll` = scrollbar at fixed height, `limit` = cut at max_items |
 | `scroll_height` | number | `400` | Max height in px when `overflow_mode` is `scroll` |
+| `visible_items` | number | — | Visible items before scrolling (auto-calculates pixel-perfect height) |
 
 #### Season
 
@@ -201,7 +226,7 @@ The AniList card appears as **"AniList"** in the card picker when adding a new c
 | `accent_color` | string | — | Primary accent color (hex). Falls back to HA `--primary-color` |
 | `secondary_color` | string | — | Secondary accent color (hex). Falls back to HA `--accent-color` |
 | `card_background` | string | — | Card background color (hex/rgba) |
-| `card_opacity` | number | `100` | Card opacity (0-100) |
+| `card_opacity` | number | `100` | Background opacity (0-100). Only affects the card background, text and images stay fully visible |
 | `border_color` | string | — | Card border color |
 | `border_width` | number | — | Card border width in px |
 | `border_radius` | number | — | Card border radius in px |
@@ -210,9 +235,9 @@ The AniList card appears as **"AniList"** in the card picker when adding a new c
 
 The card includes a full visual editor with three tabs:
 
-- **General** — View selection, title, padding, click behavior, covers, search, tooltips
-- **[View Name]** — Dynamic tab that changes based on the selected view, showing only relevant settings
-- **Colors** — Accent color, secondary color, background, opacity, borders
+- **General** — View selection, title, padding, click behavior, covers, cover quality, score position, score source, scroll settings (visible items, snap, fade), entry ID
+- **[View Name]** — Dynamic tab that changes based on the selected view, showing layout mode, view-specific toggles (next airing, status tabs, genre/format filters), and limits
+- **Colors** — Accent color, secondary color, background, background opacity, borders
 
 The middle tab label updates to show the current view name (e.g. "Watchlist", "Profile") and displays only the settings that apply to that specific view.
 
@@ -280,6 +305,33 @@ show_manga_stats: false
 show_genre_chart: true
 chart_type: donut
 show_favourites: false
+```
+
+**HD covers with score badges and scroll snap:**
+
+```yaml
+type: custom:anilist-card
+view: watchlist
+layout_mode: grid
+cover_quality: large
+score_position: top-right
+score_source: auto
+show_next_airing: true
+visible_items: 5
+scroll_snap: true
+scroll_fade: true
+```
+
+**List layout with inline scores:**
+
+```yaml
+type: custom:anilist-card
+view: season
+layout_mode: list
+score_position: inline
+score_source: average
+max_season: 20
+show_next_season: true
 ```
 
 **Custom styled card:**
@@ -353,9 +405,23 @@ All sensors are created under the `sensor.anilist_*` namespace.
 | `sensor.anilist_chapters_read` | Total chapters read | chapters | — |
 | `sensor.anilist_top_genre` | Top genre by watch count | — | `top_genres`, `favourite_anime`, `viewer_name`, `viewer_avatar` |
 
-### Sensor Attributes (used by the card)
+### WebSocket API
 
-The card reads data from sensor attributes. Key attribute structures:
+The card uses a dedicated WebSocket API (`anilist/*` commands) to fetch full data directly from the coordinator, bypassing the 16 KB recorder attribute limit. This provides:
+
+- **Unlimited items** — no truncation, full watchlist/manga/schedule
+- **HD cover images** — all sizes (small, medium, large/extraLarge) with accent color
+- **Multi-language titles** — romaji, english, native in every response
+- **Server-side filtering** — status, genre, format filtering without sending all data
+- **Pagination** — limit/offset on all list endpoints
+
+The card automatically falls back to sensor entity attributes when the WebSocket API is unavailable.
+
+**Available endpoints:** `anilist/airing_schedule`, `anilist/watchlist`, `anilist/season`, `anilist/manga`, `anilist/profile`
+
+### Sensor Attributes
+
+Sensor attributes are capped at 25 items per list (with a `total_count` field showing the full count). For unlimited data, the card uses the WebSocket API above. Key attribute structures:
 
 **`airing_schedule`** (on `episodes_this_week` sensor):
 ```json
@@ -494,9 +560,9 @@ automation:
 
 ### Sensor attributes exceed 16KB warning
 
-- This is a HA recorder warning — attributes are still accessible from the state machine
-- It only means the attributes are not stored in long-term history
-- The card reads from current state, not history, so it works fine
+- Since v0.2.0, sensor attributes are capped at 25 items to stay well under the limit
+- The card uses a WebSocket API for full data access, not sensor attributes
+- If you still see this warning, it only affects long-term history storage — the card works fine
 
 ### How do I clear the card cache?
 
@@ -507,7 +573,7 @@ automation:
 
 ## Requirements
 
-- Home Assistant **2024.1.0** or newer
+- Home Assistant **2025.2.0** or newer (tested up to 2026.4.x)
 - HACS **2.0.5** or newer (for HACS installation)
 - An AniList account (optional — public data works without one)
 

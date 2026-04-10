@@ -60,6 +60,32 @@ const OVERFLOW_MODES = [
   { value: "limit", label: "Limit items" },
 ];
 
+const LAYOUT_MODES = [
+  { value: "grid", label: "Grid (Covers)" },
+  { value: "list", label: "List (Rows)" },
+];
+
+const SCORE_SOURCES = [
+  { value: "auto", label: "Auto (smart)" },
+  { value: "user", label: "My Score" },
+  { value: "average", label: "Average Score" },
+];
+
+const SCORE_POSITIONS = [
+  { value: "top-right", label: "Top Right" },
+  { value: "top-left", label: "Top Left" },
+  { value: "bottom-right", label: "Bottom Right" },
+  { value: "bottom-left", label: "Bottom Left" },
+  { value: "inline", label: "Inline" },
+  { value: "none", label: "Hidden" },
+];
+
+const COVER_QUALITIES = [
+  { value: "small", label: "Small (fast)" },
+  { value: "medium", label: "Medium" },
+  { value: "large", label: "Large / HD" },
+];
+
 const STATUS_OPTIONS = [
   { value: "CURRENT", label: "Current" },
   { value: "PLANNING", label: "Planning" },
@@ -138,10 +164,17 @@ class AniListCardEditor extends LitElement {
       <div class="section">
         ${this._select("view", "View", VIEWS)}
         ${this._text("title", "Title (optional)")}
+        ${this._text("entry_id", "Config Entry ID (optional, for multi-account)")}
         ${this._select("card_padding", "Card spacing", PADDING_OPTIONS)}
         ${this._select("link_target", "Click action", LINK_TARGETS)}
         ${this._toggle("show_cover", "Show cover images")}
         ${this._config.show_cover !== false ? this._select("cover_size", "Cover size", COVER_SIZES) : nothing}
+        ${this._select("cover_quality", "Cover quality", COVER_QUALITIES)}
+        ${this._select("score_position", "Score position", SCORE_POSITIONS)}
+        ${this._select("score_source", "Score source", SCORE_SOURCES)}
+        ${this._number("visible_items", "Visible items (scroll for more)", 1, 50)}
+        ${this._config.visible_items ? this._toggle("scroll_snap", "Snap scroll to items") : nothing}
+        ${this._config.visible_items ? this._toggle("scroll_fade", "Fade at scroll edge") : nothing}
         ${this._toggle("show_search", "Show search bar")}
         ${this._toggle("show_tooltips", "Show tooltips on hover")}
       </div>
@@ -177,6 +210,7 @@ class AniListCardEditor extends LitElement {
         ${this._toggle("show_genres", "Show genres")}
         ${this._toggle("show_average_score", "Show average score")}
         ${this._toggle("show_format_badge", "Show format badge (TV/Movie)")}
+        ${this._select("layout_mode", "Layout", LAYOUT_MODES)}
       </div>
     `;
   }
@@ -185,6 +219,8 @@ class AniListCardEditor extends LitElement {
     return html`
       <div class="section">
         <div class="section-header">Watchlist Settings</div>
+        ${this._select("layout_mode", "Layout", LAYOUT_MODES)}
+        ${this._toggle("show_next_airing", "Show next episode countdown")}
         ${this._number("max_watchlist", "Max items (limit mode)", 1, 50)}
         ${this._select("overflow_mode", "Overflow behavior", OVERFLOW_MODES)}
         ${this._config.overflow_mode === "scroll"
@@ -227,6 +263,7 @@ class AniListCardEditor extends LitElement {
     return html`
       <div class="section">
         <div class="section-header">Season Settings</div>
+        ${this._select("layout_mode", "Layout", LAYOUT_MODES)}
         ${this._number("max_season", "Max items", 1, 50)}
         ${this._toggle("show_next_season", "Include next season")}
         ${this._select("score_display", "Score display", SCORE_DISPLAYS)}
@@ -279,6 +316,7 @@ class AniListCardEditor extends LitElement {
     return html`
       <div class="section">
         <div class="section-header">Manga Settings</div>
+        ${this._select("layout_mode", "Layout", LAYOUT_MODES)}
         ${this._number("max_manga", "Max items (limit mode)", 1, 50)}
         ${this._select("overflow_mode", "Overflow behavior", OVERFLOW_MODES)}
         ${this._config.overflow_mode === "scroll"

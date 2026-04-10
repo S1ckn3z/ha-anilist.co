@@ -30,6 +30,7 @@ Views that require authentication will show a message prompting the user to conf
 | Max watchlist | `max_watchlist` | number | _(max_items)_ | Override max items for the watchlist view |
 | Max season | `max_season` | number | _(max_items)_ | Override max items for the season view |
 | Max manga | `max_manga` | number | _(max_items)_ | Override max items for the manga view |
+| Config Entry ID | `entry_id` | string | — | Config Entry ID for multi-account setups. Optional — automatically detected when only one AniList account is configured. |
 
 ### Display
 
@@ -46,8 +47,19 @@ Views that require authentication will show a message prompting the user to conf
 | Show search | `show_search` | bool | `false` | Enable the search/filter input field |
 | Show tooltips | `show_tooltips` | bool | `false` | Show hover tooltips with additional media details |
 | Link target | `link_target` | string | `anilist` | Click behavior: `anilist` (open AniList page), `none` (no action), `ha_more_info` (open HA more-info dialog) |
+| ~~Link to AniList~~ | `link_to_anilist` | bool | — | **Deprecated.** Use `link_target` instead. Will be removed in a future release. |
 | Sort by | `sort_by` | string | `time` | Sort order for entries: `time`, `title`, `score` |
 | Card padding | `card_padding` | string | `normal` | Internal spacing: `compact`, `normal`, `relaxed` |
+
+### Layout & Display
+
+| Option | Key | Type | Default | Description |
+|--------|-----|------|---------|-------------|
+| Layout mode | `layout_mode` | string | _(view default)_ | `"grid"` or `"list"` — Grid shows cover cards in a responsive grid, List shows horizontal rows. Default: `list` for airing/season, `grid` for watchlist/manga. |
+| Cover quality | `cover_quality` | string | `"large"` | Cover image resolution: `"small"`, `"medium"`, `"large"` (HD). Controls the AniList CDN image size fetched — higher quality means larger downloads. |
+| Score position | `score_position` | string | `"top-right"` | Score badge position on cover cards: `"top-left"`, `"top-right"`, `"bottom-left"`, `"bottom-right"`, `"inline"` (next to title), `"none"` (hidden). Works on all views. |
+| Score source | `score_source` | string | `"auto"` | Which score to display: `"user"` (your personal rating), `"average"` (community average), `"auto"` (smart selection — see Score Display section below). |
+| Show next airing | `show_next_airing` | bool | `true` | Show next episode countdown badge on watchlist/manga covers. Only visible for currently airing anime that have a scheduled next episode. |
 
 ### Airing Extras
 
@@ -70,6 +82,9 @@ These options apply to the `watchlist` and `manga` views.
 | Show status tabs | `show_status_tabs` | bool | `true` | Display clickable tabs to filter by status |
 | Overflow mode | `overflow_mode` | string | `scroll` | Behavior when items exceed the visible area: `scroll` (scrollable container), `limit` (truncate to max items) |
 | Scroll height | `scroll_height` | number | `400` | Maximum height in pixels for the scrollable container (only applies when `overflow_mode` is `scroll`) |
+| Visible items | `visible_items` | number | — | Number of visible items/rows before scrolling starts. When set, the card auto-calculates the container height using a ResizeObserver for pixel-perfect sizing. Overrides `scroll_height`. |
+| Scroll snap | `scroll_snap` | bool | `true` | When `visible_items` is set: snap scroll to item boundaries so items are never half-cut at the container edge. |
+| Scroll fade | `scroll_fade` | bool | `true` | When `visible_items` is set: show a gradient fade at the scroll edge to indicate more content is available below. |
 
 ### Season
 
@@ -108,6 +123,20 @@ All styling options are optional. When omitted, values are inherited from the ac
 | Border color | `border_color` | string | _(none)_ | Card border color (CSS color value) |
 | Border width | `border_width` | number | _(none)_ | Card border width in pixels |
 | Border radius | `border_radius` | number | _(none)_ | Card corner radius in pixels |
+
+### Score Display
+
+All scores displayed on the card use a normalized **0-10 scale** with a single decimal digit, shown as a star badge (e.g., **&#9733;8.5**).
+
+The `score_source` option controls which score is shown:
+
+| score_source | Behavior |
+|--------------|----------|
+| `"user"` | Always shows your personal AniList rating. Displays nothing if you have not rated the entry. |
+| `"average"` | Always shows the community average score from AniList. |
+| `"auto"` | **Smart selection per view.** Airing and Season views always show the community average score. Watchlist and Manga views show your personal score if you have rated the entry (score > 0); otherwise, they fall back to the community average. |
+
+The `score_position` option works on **all views** (airing, watchlist, season, manga). In `"grid"` layout mode the badge is overlaid on the cover image at the chosen corner. In `"list"` layout mode, `"inline"` places the score next to the title text; other positions are mapped to `"inline"` automatically. Set to `"none"` to hide scores entirely.
 
 ---
 
@@ -251,6 +280,45 @@ cover_size: large
 show_countdown: true
 countdown_format: both
 card_padding: relaxed
+```
+
+### Watchlist with List Layout, Inline Scores, and Scroll
+
+```yaml
+type: custom:anilist-card
+view: watchlist
+title: Watching Now
+layout_mode: list
+score_position: inline
+score_source: auto
+watchlist_statuses:
+  - CURRENT
+  - PAUSED
+show_status_tabs: true
+visible_items: 6
+scroll_snap: true
+scroll_fade: true
+max_watchlist: 30
+show_progress: true
+show_progress_bar: true
+score_display: number
+```
+
+### Airing with Cover Badges and HD Covers
+
+```yaml
+type: custom:anilist-card
+view: airing
+title: Airing This Week
+layout_mode: grid
+cover_quality: large
+score_position: top-right
+score_source: average
+show_next_airing: true
+max_airing: 12
+show_countdown: true
+countdown_format: relative
+show_badges: true
 ```
 
 ### Full 4-Column Dashboard Layout

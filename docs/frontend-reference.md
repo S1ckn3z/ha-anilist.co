@@ -18,6 +18,7 @@ The main configuration object for the card. All fields except `type` are optiona
 | **General** | | | |
 | `view` | `"airing" \| "watchlist" \| "season" \| "profile" \| "manga"` | `"airing"` | Active view |
 | `title` | `string` | (auto from view) | Custom card title |
+| `entry_id` | `string` | -- | Optional override for multi-entry setups |
 | `max_items` | `number` | `5` | Global fallback max items |
 | `max_airing` | `number` | -- | Override max for airing view |
 | `max_watchlist` | `number` | -- | Override max for watchlist view |
@@ -47,6 +48,15 @@ The main configuration object for the card. All fields except `type` are optiona
 | `show_status_tabs` | `boolean` | `true` | Show status tab bar |
 | `overflow_mode` | `"scroll" \| "limit"` | `"scroll"` | List overflow handling |
 | `scroll_height` | `number` | `400` | Max height in px when overflow_mode is scroll |
+| `visible_items` | `number` | -- | Number of items visible before scrolling (auto-calculates height) |
+| `scroll_snap` | `boolean` | -- | Snap scroll to item boundaries (no half-cut items) |
+| `scroll_fade` | `boolean` | -- | Gradient fade at bottom to indicate more content |
+| **Layout & Display** | | | |
+| `layout_mode` | `"grid" \| "list"` | -- | `grid` = cover grid, `list` = horizontal rows |
+| `cover_quality` | `"small" \| "medium" \| "large"` | `"large"` | Cover image resolution |
+| `score_position` | `"top-left" \| "top-right" \| "bottom-left" \| "bottom-right" \| "inline" \| "none"` | -- | Position of score overlay on covers |
+| `score_source` | `"user" \| "average" \| "auto"` | -- | Which score to display (`auto` = smart per view/status) |
+| `show_next_airing` | `boolean` | -- | Show next episode countdown on covers |
 | **Profile** | | | |
 | `show_avatar` | `boolean` | `true` | Show user avatar |
 | `show_username` | `boolean` | `true` | Show username |
@@ -69,6 +79,17 @@ The main configuration object for the card. All fields except `type` are optiona
 | `border_radius` | `number` | -- | Border radius in px |
 | **Legacy** | | | |
 | `link_to_anilist` | `boolean` | `true` | Deprecated. Mapped to `link_target: "none"` when `false` |
+
+### CoverImages
+
+Multi-resolution cover image URLs returned by the WebSocket API.
+
+| Field | Type | Description |
+|---|---|---|
+| `small` | `string?` | Small cover (~100-230px) |
+| `medium` | `string?` | Medium cover (~230px) |
+| `large` | `string?` | Large cover (~500px, HD) |
+| `color` | `string?` | Accent color hex extracted from the cover |
 
 ### HomeAssistant
 
@@ -101,6 +122,7 @@ Data shape from the `airing_schedule` sensor attribute.
 | `episode` | `number` | yes | Episode number |
 | `airing_at` | `string` | yes | ISO or Unix timestamp of airing |
 | `cover_image` | `string` | no | Cover image URL |
+| `cover_images` | `CoverImages` | no | Multi-resolution cover images (from WebSocket API) |
 | `site_url` | `string` | no | AniList page URL |
 | `duration` | `number` | no | Episode duration in minutes |
 | `genres` | `string[]` | no | Genre tags |
@@ -119,7 +141,9 @@ Data shape from the `watchlist` sensor attribute.
 | `progress` | `number` | yes | Episodes watched |
 | `episodes` | `number` | no | Total episode count |
 | `score` | `number` | no | User score |
+| `average_score` | `number` | no | Average score (0-100) |
 | `cover_image` | `string` | no | Cover image URL |
+| `cover_images` | `CoverImages` | no | Multi-resolution cover images (from WebSocket API) |
 | `site_url` | `string` | no | AniList page URL |
 
 ### MangaItem
@@ -136,7 +160,9 @@ Data shape from the `manga_list` sensor attribute.
 | `chapters` | `number` | no | Total chapters |
 | `volumes` | `number` | no | Total volumes |
 | `score` | `number` | no | User score |
+| `average_score` | `number` | no | Average score (0-100) |
 | `cover_image` | `string` | no | Cover image URL |
+| `cover_images` | `CoverImages` | no | Multi-resolution cover images (from WebSocket API) |
 | `site_url` | `string` | no | AniList page URL |
 
 ### SeasonAnime
@@ -152,6 +178,7 @@ Data shape from the `season_anime` sensor attribute.
 | `format` | `string` | no | Media format |
 | `genres` | `string[]` | no | Genre tags |
 | `cover_image` | `string` | no | Cover image URL |
+| `cover_images` | `CoverImages` | no | Multi-resolution cover images (from WebSocket API) |
 | `site_url` | `string` | no | AniList page URL |
 | `next_airing_episode` | `{ airing_at: string; episode: number }` | no | Next airing info |
 
@@ -176,6 +203,18 @@ Data shape from the `season_anime` sensor attribute.
 | `mean_score` | `number?` | Mean score |
 | `top_genres` | `string[]?` | Top genres list |
 | `favourite_anime` | `{ title: string; site_url?: string; cover?: string }[]?` | Favourite anime |
+
+### WSFavouriteAnime
+
+Data shape for favourite anime entries returned by the WebSocket API.
+
+| Field | Type | Required | Description |
+|---|---|---|---|
+| `id` | `number` | no | AniList media ID |
+| `title` | `string \| MediaTitle` | yes | Anime title (plain string or multi-lang object) |
+| `cover_image` | `string` | no | Cover image URL |
+| `cover_images` | `CoverImages` | no | Multi-resolution cover images |
+| `site_url` | `string` | no | AniList page URL |
 
 ---
 
@@ -308,6 +347,37 @@ The profile view does not use an extraction method. Instead it reads individual 
 **`getEntityState(hass, entityId)`** -- Safe accessor that returns `hass.states[entityId]?.state ?? ""`.
 
 **`renderScore(score, display)`** -- Returns a Lit template for score display: stars badge, progress bar, or plain number. Returns `nothing` for `"none"` or missing score.
+
+**`resolveTitle(title, lang)`** -- Resolves a title that may be a plain string (entity attribute fallback) or a `MediaTitle` object (WebSocket API). When given a string, returns it directly. When given a `MediaTitle`, tries `title[lang]`, then falls back through `romaji` -> `english` -> `native` -> `"Unknown"`. Defined in `types.ts` and exported for use by both the card and editor.
+
+```typescript
+function resolveTitle(
+  title: string | MediaTitle | undefined,
+  lang: string = "romaji",
+): string;
+```
+
+**`fmtScore(raw)`** -- Formats a raw 0-100 AniList score to a single-digit 0-10 scale string. Returns `""` for falsy values. Used by score overlays and inline score displays.
+
+```typescript
+function fmtScore(raw: number | undefined): string;
+// fmtScore(91)  => "9.1"
+// fmtScore(80)  => "8"
+// fmtScore(undefined) => ""
+```
+
+### WebSocket Data Flow
+
+When the card uses the WebSocket API instead of entity attributes (for unlimited data access), the data flows through the following pipeline:
+
+1. **Card** calls `this.hass.callWS({ type: "anilist/...", ... })` to request data.
+2. **HA WebSocket** routes the message to the integration's `websocket_api.py` handler.
+3. **websocket_api.py** reads from `coordinator.data` (the cached AniList API data) and serializes the response with full item lists (no 25-item cap).
+4. The **serialized response** is sent back over the WebSocket to the card.
+5. The **Card** stores the response in a `@state()` cache property, which triggers a Lit re-render.
+6. The **render methods** read from the cached WebSocket data, falling back to entity attributes if the WebSocket data is not available.
+
+This flow allows the card to display all items (not limited to 25) while keeping sensor attributes small for the HA recorder.
 
 ---
 

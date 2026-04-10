@@ -4,12 +4,14 @@ from __future__ import annotations
 import logging
 from pathlib import Path
 
+from homeassistant.components.http import StaticPathConfig
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 
 from .api import AniListClient
 from .const import CONF_ACCESS_TOKEN, DOMAIN, PLATFORMS
 from .coordinator import AniListConfigEntry, AniListCoordinator
+from .websocket_api import async_register_websocket_commands
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -30,7 +32,9 @@ def _get_access_token(entry: AniListConfigEntry) -> str | None:
 async def _register_card(hass: HomeAssistant) -> None:
     """Register the custom Lovelace card frontend resource."""
     # Serve the built JS from within the integration directory
-    hass.http.register_static_path("/anilist-card", str(CARD_DIR), cache_headers=False)
+    await hass.http.async_register_static_paths(
+        [StaticPathConfig("/anilist-card", str(CARD_DIR), False)]
+    )
 
     # Auto-register as a Lovelace resource so users don't have to
     # This uses the lovelace resource storage collection
@@ -69,9 +73,12 @@ async def async_setup_entry(hass: HomeAssistant, entry: AniListConfigEntry) -> b
 
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
 
-    # Register the frontend card (only once, even with multiple config entries)
+    # Register WebSocket commands and frontend card (only once)
     if DOMAIN not in hass.data:
         hass.data[DOMAIN] = {}
+    if "ws_registered" not in hass.data[DOMAIN]:
+        async_register_websocket_commands(hass)
+        hass.data[DOMAIN]["ws_registered"] = True
     if "card_registered" not in hass.data[DOMAIN]:
         await _register_card(hass)
         hass.data[DOMAIN]["card_registered"] = True

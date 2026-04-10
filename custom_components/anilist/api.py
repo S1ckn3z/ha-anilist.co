@@ -53,7 +53,8 @@ query PublicData(
         episodes
         duration
         format
-        coverImage { large medium color }
+        averageScore
+        coverImage { extraLarge large medium color }
         genres
         isAdult
         siteUrl
@@ -154,7 +155,8 @@ query CombinedData(
           duration
           status
           format
-          coverImage { large medium color }
+          averageScore
+          coverImage { extraLarge large medium color }
           nextAiringEpisode { id airingAt timeUntilAiring episode }
           siteUrl
         }
@@ -178,8 +180,9 @@ query CombinedData(
         title { romaji english native }
         duration
         format
+        averageScore
         genres
-        coverImage { medium color }
+        coverImage { extraLarge large medium color }
         isAdult
         siteUrl
       }
@@ -264,8 +267,9 @@ query SchedulePage(
         title { romaji english native }
         duration
         format
+        averageScore
         genres
-        coverImage { medium color }
+        coverImage { extraLarge large medium color }
         isAdult
         siteUrl
       }
@@ -300,7 +304,7 @@ query UserStatsAndManga($userName: String) {
         nodes {
           id
           title { romaji english native }
-          coverImage { medium }
+          coverImage { extraLarge large medium color }
           siteUrl
         }
       }
@@ -308,7 +312,7 @@ query UserStatsAndManga($userName: String) {
         nodes {
           id
           title { romaji english native }
-          coverImage { medium }
+          coverImage { extraLarge large medium color }
           siteUrl
         }
       }
@@ -336,7 +340,8 @@ query UserStatsAndManga($userName: String) {
           volumes
           status
           format
-          coverImage { large medium color }
+          averageScore
+          coverImage { extraLarge large medium color }
           siteUrl
         }
       }

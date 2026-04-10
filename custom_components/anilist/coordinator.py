@@ -85,7 +85,8 @@ class UserStats:
     episodes_watched: int
     minutes_watched: int
     anime_mean_score: float
-    top_genres: list[str]           # top genre names (by watch count)
+    top_genres: list[str]           # top genre names (by watch count) — legacy compat
+    genre_stats: list[dict[str, Any]]  # full [{genre, count}, ...] from API
     manga_count: int
     chapters_read: int
     volumes_read: int
@@ -219,11 +220,12 @@ def _parse_user_stats(user_block: dict[str, Any]) -> UserStats:
     manga_stats = stats.get("manga", {})
     favs = user_block.get("favourites", {})
 
-    top_genres = [
-        g["genre"]
+    genre_stats_raw = [
+        {"genre": g["genre"], "count": g.get("count", 0)}
         for g in anime_stats.get("genres", [])
         if g.get("genre")
-    ][:5]
+    ]
+    top_genres = [g["genre"] for g in genre_stats_raw][:5]
 
     return UserStats(
         anime_count=anime_stats.get("count", 0),
@@ -231,6 +233,7 @@ def _parse_user_stats(user_block: dict[str, Any]) -> UserStats:
         minutes_watched=anime_stats.get("minutesWatched", 0),
         anime_mean_score=anime_stats.get("meanScore", 0.0),
         top_genres=top_genres,
+        genre_stats=genre_stats_raw,
         manga_count=manga_stats.get("count", 0),
         chapters_read=manga_stats.get("chaptersRead", 0),
         volumes_read=manga_stats.get("volumesRead", 0),
