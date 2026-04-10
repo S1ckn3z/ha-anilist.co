@@ -2,6 +2,8 @@
 
 > Bring your anime & manga tracking into your Home Assistant dashboard.
 
+![AniList Dashboard](https://raw.githubusercontent.com/S1ckn3z/ha-anilist.co/main/docs/images/dashboard-overview.png)
+
 ## ✨ What you get
 
 - 🃏 **Custom Lovelace Card** with 5 views (Airing, Watchlist, Manga, Season, Profile)
@@ -31,6 +33,14 @@
 | 📖 | Manga | Manga reading list with chapter/volume progress |
 | 🗓️ | Season | Current & next season anime browser with genre/format filters |
 | 👤 | Profile | Stats, genre charts, and favourite anime |
+
+## 📸 Previews
+
+![Watchlist with HD covers](https://raw.githubusercontent.com/S1ckn3z/ha-anilist.co/main/docs/images/view-watchlist.png)
+
+![Airing schedule with countdowns](https://raw.githubusercontent.com/S1ckn3z/ha-anilist.co/main/docs/images/view-airing.png)
+
+![Profile stats and genre chart](https://raw.githubusercontent.com/S1ckn3z/ha-anilist.co/main/docs/images/view-profile.png)
 
 ## ⚙️ Key Configuration Options
 

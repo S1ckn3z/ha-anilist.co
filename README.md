@@ -10,6 +10,8 @@
 >
 > A full-featured [Home Assistant](https://www.home-assistant.io/) custom integration for [AniList.co](https://anilist.co) — with a custom Lovelace card, 5 views, HD covers, visual editor, and 23 languages.
 
+![AniList Dashboard Overview](docs/images/dashboard-overview.png)
+
 ---
 
 ## ⚡ Quick Install
@@ -112,6 +114,31 @@ The AniList card appears as **"AniList"** in the card picker when adding a new c
 | 📖 `manga` | Manga reading list with chapter/volume tracking | ✅ |
 | 🗓️ `season` | Season anime browser with scores and formats | ❌ |
 | 👤 `profile` | Profile with stats, genre charts, and favourites | ✅ |
+
+### 📸 Screenshots
+
+<table>
+  <tr>
+    <td align="center" width="50%">
+      <img src="docs/images/view-airing.png" alt="Airing view"><br>
+      <b>📺 Airing</b> — Upcoming episodes with countdowns, genres, and format badges
+    </td>
+    <td align="center" width="50%">
+      <img src="docs/images/view-watchlist.png" alt="Watchlist view"><br>
+      <b>📋 Watchlist</b> — HD cover grid with status tabs, scores, and progress
+    </td>
+  </tr>
+  <tr>
+    <td align="center" width="50%">
+      <img src="docs/images/view-season.png" alt="Season view"><br>
+      <b>🗓️ Season</b> — Current season anime with scores and format badges
+    </td>
+    <td align="center" width="50%">
+      <img src="docs/images/view-profile.png" alt="Profile view"><br>
+      <b>👤 Profile</b> — Stats, genre charts, and favourites
+    </td>
+  </tr>
+</table>
 
 ### 📝 YAML Examples
 
