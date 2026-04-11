@@ -13,6 +13,14 @@
 </p>
 
 <p align="center">
+  <a href="https://github.com/S1ckn3z/ha-anilist.co/releases"><img src="https://img.shields.io/github/downloads/S1ckn3z/ha-anilist.co/total?style=flat-square&color=blue&label=downloads" alt="Downloads"></a>
+  <a href="https://github.com/S1ckn3z/ha-anilist.co/stargazers"><img src="https://img.shields.io/github/stars/S1ckn3z/ha-anilist.co?style=flat-square&color=yellow" alt="Stars"></a>
+  <a href="https://github.com/S1ckn3z/ha-anilist.co/issues"><img src="https://img.shields.io/github/issues/S1ckn3z/ha-anilist.co?style=flat-square" alt="Open Issues"></a>
+  <a href="https://github.com/S1ckn3z/ha-anilist.co/commits/main"><img src="https://img.shields.io/github/last-commit/S1ckn3z/ha-anilist.co?style=flat-square" alt="Last Commit"></a>
+  <a href="https://github.com/S1ckn3z/ha-anilist.co/actions"><img src="https://img.shields.io/github/actions/workflow/status/S1ckn3z/ha-anilist.co/release.yml?branch=main&style=flat-square&label=CI" alt="CI Status"></a>
+</p>
+
+<p align="center">
   <b>Bring your anime & manga tracking into your smart home dashboard.</b><br>
   A full-featured <a href="https://www.home-assistant.io/">Home Assistant</a> custom integration for <a href="https://anilist.co">AniList.co</a> — with a custom Lovelace card, 5 views, HD covers, visual editor, and 23 languages.
 </p>
