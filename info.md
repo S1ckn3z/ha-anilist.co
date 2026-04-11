@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/S1ckn3z/ha-anilist.co/main/docs/images/icon.png" alt="AniList" width="160">
+  <img src="https://raw.githubusercontent.com/S1ckn3z/ha-anilist.co/main/docs/images/icon@2x.png" alt="AniList" width="180">
 </p>
 
 # 🎌 AniList for Home Assistant

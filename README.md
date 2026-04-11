@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="docs/images/icon.png" alt="AniList for Home Assistant" width="180">
+  <img src="docs/images/icon@2x.png" alt="AniList for Home Assistant" width="200">
 </p>
 
 <h1 align="center">🎌 AniList for Home Assistant</h1>

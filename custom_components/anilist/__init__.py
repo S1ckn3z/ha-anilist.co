@@ -36,23 +36,65 @@ async def _register_card(hass: HomeAssistant) -> None:
         [StaticPathConfig("/anilist-card", str(CARD_DIR), False)]
     )
 
-    # Auto-register as a Lovelace resource so users don't have to
-    # This uses the lovelace resource storage collection
-    url = CARD_URL
-    resources = hass.data.get("lovelace_resources")
-    if resources is not None:
-        # Check if already registered
+    # Auto-register as a Lovelace resource so users don't have to.
+    # The correct key is LOVELACE_DATA (since HA 2024+), which holds a
+    # LovelaceData object with a .resources attribute. Older HA versions
+    # used a dict at hass.data["lovelace"].
+    try:
+        from homeassistant.components.lovelace.const import LOVELACE_DATA
+        lovelace_data = hass.data.get(LOVELACE_DATA)
+    except ImportError:
+        lovelace_data = hass.data.get("lovelace")
+
+    if lovelace_data is None:
+        _LOGGER.warning(
+            "Lovelace not available — add '%s' as a module resource manually "
+            "under Settings > Dashboards > Resources.",
+            CARD_URL,
+        )
+        return
+
+    # Modern HA: LovelaceData object with .resources attribute
+    # Older HA: plain dict with "resources" key
+    resources = getattr(lovelace_data, "resources", None)
+    if resources is None and isinstance(lovelace_data, dict):
+        resources = lovelace_data.get("resources")
+
+    if resources is None:
+        _LOGGER.warning(
+            "Lovelace resources storage not available (YAML mode?) — "
+            "add '%s' as a module resource manually.",
+            CARD_URL,
+        )
+        return
+
+    # Ensure the storage collection is loaded before we read from it
+    if hasattr(resources, "async_load") and not getattr(resources, "loaded", True):
+        try:
+            await resources.async_load()
+        except Exception as err:  # noqa: BLE001
+            _LOGGER.debug("Could not load resource collection: %s", err)
+
+    try:
+        # Check if already registered (avoid duplicates on reload)
         for item in resources.async_items():
-            if item.get("url") == url:
+            if item.get("url") == CARD_URL:
+                _LOGGER.debug("AniList card already registered as resource")
                 return
-        # Register as module resource
-        await resources.async_create_item({"res_type": "module", "url": url})
-        _LOGGER.debug("Registered AniList card as Lovelace resource: %s", url)
-    else:
-        _LOGGER.debug(
-            "Lovelace resources not available (YAML mode?). "
-            "Add '%s' as a module resource manually.",
-            url,
+
+        await resources.async_create_item(
+            {"res_type": "module", "url": CARD_URL}
+        )
+        _LOGGER.info(
+            "Registered AniList Lovelace card resource: %s (reload your browser)",
+            CARD_URL,
+        )
+    except Exception as err:  # noqa: BLE001
+        _LOGGER.warning(
+            "Could not auto-register card resource (%s) — "
+            "add '%s' manually under Settings > Dashboards > Resources.",
+            err,
+            CARD_URL,
         )
 
 

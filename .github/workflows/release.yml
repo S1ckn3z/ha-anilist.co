@@ -193,30 +193,8 @@ jobs:
           generate_release_notes: false
           files: anilist.zip
           body: |
-            ## 📦 Installation
-
-            ### 🚀 HACS (Recommended)
-
-            [![Open in HACS](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=S1ckn3z&repository=ha-anilist.co&category=integration)
-
-            1. Click the button above, or add `https://github.com/S1ckn3z/ha-anilist.co` as a custom repository in HACS (category: Integration)
-            2. Search for **AniList** and click **Download**
-            3. Restart Home Assistant
-
-            ### 📁 Manual
-
-            1. Download `anilist.zip` from this release
-            2. Extract to `config/custom_components/anilist/`
-            3. Restart Home Assistant
-
-            The Lovelace card is bundled and registers automatically — no manual resource setup needed.
-
-            ---
-
-            ## 📝 What's Changed
-
             ${{ steps.changelog.outputs.body }}
 
             ---
 
-            📖 See the [full CHANGELOG](https://github.com/S1ckn3z/ha-anilist.co/blob/main/CHANGELOG.md) for version history.
+            🔄 **After updating, restart Home Assistant** and reload your browser (Ctrl+Shift+R) to pick up card changes.
