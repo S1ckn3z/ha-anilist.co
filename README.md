@@ -77,10 +77,40 @@ After installation and restart, add the integration:
 
 ### 🔐 With AniList Account (Full Features)
 
+AniList requires you to register your own API client. The most common setup error (`invalid_client / Client authentication failed`) comes from the **Redirect URL** not matching exactly — so please follow the steps in order.
+
+**1. Create an AniList API client**
+
+- Open [AniList Developer Settings](https://anilist.co/settings/developer) → **Create New Client**
+- **Name:** anything you like (e.g. `Home Assistant`)
+- **Redirect URL:** for almost all installations, this is **exactly**:
+
+   ```
+   https://my.home-assistant.io/redirect/oauth
+   ```
+
+   This is the URL Home Assistant uses by default for all OAuth2 integrations (via the built-in [My Home Assistant](https://my.home-assistant.io/) redirector). When you set up the credentials inside HA, it will display this same URL — copy it from there if in doubt.
+
+   <details>
+   <summary>Advanced: I disabled the <code>my</code> integration</summary>
+
+   If you removed the `my` component from your HA config, HA falls back to your local callback. Register this instead — replace `<your-ha-url>` with the exact URL you open HA from in your browser (scheme + host + port, no trailing slash):
+
+   ```
+   <your-ha-url>/auth/external/callback
+   ```
+
+   Examples: `http://homeassistant.local:8123/auth/external/callback`, `https://abc123xyz.ui.nabu.casa/auth/external/callback`, `https://ha.mydomain.com/auth/external/callback`.
+   </details>
+
+- Save the client and copy the **Client ID** and **Client Secret**.
+
+**2. Add the credentials in Home Assistant**
+
 1. Click the button above (or **Settings → Devices & Services → Add Integration**)
-2. Search for **AniList**
-3. Select **Sign in with AniList account (OAuth2)**
-4. Authorize with your AniList credentials
+2. Search for **AniList** → choose **Sign in with AniList account (OAuth2)**
+3. Paste your **Client ID** and **Client Secret** when prompted
+4. You'll be redirected to AniList — authorize the application
 5. ✅ All sensors and calendars are created automatically
 
 ### 🌐 Public Data Only (No Account)
@@ -559,6 +589,24 @@ The integration, Lovelace card, and visual card editor are fully translated into
 ---
 
 ## ❓ FAQ
+
+<details>
+<summary>❌ OAuth login fails with <code>invalid_client / Client authentication failed</code></summary>
+
+This error comes from AniList, not from Home Assistant. It means the **Redirect URL** registered on your AniList API client doesn't exactly match the one Home Assistant is sending.
+
+For almost all installations, HA sends:
+
+```
+https://my.home-assistant.io/redirect/oauth
+```
+
+Open https://anilist.co/settings/developer and set the Redirect URL on your client to that exact value (no trailing slash, no extra characters). The Application Credentials dialog inside HA also shows you the exact URL you need — when in doubt, copy it from there.
+
+> Only if you have intentionally disabled the `my` integration in your HA config, HA falls back to `<your-ha-url>/auth/external/callback` instead.
+
+Fix the Redirect URL on AniList, then try **Settings → Devices & Services → Add Integration → AniList** again.
+</details>
 
 <details>
 <summary>❌ Card shows "No episodes in the coming days"</summary>
